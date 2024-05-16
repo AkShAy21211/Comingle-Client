@@ -7,7 +7,8 @@ import userApi from "../../Apis/user";
 import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Register() {
+
   const navigate = useNavigate();
   const {
     errors,
@@ -54,7 +55,7 @@ function Login() {
             <strong className="text-black lg:text-blue-800"> UP</strong>
           </h1>
           <form
-            className="space-y-2 md:space-y-4"
+            className="space-y-2 md:space-y-4  w-auto"
             onSubmit={handleSubmit}
             noValidate
           >
@@ -139,11 +140,11 @@ function Login() {
             >
               Create an account
             </button>
-            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-light text-white lg:text-black">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                className="font-medium  lg:text-blue-800  text-primary-600 hover:underline dark:text-primary-500"
               >
                 Login here
               </Link>
@@ -156,4 +157,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;

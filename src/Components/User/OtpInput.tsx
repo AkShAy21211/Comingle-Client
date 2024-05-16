@@ -4,7 +4,9 @@ import { Otp } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { ToastContainer } from "react-toastify";
 import Timer from "../Common/Timer";
+import { useNavigate } from "react-router-dom";
 function OtpInput() {
+  const navigate = useNavigate();
   const { handleSubmit, values, setFieldValue } = useFormik<Otp>({
     initialValues: {
       otp: "",
@@ -14,6 +16,9 @@ function OtpInput() {
 
   async function onSubmit(otpData: Otp) {
     const otpVerifyResponse = await userApi.verifyOtp(otpData);
+    if(otpVerifyResponse){
+      navigate('/login')
+    }
   }
 
   return (
