@@ -1,15 +1,15 @@
-export type SignUpType = {
+export interface SignUpType {
   name: string;
   email: string;
   password: string;
   confirmpassword: string;
 };
-export type SignInType = {
+export interface SignInType {
   email: string;
   password: string;
 };
 
-export type Otp = {
+export interface Otp {
 
-  otp:'',
+  otp:"",
 }

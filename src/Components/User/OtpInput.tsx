@@ -1,21 +1,18 @@
 import { useFormik } from "formik";
 import OtpInputBox from "react-otp-input";
-
-// Define the Otp interface
-interface Otp {
-  otp: string;
-}
-
+import { Otp } from "../../Interface/interface";
+import userApi from "../../Apis/user";
+import { ToastContainer } from "react-toastify";
 function OtpInput() {
-  const formik = useFormik<Otp>({
+  const { handleSubmit, values, setFieldValue } = useFormik<Otp>({
     initialValues: {
       otp: "",
     },
-    onSubmit: handleClick,
+    onSubmit: onSubmit,
   });
 
-  async function handleClick(values: Otp) {
-    console.log(values);
+  async function onSubmit(otpData: Otp) {
+    const otpVerifyResponse = await userApi.verifyOtp(otpData);
   }
 
   return (
@@ -27,17 +24,17 @@ function OtpInput() {
               <p>Email Verification</p>
             </div>
             <div className="flex flex-row text-sm font-medium text-gray-400">
-              <p>We have sent a code to your email ba**@dipainhouse.com</p>
+              <p>We have sent a code to your email address</p>
             </div>
           </div>
 
           <div>
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="flex flex-col space-y-16">
                 <div className="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
                   <OtpInputBox
-                    value={formik.values.otp}
-                    onChange={(otp) => formik.setFieldValue("otp", otp)}
+                    value={values.otp}
+                    onChange={(otp) => setFieldValue("otp", otp)}
                     numInputs={4}
                     inputType="tel"
                     renderSeparator={<span>-</span>}
@@ -46,8 +43,8 @@ function OtpInput() {
                         {...props}
                         style={{
                           width: "80px",
-                          padding:"30px",
-                          fontSize:"20px",
+                          padding: "30px",
+                          fontSize: "20px",
                           height: "70px",
                           border: "1px solid #ccc",
                         }}
@@ -71,8 +68,7 @@ function OtpInput() {
                     <a
                       className="flex flex-row items-center text-blue-600"
                       href="#"
-                      onClick={() => {
-                      }}
+                      onClick={() => {}}
                     >
                       Resend
                     </a>
@@ -83,6 +79,7 @@ function OtpInput() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

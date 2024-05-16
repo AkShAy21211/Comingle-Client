@@ -2,7 +2,7 @@ const userEnpoints = {
 
 
     SIGNUP:'/user/signup',
-    VERIFYOTP:'/user/verify-otp',
+    VERIFYOTP:'/user/signup/verify-otp',
 
 }
 
