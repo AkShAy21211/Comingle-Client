@@ -9,6 +9,12 @@ export interface SignInType {
   password: string;
 };
 
+export interface OTPResend{
+
+  duration:number,
+  onResend: ()=>Promise<void>;
+}
+
 export interface Otp {
 
   otp:"",

@@ -43,27 +43,29 @@ const userApi = {
   verifyOtp: async (otp: Otp) => {
     try {
       console.log(otp);
-      
-      const OtpVerifyResponse = await axiosInstance.post(userEnpoints.VERIFYOTP, otp);
-console.log(OtpVerifyResponse);
 
-      if(OtpVerifyResponse.data.status){
+      const OtpVerifyResponse = await axiosInstance.post(
+        userEnpoints.VERIFYOTP,
+        otp
+      );
+
+      if (OtpVerifyResponse.data.status) {
         toast.success(OtpVerifyResponse.data.message, {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
 
-      return OtpVerifyResponse;
+        return OtpVerifyResponse;
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error);
-      
-        toast.warning(error.response.data.message, {
+
+      toast.warning(error.response.data.message, {
         position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: true,
@@ -72,8 +74,38 @@ console.log(OtpVerifyResponse);
         theme: "colored",
         transition: Bounce,
       });
-      
-    }    
+    }
+  },
+
+  resendOTP: async () => {
+    try {
+      const resendResponse = await axiosInstance.post(userEnpoints.RESEND_OTP);
+
+      if (resendResponse.data.status) {
+        toast.success(resendResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error.response.data.message) {
+        toast.error(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+      }
+    }
   },
 };
 

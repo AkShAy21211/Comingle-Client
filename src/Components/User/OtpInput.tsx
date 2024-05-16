@@ -3,6 +3,7 @@ import OtpInputBox from "react-otp-input";
 import { Otp } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { ToastContainer } from "react-toastify";
+import Timer from "../Common/Timer";
 function OtpInput() {
   const { handleSubmit, values, setFieldValue } = useFormik<Otp>({
     initialValues: {
@@ -42,10 +43,10 @@ function OtpInput() {
                       <input
                         {...props}
                         style={{
-                          width: "80px",
+                          width: "75px",
                           padding: "30px",
                           fontSize: "20px",
-                          height: "70px",
+                          height: "60px",
                           border: "1px solid #ccc",
                         }}
                       />
@@ -63,15 +64,9 @@ function OtpInput() {
                     </button>
                   </div>
 
-                  <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-                    <p>Didn't receive code?</p>
-                    <a
-                      className="flex flex-row items-center text-blue-600"
-                      href="#"
-                      onClick={() => {}}
-                    >
-                      Resend
-                    </a>
+                  <div className="flex flex-col items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
+                 
+                   <Timer  duration={60} onResend={userApi.resendOTP}/>
                   </div>
                 </div>
               </div>
