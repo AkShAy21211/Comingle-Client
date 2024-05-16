@@ -5,7 +5,10 @@ import { useFormik } from "formik";
 import { SignUpType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 function Login() {
+  const navigate = useNavigate();
   const {
     errors,
     handleBlur,
@@ -26,12 +29,15 @@ function Login() {
 
   async function onSubmit(formData: SignUpType) {
     try {
-      await userApi.signup(formData);
-      handleReset('')
-     
+      const response = await userApi.signup(formData);
 
+      if (response?.data.status) {
+        setTimeout(() => {
+          navigate("/verify-otp");
+          handleReset("");
+        }, 1000);
+      }
     } catch (error: any) {
-      
       console.log(error);
     }
   }
@@ -145,7 +151,7 @@ function Login() {
           </form>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 }
