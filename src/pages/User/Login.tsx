@@ -7,10 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import signinSchema from "../../Validation/User/LoginSchema";
 import { useForm } from "react-hook-form";
 import userApi from "../../Apis/user";
-
+import { useDispatch } from "react-redux";
+import { userLogin } from "../../Redux/Slice/userSlice";
 function Login() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const {
     formState: { errors },
     handleSubmit,
@@ -27,9 +28,10 @@ function Login() {
   const onSubmit = async (userData: SignInType) => {
     const signupRespnse = await userApi.signin(userData);
     if (signupRespnse?.status) {
+      dispatch(userLogin(signupRespnse.data.userData))
       setTimeout(() => {
         reset();
-        navigate("/");
+        // navigate("/");
       }, 1000);
     }
     console.log(signupRespnse);
@@ -62,7 +64,7 @@ function Login() {
                 {...register("email")}
                 id="email"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="name@company.com"
+                placeholder="name@gmail.com"
               />
               <p className="text-red-500 text-sm mt-2">
                 {errors.email?.message}
