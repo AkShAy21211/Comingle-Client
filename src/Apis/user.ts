@@ -1,5 +1,5 @@
 import axiosInstance from "./axios";
-import { Otp, SignUpType } from "../Interface/interface";
+import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import userEnpoints from "./Endpoints/user";
@@ -91,6 +91,40 @@ const userApi = {
           theme: "colored",
           transition: Bounce,
         });
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error.response.data.message) {
+        toast.error(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+      }
+    }
+  },
+
+
+  signin: async (userData:SignInType) => {
+    try {
+      const signinResponse = await axiosInstance.post(userEnpoints.SIGNIN,userData);
+
+      if (signinResponse.data.status) {
+        toast.success(signinResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+
+        return signinResponse;
       }
     } catch (error: any) {
       console.log(error);
