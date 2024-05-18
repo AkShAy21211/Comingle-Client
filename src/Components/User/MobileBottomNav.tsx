@@ -35,7 +35,7 @@ function MobileBottomNav() {
 
         <button data-tooltip-target="tooltip-profile" type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50  group">
             <CiSaveDown2 size={30}/>
-            <span className="not-sr-only text-sm">Profile</span>
+            <span className="not-sr-only text-sm">Saved</span>
         </button>
         
     </div>
