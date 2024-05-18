@@ -17,7 +17,9 @@ function OtpInput() {
   async function onSubmit(otpData: Otp) {
     const otpVerifyResponse = await userApi.verifyOtp(otpData);
     if(otpVerifyResponse){
-      navigate('/login')
+     setTimeout(() => {
+       navigate('/login')
+     }, 1000);
     }
   }
 

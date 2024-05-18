@@ -31,7 +31,7 @@ function Login() {
       dispatch(userLogin(signupRespnse.data.userData))
       setTimeout(() => {
         reset();
-        // navigate("/");
+        navigate("/");
       }, 1000);
     }
     console.log(signupRespnse);
