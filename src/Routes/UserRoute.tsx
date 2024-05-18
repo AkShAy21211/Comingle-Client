@@ -1,5 +1,5 @@
 
-import { Routes,Route,redirect } from 'react-router-dom'
+import { Routes,Route } from 'react-router-dom'
 import Register from '../pages/User/Register';
 import OtpVerify from '../pages/User/OtpVerify';
 import Login from '../pages/User/Login';
