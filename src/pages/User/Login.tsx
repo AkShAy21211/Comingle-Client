@@ -1,5 +1,5 @@
 import { ToastContainer } from "react-toastify";
-import LoginLeft from "../../Components/User/LoginLeft";
+import LoginLeft from "../../Components/User/Miscellaneous/LoginLeft";
 import { SignInType } from "../../Interface/interface";
 import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";

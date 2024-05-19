@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import LoginLeft from "../../Components/User/LoginLeft";
+import LoginLeft from "../../Components/User/Miscellaneous/LoginLeft";
 import signUpScheema from "../../Validation/User/RegisterSchema";
 import { useFormik } from "formik";
 import { SignUpType } from "../../Interface/interface";

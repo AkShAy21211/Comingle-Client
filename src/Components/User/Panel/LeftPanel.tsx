@@ -3,7 +3,7 @@ import { BsChatLeftText } from "react-icons/bs";
 import { BsPersonAdd } from "react-icons/bs";
 import { CiSaveDown2 } from "react-icons/ci";
 import { Link } from "react-router-dom";
-import Suggestions from "./Suggestions";
+import Suggestions from "../Home/Suggestions";
 
 function LeftPanel() {
   return (

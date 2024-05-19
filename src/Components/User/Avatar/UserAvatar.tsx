@@ -1,4 +1,4 @@
-import usersDymmy from "../../Dummy/user";
+import usersDymmy from "../../../Dummy/user";
 
 
 function UserAvatar({suggestions,isRight}:{suggestions:string,isRight?:boolean}) {

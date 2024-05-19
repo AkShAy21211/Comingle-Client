@@ -1,5 +1,4 @@
-import React from "react";
-import UserAvatar from "./UserAvatar";
+import UserAvatar from "../Avatar/UserAvatar";
 
 function Suggestions() {
   return (

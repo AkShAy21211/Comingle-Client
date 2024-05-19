@@ -1,6 +1,6 @@
 import React from 'react'
-import UserAvatar from './UserAvatar'
-import PremiumAd from './PremiumAd'
+import UserAvatar from '../Avatar/UserAvatar'
+import PremiumAd from '../Home/PremiumAd'
 
 function RightPanel() {
   return (
