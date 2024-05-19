@@ -7,13 +7,9 @@ import Posts from "../../Components/User/Post/Posts";
 function Home() {
   return (
     <>
-      <Header />
-      <div className="flex justify-between ">
-        <LeftPanel />
+      
         <Posts />
-        <RightPanel />
-      </div>
-      <MobileBottomNav />
+     
     </>
   );
 }

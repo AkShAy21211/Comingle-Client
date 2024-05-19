@@ -31,10 +31,10 @@ const images = [
 function Posts() {
   return (
     <>
-      <div className="h-auto mb-16 mt-28 flex flex-col items-center justify-start w-full overflow-auto overscroll-y-auto">
+      <div className="h-screen mb-16   flex flex-col items-center col-span-full lg:col-start-2 lg:col-end-5  overflow-auto overscroll-y-auto">
         <CreatePost />
 
-        <div className="h-fit shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-2/6 mb-10">
+        <div className=" mt-32 lg:mt-0 shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10">
           <div className="flex items-center p-4 w-full">
             <img
               className="w-10 h-10 mr-4 rounded-full"
@@ -52,14 +52,14 @@ function Posts() {
           <div className="flex-grow w-full p-2">
             <Contents images={images} />
           </div>
-          <div className="w-full h-16 flex justify-around items-center p-4 bg-gray-100">
+          <div className="w-full  flex justify-around items-center p-4 bg-gray-100">
             <SlLike />
             <FaRegCommentAlt />
             <VscSave />
           </div>
         </div>
 
-        <div className="h-fit shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-2/6 mb-10">
+     <div className=" shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10">
           <div className="flex items-center p-4 w-full">
             <img
               className="w-10 h-10 mr-4 rounded-full"
@@ -77,7 +77,7 @@ function Posts() {
           <div className="flex-grow w-full p-2">
             <Contents images={images} />
           </div>
-          <div className="w-full h-16 flex justify-around items-center p-4 bg-gray-100">
+          <div className="w-full  flex justify-around items-center p-4 bg-gray-100">
             <SlLike />
             <FaRegCommentAlt />
             <VscSave />

@@ -3,7 +3,7 @@ import { LuSendHorizonal } from "react-icons/lu";
 
 function CreatePost() {
   return (
-    <div className=" hidden h-24 lg:flex  items-center shadow-md rounded-xl bg-gray-100 border-gray-600 w-5/6 lg:w-2/6 mb-20  ">
+    <div className=" hidden h-24 lg:flex mt-32 items-center shadow-md rounded-xl bg-gray-100 border-gray-600  lg:w-3/5 mb-20  ">
        <img
             className="w-10 h-10 m-7 rounded-full"
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"

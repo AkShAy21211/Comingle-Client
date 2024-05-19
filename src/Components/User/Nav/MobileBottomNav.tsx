@@ -2,19 +2,20 @@ import { PiSquaresFour } from "react-icons/pi";
 import { BsChatLeftText } from "react-icons/bs";
 import { BsPersonAdd } from "react-icons/bs";
 import { CiSaveDown2 } from "react-icons/ci";
+import { Link } from "react-router-dom";
 function MobileBottomNav() {
   return (
     <div className="fixed lg:hidden z-50  h-16 w-full -translate-x-1/2 bg-white border border-gray-200   bottom-0  left-1/2 ">
     <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
-        <button  type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-s-full :hover:bg-custom-blue group">
+        <Link to="/"  type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-s-full :hover:bg-custom-blue group">
             <PiSquaresFour size={30}/>
             <span className="not-sr-only text-sm">Feeds</span>
-        </button>
+        </Link>
        
-        <button data-tooltip-target="tooltip-wallet " type="button" className="inline-flex flex-col items-center justify-center px-5 mt-1 hover:bg-gray-50 group">
+        <Link to="" data-tooltip-target="tooltip-wallet " type="button" className="inline-flex flex-col items-center justify-center px-5 mt-1 hover:bg-gray-50 group">
            <BsChatLeftText size={20}/>
             <span className="not-sr-only text-sm mt-1">Chats</span>
-        </button>
+        </Link>
        
 
         <div className="flex items-center justify-center">
@@ -26,17 +27,17 @@ function MobileBottomNav() {
         </div>
        
 
-        <button data-tooltip-target="tooltip-settings" type="button" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
+        <Link to="" data-tooltip-target="tooltip-settings" type="button" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
            <BsPersonAdd size={30}/>
             <span className="not-sr-only text-sm">Request</span>
-        </button>
+        </Link>
        
 
 
-        <button data-tooltip-target="tooltip-profile" type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50  group">
+        <Link to="" data-tooltip-target="tooltip-profile" type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50  group">
             <CiSaveDown2 size={30}/>
             <span className="not-sr-only text-sm">Saved</span>
-        </button>
+        </Link>
         
     </div>
 </div>

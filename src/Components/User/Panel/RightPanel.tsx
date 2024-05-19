@@ -1,15 +1,16 @@
-import React from 'react'
 import UserAvatar from '../Avatar/UserAvatar'
 import PremiumAd from '../Home/PremiumAd'
 
 function RightPanel() {
   return (
-    <div className='h-screen  fixed right-0 w-1/5  shadow-lg hidden lg:block overflow-hidden'>
-    {/* side bar left options start */}
+ <div className='h-screen   col-span-1 sticky top-0  shadow-lg hidden lg:block overflow-hidden'>
 		<div className="flex-1  p-10 mt-14">
-      <UserAvatar isRight suggestions='Friends'/>
-      <PremiumAd/>
-    </div>
+		
+    <UserAvatar suggestions='Fridends' isRight/>
+    <PremiumAd/>
+		</div>
+		
+		
     </div>
   )
 }

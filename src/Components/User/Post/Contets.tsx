@@ -14,19 +14,20 @@ const Contents = ({ images }:any) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    arrows:false
+
   };
   
   
     return (
       <>
-      <Slider {...settings}>
+      <Slider {...settings} >
          {images.map((image:any) => (
-        <div key={image.id} className="w-full">
+
           <img
             src={image.url}
             className=" aspect-[4/4] h-auto object-cover rounded "
           />
-        </div>
       ))}
       </Slider>
      
