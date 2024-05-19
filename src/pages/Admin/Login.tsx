@@ -5,8 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import signinSchema from "../../Validation/Admin/LoginSchema";
 import { useForm } from "react-hook-form";
 import LoginLeft from "../../Components/Admin/LoginLeft";
+import { useDispatch } from "react-redux";
+import adminApi from "../../Apis/admin";
+import { adminLogin } from "../../Redux/Slice/adminSlice";
 
 function Login() {
+  const dispatch = useDispatch();
   const {
     formState: { errors },
     handleSubmit,
@@ -20,13 +24,23 @@ function Login() {
     resolver: yupResolver(signinSchema),
   });
 
-  const onSubmit = async (userData: SignInType) => {
-    
-  
+  const onSubmit = async (adminData: SignInType) => {
+    try {
+      const signupResponse = await adminApi.signin(adminData);
+      if(signupResponse?.data.status){
+
+        console.log(signupResponse);
+        
+        dispatch(adminLogin(signupResponse.data.admin))
+      }
+      console.log(signupResponse);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className=" flex bg-blue-900  lg:bg-white justify-center h-screen items-center md:bg-blue-900">
-     <LoginLeft/>
+      <LoginLeft />
       <div className="w-full  flex  flex-col justify-center items-center ">
         <div className=" space-y-2 md:space-y-2 w-full flex flex-col  items-center">
           <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 ">
@@ -88,7 +102,7 @@ function Login() {
                 to="#"
                 className="font-medium  lg:text-blue-800 text-primary-600 hover:underline dark:text-primary-500"
               >
-               Forget password
+                Forget password
               </Link>
             </p>
           </form>
