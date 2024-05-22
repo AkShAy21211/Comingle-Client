@@ -23,13 +23,12 @@
     background: #FFD700;
 }
 
-/* The thumb when it's hovered */
-/* ::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
     background: #FFD700;
-} */
+} 
 
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
     display: none;
-} */
+} 
 
 

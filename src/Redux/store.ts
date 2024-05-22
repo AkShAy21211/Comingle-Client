@@ -1,16 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { composeWithDevTools } from '@redux-devtools/extension';
-import userReducer from './Slice/userSlice';
-import adminReducer from "./Slice/adminSlice"
-import logger from 'redux-logger';
+import rootReducer from './rootReducer'; 
+import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer } from 'redux-persist';
 
-const store = configureStore({
-  reducer: {
-    user: userReducer,
-    admin:adminReducer,
-  },
-    middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(logger),
+const persistConfig = {
+  key: 'root',
+  storage: storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
 });
 
-export default store;
+export const persistor = persistStore(store);
+
+export default { store };

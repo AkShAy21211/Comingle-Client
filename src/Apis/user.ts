@@ -1,8 +1,15 @@
 import axiosInstance from "./axios";
-import { Otp, SignInType, SignUpType } from "../Interface/interface";
+import {
+  CurrentUser,
+  Otp,
+  SignInType,
+  SignUpType,
+} from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import userEnpoints from "./Endpoints/user";
+
+const userData = localStorage.getItem("user");
+const user = userData ? JSON.parse(userData) : null;
 
 const userApi = {
   // User signup and send otp start
@@ -15,7 +22,7 @@ const userApi = {
 
       toast.success(`OTP sent to ${formData.email}`, {
         position: "bottom-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
@@ -27,7 +34,7 @@ const userApi = {
     } catch (error: any) {
       toast.warning(error.response.data.message, {
         position: "bottom-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
@@ -46,13 +53,16 @@ const userApi = {
 
       const OtpVerifyResponse = await axiosInstance.post(
         userEnpoints.VERIFYOTP,
-        otp
+        otp,
+        {
+          withCredentials: true,
+        }
       );
 
       if (OtpVerifyResponse.data.status) {
         toast.success(OtpVerifyResponse.data.message, {
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
@@ -67,7 +77,7 @@ const userApi = {
 
       toast.warning(error.response.data.message, {
         position: "bottom-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
@@ -84,21 +94,20 @@ const userApi = {
       if (resendResponse.data.status) {
         toast.success(resendResponse.data.message, {
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
           theme: "colored",
           transition: Bounce,
         });
-        
       }
     } catch (error: any) {
       console.log(error);
       if (error.response.data.message) {
         toast.error(error.response.data.message, {
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
@@ -109,15 +118,17 @@ const userApi = {
     }
   },
 
-
-  signin: async (userData:SignInType) => {
+  signin: async (userData: SignInType) => {
     try {
-      const signinResponse = await axiosInstance.post(userEnpoints.SIGNIN,userData);
+      const signinResponse = await axiosInstance.post(
+        userEnpoints.SIGNIN,
+        userData
+      );
 
       if (signinResponse.data.status) {
         toast.success(signinResponse.data.message, {
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
@@ -125,6 +136,7 @@ const userApi = {
           transition: Bounce,
         });
 
+        
         return signinResponse;
       }
     } catch (error: any) {
@@ -132,7 +144,7 @@ const userApi = {
       if (error.response.data.message) {
         toast.error(error.response.data.message, {
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
@@ -140,6 +152,107 @@ const userApi = {
           transition: Bounce,
         });
       }
+    }
+  },
+
+  profile: async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      };
+
+      const { data } = await axiosInstance.get(userEnpoints.PROFILE, config);
+
+      return data.user;
+    } catch (error) {}
+  },
+
+  updateProfileImage: async (type: string, image: any) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    try {
+      if (type === "background") {
+        const response = await axiosInstance.patch(
+          userEnpoints.PROFILE_UPDATE_COVER,
+          { type: type, image: image },
+          config
+        );
+
+         if (response.data.status) {
+          toast.success(response.data.message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        } else {
+          toast.warning(response.data.message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        }
+
+        console.log(response.data.message);
+        
+        return response
+      } else {
+        const response = await axiosInstance.patch(
+          userEnpoints.PROFILE_UPDATE_DP,
+          { type: type, image: image },
+          config
+        );
+
+        if (response.data.status) {
+          toast.success(response.data.message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        } else {
+          toast.warning(response.data.message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        }
+                console.log(response.data.message);
+
+       return response
+
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
   },
 };

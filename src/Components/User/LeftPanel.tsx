@@ -3,8 +3,8 @@ import { BsChatLeftText } from "react-icons/bs";
 import { BsPersonAdd } from "react-icons/bs";
 import { CiSaveDown2 } from "react-icons/ci";
 import { Link } from "react-router-dom";
-import Suggestions from "../Home/Suggestions";
-import Settings from "../Profile/Settings";
+import Suggestions from "./Suggestions";
+import Settings from "./Settings";
 
 function LeftPanel({isProfile}:{isProfile?:boolean}) {
   return (

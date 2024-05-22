@@ -1,14 +1,18 @@
 import  { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMediaQuery } from '@react-hook/media-query';
+
+import LogoutModal from '../Common/LogoutModal';
 function Header() {
 
   const [profileMenue,setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue)
+  const [logoutMdal,setLogoutModal] = useState(false);
+  const  isSmallScreen = useMediaQuery("(max-width: 768px)");
 
-    const  isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   return (
+  <>
   <nav className="bg-custom-blue top-0 fixed w-full z-50">
   <div className="mx-auto w-auto px-2 sm:px-6 lg:px-8">
     <div className="relative flex h-16 items-center justify-between">
@@ -64,15 +68,24 @@ function Header() {
              <div className="absolute hidden lg:block  right-0 z-10 mt-2 border w-48  rounded-md bg-white py-1 shadow-lg   ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" >
             <Link to="/profile" onClick={()=>setProfileMenu(false)} className="block  focus:bg-custom-blue focus:text-white  active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700" role="menuitem"  id="user-menu-item-0">Your Profile</Link>
             <Link to="#" onClick={()=>setProfileMenu(false)} className="block  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700" role="menuitem"id="user-menu-item-1">Settings</Link>
-            <Link to="#" onClick={()=>setProfileMenu(false)} className="block  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700" role="menuitem"  id="user-menu-item-2">Sign out</Link>
+            <Link to="#"  onClick={()=>{setLogoutModal(true);setProfileMenu(false)}} className="block  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700" role="menuitem"  id="user-menu-item-2">Sign out</Link>
           </div>
           )
          }
+
         </div>
+
+
+        
       </div>
     </div>
   </div>
+        
 </nav>
+{
+  logoutMdal && <LogoutModal  setLogoutModal={setLogoutModal} />
+
+}  </>
   )
 }
 

@@ -1,4 +1,4 @@
-import UserAvatar from "../Avatar/UserAvatar";
+import UserAvatar from "./UserAvatar";
 
 function Suggestions() {
   return (

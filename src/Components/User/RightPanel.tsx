@@ -1,5 +1,5 @@
-import UserAvatar from '../Avatar/UserAvatar'
-import PremiumAd from '../Home/PremiumAd'
+import UserAvatar from './UserAvatar'
+import PremiumAd from './PremiumAd'
 
 function RightPanel() {
   return (

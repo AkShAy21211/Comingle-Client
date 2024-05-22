@@ -4,8 +4,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
 
-    baseURL:"http://localhost:5000",
-    withCredentials:true,
+    baseURL:"http://192.168.1.4:5000",
+
 })
 
 

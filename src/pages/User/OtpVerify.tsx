@@ -1,6 +1,6 @@
 import React from 'react'
-import OtpInput from '../../Components/User/Miscellaneous/OtpInput'
-import LoginLeft from '../../Components/User/Miscellaneous/LoginLeft'
+import OtpInput from '../../Components/User/OtpInput'
+import LoginLeft from '../../Components/User/LoginLeft'
 function OtpVerify() {
   return (
    <div className="flex bg-blue-900  lg:bg-white justify-center h-screen items-center md:bg-blue-900">

@@ -1,15 +1,16 @@
-import { ToastContainer } from "react-toastify";
+import React from 'react'
 import { SignInType } from "../../Interface/interface";
 import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import signinSchema from "../../Validation/Admin/LoginSchema";
+import signinSchema from "../../Validation/User/LoginSchema";
 import { useForm } from "react-hook-form";
-import LoginLeft from "../../Components/Admin/LoginLeft";
+import userApi from "../../Apis/user";
 import { useDispatch } from "react-redux";
-import adminApi from "../../Apis/admin";
-import { adminLogin } from "../../Redux/Slice/Admin/adminSlice";
+import { userLogin } from "../../Redux/Slice/User/userSlice";
+function LoginFrom() {
 
-function Login() {
+
+      const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
     formState: { errors },
@@ -24,33 +25,34 @@ function Login() {
     resolver: yupResolver(signinSchema),
   });
 
-  const onSubmit = async (adminData: SignInType) => {
-    try {
-      const signupResponse = await adminApi.signin(adminData);
-      if(signupResponse?.data.status){
-
-        console.log(signupResponse);
-        
-        dispatch(adminLogin(signupResponse.data.admin))
-      }
-      console.log(signupResponse);
-    } catch (error) {
-      console.log(error);
-    }
+  const onSubmit = async (userData: SignInType) => {
+   try {
+     const signupRespnse = await userApi.signin(userData);
+     if (signupRespnse?.status) {
+       dispatch(userLogin(signupRespnse.data.userData))
+       setTimeout(() => {
+         reset();
+         navigate("/");
+       }, 1000);
+     }
+     console.log(signupRespnse);
+   } catch (error) {
+    
+    console.log(error);
+    
+   }
   };
   return (
-    <div className=" flex bg-blue-900  lg:bg-white justify-center h-screen items-center md:bg-blue-900">
-      <LoginLeft />
-      <div className="w-full  flex  flex-col justify-center items-center ">
+   <div className="w-full  flex  flex-col justify-center items-center ">
         <div className=" space-y-2 md:space-y-2 w-full flex flex-col  items-center">
           <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 ">
             <strong className="text-white sm:text-white lg:text-gray-500">
-              ADMIN SIGN
+              SIGN
             </strong>
             <strong className="text-black lg:text-blue-800"> IN</strong>
           </h1>
           <form
-            className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-auto lg:w-1/2"
+            className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-auto"
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
@@ -95,22 +97,21 @@ function Login() {
               type="submit"
               className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none bg-black lg:bg-blue-900 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
             >
-              SignIn
+              Create an account
             </button>
-            <p className="text-sm pt-0 font-light text-end text-white lg:text-black ">
+            <p className="text-sm pt-3 font-light text-center text-white lg:text-black ">
+              Don't have an account?{" "}
               <Link
-                to="#"
+                to="/register"
                 className="font-medium  lg:text-blue-800 text-primary-600 hover:underline dark:text-primary-500"
               >
-                Forget password
+                Register here
               </Link>
             </p>
           </form>
         </div>
       </div>
-      <ToastContainer />
-    </div>
-  );
+  )
 }
 
-export default Login;
+export default LoginFrom

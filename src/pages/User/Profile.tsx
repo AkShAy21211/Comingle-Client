@@ -1,6 +1,7 @@
-import CountBox from "../../Components/User/Post/CountBox";
-import PostGrid from "../../Components/User/Post/PostGrid";
-import ProfileAndBg from "../../Components/User/Post/ProfileAndBg";
+import { ToastContainer } from "react-toastify";
+import CountBox from "../../Components/User/CountBox";
+import PostGrid from "../../Components/User/PostGrid";
+import ProfileAndBg from "../../Components/User/ProfileAndBg";
 
 function Profile() {
   return (
@@ -17,7 +18,6 @@ function Profile() {
         <ProfileAndBg />
         <CountBox/>
         <PostGrid/>
-
 
       </div>
     </div>

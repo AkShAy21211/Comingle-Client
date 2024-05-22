@@ -3,7 +3,7 @@ import { FaRegCommentAlt } from "react-icons/fa";
 import { VscSave } from "react-icons/vsc";
 import CreatePost from "./CreatePost";
 import Contents from "./Contets";
-import FormattedRelativeTime from "../../../Utils/Time";
+import FormattedRelativeTime from "../../Utils/Time";
 
 const images = [
   {

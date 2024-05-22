@@ -2,6 +2,8 @@ import { PiSquaresFour } from "react-icons/pi";
 import { BsChatLeftText } from "react-icons/bs";
 import { BsPersonAdd } from "react-icons/bs";
 import { CiSaveDown2 } from "react-icons/ci";
+import { IoSettingsOutline } from "react-icons/io5";
+
 import { Link } from "react-router-dom";
 function MobileBottomNav() {
   return (
@@ -35,8 +37,8 @@ function MobileBottomNav() {
 
 
         <Link to="" data-tooltip-target="tooltip-profile" type="button" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50  group">
-            <CiSaveDown2 size={30}/>
-            <span className="not-sr-only text-sm">Saved</span>
+            <IoSettingsOutline size={30}/>
+            <span className="not-sr-only text-sm">Settings</span>
         </Link>
         
     </div>

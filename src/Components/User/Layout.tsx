@@ -1,8 +1,8 @@
 import React from "react";
 import Header from "./Header";
 import MobileBottomNav from "./MobileBottomNav";
-import LeftPanel from "../Panel/LeftPanel";
-import RightPanel from "../Panel/RightPanel";
+import LeftPanel from "./LeftPanel";
+import RightPanel from "./RightPanel";
 import { is } from "date-fns/locale";
 
 type LayoutProps = {

@@ -1,9 +1,9 @@
 import { useFormik } from "formik";
 import OtpInputBox from "react-otp-input";
-import { Otp } from "../../../Interface/interface";
-import userApi from "../../../Apis/user";
+import { Otp } from "../../Interface/interface";
+import userApi from "../../Apis/user";
 import { ToastContainer } from "react-toastify";
-import Timer from "../../Common/Timer";
+import Timer from "../Common/Timer";
 import { useNavigate } from "react-router-dom";
 function OtpInput() {
   const navigate = useNavigate();
@@ -81,7 +81,6 @@ function OtpInput() {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 }
