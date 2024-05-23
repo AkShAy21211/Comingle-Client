@@ -18,10 +18,10 @@ function LogoutModal({setLogoutModal}:LogoutModalPro) {
     <>
       <div
         id="popup-modal"
-        className="fixed inset-0 flex items-center justify-center z-50"
+        className="fixed  inset-0 flex items-center justify-center z-50"
       >
-        <div className="relative w-full max-w-md">
-          <div className="relative bg-white rounded-lg shadow dark:bg-custom-blue">
+        <div className="relative rounded-xl  lg:w-full max-w-md bg-black">
+          <div className="relative  bg-white rounded-lg shadow dark:bg-custom-blue">
             <button
               type="button"
                               onClick={()=>setLogoutModal(false)}

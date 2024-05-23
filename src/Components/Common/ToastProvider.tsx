@@ -8,15 +8,8 @@ type ToastProviderProps = {
   children: ReactNode;
 };
 
-const StyledToastContainer = styled(ToastContainer)`
-  width: 100%;
-  max-width: max-content;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  top: 10%;
-`;
+const StyledToastContainer = styled(ToastContainer)``;
+
 
 const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   return (

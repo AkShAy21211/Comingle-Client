@@ -8,6 +8,7 @@ import Profile from '../pages/User/Profile';
 import Layout from '../Components/User/Layout';
 import IsLoggedOut from '../Middleware/User/IsLoggedOut';
 import IslogedIn from  '../Middleware/User/IsLoggedIn';
+import SettingsPage from '../pages/User/Settings';
 
 
 function UserRoute() {
@@ -24,7 +25,7 @@ function UserRoute() {
     <Route path='/login' element={<IsLoggedOut><Login/></IsLoggedOut>}/>
     <Route path='/' element={<IslogedIn><Layout><Home/></Layout></IslogedIn>}/>
     <Route path='/profile' element={<IslogedIn><Layout isProflie><Profile/></Layout></IslogedIn>}/>
-    <Route path='/settings' element={<IslogedIn><Layout isProflie><Profile/></Layout></IslogedIn>}/>
+    <Route path='/settings' element={<IslogedIn><Layout isProflie><SettingsPage/></Layout></IslogedIn>}/>
 
    </Routes>
   )

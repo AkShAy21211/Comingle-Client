@@ -3,7 +3,6 @@ import Header from "./Header";
 import MobileBottomNav from "./MobileBottomNav";
 import LeftPanel from "./LeftPanel";
 import RightPanel from "./RightPanel";
-import { is } from "date-fns/locale";
 
 type LayoutProps = {
   children: React.ReactNode;

@@ -4,7 +4,9 @@ import { VscSave } from "react-icons/vsc";
 import CreatePost from "./CreatePost";
 import Contents from "./Contets";
 import FormattedRelativeTime from "../../Utils/Time";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import { is } from "date-fns/locale";
 const images = [
   {
     id: 1,
@@ -29,12 +31,22 @@ const images = [
 ];
 
 function Posts() {
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+
   return (
     <>
-      <div className="h-screen mb-16   flex flex-col items-center col-span-full lg:col-start-2 lg:col-end-5  overflow-auto overscroll-y-auto">
+      <div
+        className={`h-full mb-16  ${
+          isDarkMode ? "bg-black text-white" : ""
+        }  flex flex-col items-center col-span-full lg:col-start-2 lg:col-end-5  overflow-auto overscroll-y-auto`}
+      >
         <CreatePost />
 
-        <div className=" mt-32 lg:mt-0 shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10">
+        <div
+          className={` w-full mt-32 lg:mt-0  shadow-sm ${
+            isDarkMode ? "bg-black text-white  " : ""
+          }  flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10`}
+        >
           <div className="flex items-center p-4 w-full">
             <img
               className="w-10 h-10 mr-4 rounded-full"
@@ -52,14 +64,22 @@ function Posts() {
           <div className="flex-grow w-full p-2">
             <Contents images={images} />
           </div>
-          <div className="w-full  flex justify-around items-center p-4 bg-gray-100">
+          <div
+            className={`w-full  ${
+              isDarkMode ? "bg-black " : ""
+            } flex justify-around items-center p-4`}
+          >
             <SlLike />
             <FaRegCommentAlt />
             <VscSave />
           </div>
         </div>
 
-     <div className=" shadow-md border border-gray-300 flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10">
+ <div
+          className={` w-full  lg:mt-0  shadow-sm ${
+            isDarkMode ? "bg-black text-white  " : ""
+          }  flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10`}
+        >
           <div className="flex items-center p-4 w-full">
             <img
               className="w-10 h-10 mr-4 rounded-full"
@@ -77,7 +97,43 @@ function Posts() {
           <div className="flex-grow w-full p-2">
             <Contents images={images} />
           </div>
-          <div className="w-full  flex justify-around items-center p-4 bg-gray-100">
+          <div
+            className={`w-full  ${
+              isDarkMode ? "bg-black " : ""
+            } flex justify-around items-center p-4`}
+          >
+            <SlLike />
+            <FaRegCommentAlt />
+            <VscSave />
+          </div>
+        </div>
+        <div
+          className={` w-full  lg:mt-0  shadow-sm ${
+            isDarkMode ? "bg-black text-white  " : ""
+          }  flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10`}
+        >
+          <div className="flex items-center p-4 w-full">
+            <img
+              className="w-10 h-10 mr-4 rounded-full"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              alt="Rounded avatar"
+            />
+            <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
+              <h3 className="text-base md:text-lg font-semibold">Terry</h3>
+              <p className="text-sm md:text-base text-gray-500 mt-1 md:mt-0">
+                {FormattedRelativeTime()}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-grow w-full p-2">
+            <Contents images={images} />
+          </div>
+          <div
+            className={`w-full  ${
+              isDarkMode ? "bg-black " : ""
+            } flex justify-around items-center p-4`}
+          >
             <SlLike />
             <FaRegCommentAlt />
             <VscSave />
