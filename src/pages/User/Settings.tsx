@@ -15,6 +15,18 @@ function Settings() {
   return (
     <div className={` h-screen  flex ${isDarkMode?'bg-black text-white lg:border-x':""}  flex-col overflow-hidden col-span-full mt-18 pt-20  lg:col-start-2 lg:col-end-5`}>
       <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
+        Personal Details
+      </h1>
+      <ul className="h-auto   w-full  text-nowrap space-y-5  pl-10 lg:pl-0 text-md">
+      
+        <li className="lg:text-center flex lg:block">
+             <Link to="/details">Edit personal details</Link> 
+           
+        </li>
+      </ul >
+      
+      
+      <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
         Account seetings
       </h1>
       <ul className="h-auto  w-full  text-nowrap space-y-5  pl-10 lg:pl-0 text-md">

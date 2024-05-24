@@ -8,6 +8,8 @@ const userEnpoints = {
     PROFILE:'/user/profile',
     PROFILE_UPDATE_COVER:'/user/profile/update/cover',
     PROFILE_UPDATE_DP:'/user/profile/update/dp',
+    PROFILE_UPDATE_INFO:'user/profile/update/info',
+
 
 
     

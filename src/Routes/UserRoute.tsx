@@ -9,6 +9,7 @@ import Layout from '../Components/User/Layout';
 import IsLoggedOut from '../Middleware/User/IsLoggedOut';
 import IslogedIn from  '../Middleware/User/IsLoggedIn';
 import SettingsPage from '../pages/User/Settings';
+import PersonalDetails from '../pages/User/PersonalDetails';
 
 
 function UserRoute() {
@@ -26,6 +27,7 @@ function UserRoute() {
     <Route path='/' element={<IslogedIn><Layout><Home/></Layout></IslogedIn>}/>
     <Route path='/profile' element={<IslogedIn><Layout isProflie><Profile/></Layout></IslogedIn>}/>
     <Route path='/settings' element={<IslogedIn><Layout isProflie><SettingsPage/></Layout></IslogedIn>}/>
+    <Route path='/details' element={<IslogedIn><Layout isProflie><PersonalDetails/></Layout></IslogedIn>}/>
 
    </Routes>
   )

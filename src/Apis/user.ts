@@ -1,6 +1,6 @@
 import axiosInstance from "./axios";
 import {
-  CurrentUser,
+
   Otp,
   SignInType,
   SignUpType,
@@ -8,16 +8,22 @@ import {
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
-const userData = localStorage.getItem("user");
-const user = userData ? JSON.parse(userData) : null;
+const currentUser = localStorage.getItem("user");
+const user = currentUser ? JSON.parse(currentUser) : null;
 
 const userApi = {
   // User signup and send otp start
   signup: async (formData: SignUpType) => {
     try {
+        const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
       const signupResponse = await axiosInstance.post(
         userEnpoints.SIGNUP,
-        formData
+        JSON.stringify(formData),
+        config
       );
 
       toast.success(`OTP sent to ${formData.email}`, {
@@ -48,15 +54,15 @@ const userApi = {
   // User signup and send otp end
 
   verifyOtp: async (otp: Otp) => {
-    try {
-      console.log(otp);
 
+    
+    try {
+
+      
       const OtpVerifyResponse = await axiosInstance.post(
         userEnpoints.VERIFYOTP,
         otp,
-        {
-          withCredentials: true,
-        }
+       
       );
 
       if (OtpVerifyResponse.data.status) {
@@ -120,9 +126,18 @@ const userApi = {
 
   signin: async (userData: SignInType) => {
     try {
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      
+
       const signinResponse = await axiosInstance.post(
         userEnpoints.SIGNIN,
-        userData
+        JSON.stringify(userData),
+        config
       );
 
       if (signinResponse.data.status) {
@@ -136,7 +151,6 @@ const userApi = {
           transition: Bounce,
         });
 
-        
         return signinResponse;
       }
     } catch (error: any) {
@@ -185,7 +199,7 @@ const userApi = {
           config
         );
 
-         if (response.data.status) {
+        if (response.data.status) {
           toast.success(response.data.message, {
             position: "top-center",
             autoClose: 3000,
@@ -208,8 +222,8 @@ const userApi = {
         }
 
         console.log(response.data.message);
-        
-        return response
+
+        return response;
       } else {
         const response = await axiosInstance.patch(
           userEnpoints.PROFILE_UPDATE_DP,
@@ -238,10 +252,9 @@ const userApi = {
             transition: Bounce,
           });
         }
-                console.log(response.data.message);
+        console.log(response.data.message);
 
-       return response
-
+        return response;
       }
     } catch (error: any) {
       toast.error(error.response.data.message, {
@@ -253,6 +266,62 @@ const userApi = {
         theme: "colored",
         transition: Bounce,
       });
+    }
+  },
+
+  updateUserInfo: async (userData: any) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      
+      
+      const updatedUserInfo = await axiosInstance.patch(
+        userEnpoints.PROFILE_UPDATE_INFO,
+      JSON.stringify(userData),
+        config
+      );
+
+      if (updatedUserInfo.status) {
+        toast.success(updatedUserInfo.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return updatedUserInfo
+      } else {
+        toast.warning(updatedUserInfo.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
+
+      return updatedUserInfo
+    } catch (error: any) {
+      toast.error(error.respponse.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+
+      return;
     }
   },
 };

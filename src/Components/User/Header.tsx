@@ -8,7 +8,7 @@ function Header() {
   const [profileMenue,setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue)
   const [logoutMdal,setLogoutModal] = useState(false);
-  const  isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const  isSmallScreen = useMediaQuery("(max-width: 992px)");
 
 
   return (

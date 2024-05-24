@@ -3,7 +3,6 @@ import signUpScheema from "../../Validation/User/RegisterSchema";
 import { useFormik } from "formik";
 import { SignUpType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
-import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 function RegisterForm() {
 
