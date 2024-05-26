@@ -1,10 +1,5 @@
 import axiosInstance from "./axios";
-import {
-
-  Otp,
-  SignInType,
-  SignUpType,
-} from "../Interface/interface";
+import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
@@ -12,16 +7,15 @@ const currentUser = localStorage.getItem("user");
 
 const user = currentUser ? JSON.parse(currentUser) : null;
 
-let token = localStorage.getItem('token');
+let token = localStorage.getItem("token");
 
-token = token?JSON.parse(token):null;
-
+token = token ? JSON.parse(token) : null;
 
 const userApi = {
   // User signup and send otp start
   signup: async (formData: SignUpType) => {
     try {
-        const config = {
+      const config = {
         headers: {
           "Content-Type": "application/json",
         },
@@ -60,15 +54,10 @@ const userApi = {
   // User signup and send otp end
 
   verifyOtp: async (otp: Otp) => {
-
-    
     try {
-
-      
       const OtpVerifyResponse = await axiosInstance.post(
         userEnpoints.VERIFYOTP,
-        otp,
-       
+        otp
       );
 
       if (OtpVerifyResponse.data.status) {
@@ -132,13 +121,11 @@ const userApi = {
 
   signin: async (userData: SignInType) => {
     try {
-
       const config = {
         headers: {
           "Content-Type": "application/json",
         },
       };
-      
 
       const signinResponse = await axiosInstance.post(
         userEnpoints.SIGNIN,
@@ -176,23 +163,19 @@ const userApi = {
   },
 
   profile: async () => {
-
-    
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${user?.token||token}`,
+          Authorization: `Bearer ${user?.token || token}`,
         },
       };
 
       const { data } = await axiosInstance.get(userEnpoints.PROFILE, config);
 
-      console.log('caling user');
-      
+      console.log("caling user");
+
       console.log(data);
 
-    
-      
       return data.user;
     } catch (error) {}
   },
@@ -292,11 +275,10 @@ const userApi = {
         },
       };
       console.log(config);
-      
 
       const updatedUserInfo = await axiosInstance.patch(
         userEnpoints.PROFILE_UPDATE_INFO,
-      JSON.stringify(userData),
+        JSON.stringify(userData),
         config
       );
 
@@ -311,7 +293,7 @@ const userApi = {
           transition: Bounce,
         });
 
-        return updatedUserInfo
+        return updatedUserInfo;
       } else {
         toast.warning(updatedUserInfo.data.message, {
           position: "bottom-center",
@@ -324,7 +306,7 @@ const userApi = {
         });
       }
 
-      return updatedUserInfo
+      return updatedUserInfo;
     } catch (error: any) {
       toast.error(error.respponse, {
         position: "bottom-center",
@@ -340,18 +322,97 @@ const userApi = {
     }
   },
 
-  googleLogin: async()=>{
-
+  googleLogin: async () => {
     try {
-    
-    window.location.href = 'http://localhost:5000/user/auth/google'
+      window.location.href = "http://localhost:5000/user/auth/google";
+    } catch (error) {}
+  },
 
+  forgotPassword: async (email: string) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      console.log(email);
 
-      
-    } catch (error) {
-      
+      const forgetPasswprdResponse = await axiosInstance.post(
+        userEnpoints.FORGOT_PASSWORD,
+        { email: email },
+        config
+      );
+
+      if (forgetPasswprdResponse.status) {
+        toast.success(forgetPasswprdResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        return forgetPasswprdResponse;
+      }
+    } catch (error: any) {
+      console.log(error);
+
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
-  }
+  },
+
+  updatePassword: async (password: string) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const updatedResponse = await axiosInstance.post(
+        userEnpoints.UPDATE_PASSWORD,
+        { password: password },
+        config
+      );
+
+      if (updatedResponse.status) {
+        toast.success(updatedResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+
+
+        return updatedResponse;
+      }
+    } catch (error: any) {
+      console.log(error);
+
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+
+      return;
+    }
+  },
 };
 
 export default userApi;

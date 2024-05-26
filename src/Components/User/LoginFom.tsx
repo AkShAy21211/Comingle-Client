@@ -1,4 +1,3 @@
-import React from "react";
 import { SignInType } from "../../Interface/interface";
 import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -100,7 +99,7 @@ function LoginFrom() {
            <p className="text-sm pt-0 font-light text-center text-white lg:text-black ">
            
             <Link
-              to="/forget-password"
+              to="/forgot-password"
               className="font-medium  lg:text-blue-800 text-primary-600 hover:underline dark:text-primary-500"
             >
             forget password?{" "}
