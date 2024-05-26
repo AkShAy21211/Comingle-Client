@@ -13,7 +13,6 @@ const UserDetails: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const [isEditing, setIsEditing] = useState(false);
 
-  console.log(user);
 
   ////////////////////////// Handling Form submit for edit user detail///////////////////////////
 
@@ -35,6 +34,10 @@ const UserDetails: React.FC = () => {
     }
 
     try {
+
+      console.log(userData);
+      
+
       const updateResponse = await userApi.updateUserInfo(userData);
       if (updateResponse) {
         setIsEditing(false);

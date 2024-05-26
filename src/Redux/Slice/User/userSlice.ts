@@ -21,6 +21,8 @@ const userSlice = createSlice({
             console.log(action.payload);
             
             state.user = action.payload
+            console.log(action.payload);
+            
             localStorage.setItem('user',JSON.stringify(action.payload))
 
             

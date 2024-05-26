@@ -141,7 +141,7 @@ function RegisterForm() {
                 to="/login"
                 className="font-medium  lg:text-blue-800  text-primary-600 hover:underline dark:text-primary-500"
               >
-                Login here
+                Signin here
               </Link>
             </p>
           </form>

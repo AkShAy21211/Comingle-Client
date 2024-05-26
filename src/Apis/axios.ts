@@ -4,7 +4,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
 
-    baseURL:"http://192.168.1.4:5000",
+    baseURL:"http://localhost:5000",
     withCredentials:true,
     
 

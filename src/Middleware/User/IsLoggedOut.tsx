@@ -8,8 +8,8 @@ interface AuthProps {
 }
 
 function IsLoggedOut({ children }: AuthProps) {
-  const user = useSelector((state: RootState) => state.user.user);
-console.log(user);
+const user = useSelector((state: RootState) => state.user.user);
+console.log('no user',user);
 
   return <>{!user?children : <Navigate to="/" />}</>;
 }

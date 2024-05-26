@@ -10,7 +10,6 @@ interface AuthProps {
 const AuIsLoggedIn: React.FC<AuthProps> = ({ children }) => {
   const user = useSelector((state: RootState) => state.user.user);
 
-  console.log(user);
   
   return (
     <>

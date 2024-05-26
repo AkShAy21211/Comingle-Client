@@ -10,6 +10,7 @@ import IsLoggedOut from '../Middleware/User/IsLoggedOut';
 import IslogedIn from  '../Middleware/User/IsLoggedIn';
 import SettingsPage from '../pages/User/Settings';
 import PersonalDetails from '../pages/User/PersonalDetails';
+import Loading from '../Components/Common/Loading';
 
 
 function UserRoute() {
@@ -28,7 +29,7 @@ function UserRoute() {
     <Route path='/profile' element={<IslogedIn><Layout isProflie><Profile/></Layout></IslogedIn>}/>
     <Route path='/settings' element={<IslogedIn><Layout isProflie><SettingsPage/></Layout></IslogedIn>}/>
     <Route path='/details' element={<IslogedIn><Layout isProflie><PersonalDetails/></Layout></IslogedIn>}/>
-
+    <Route path='/login/success'  element={<Loading size={25}/>}/>
    </Routes>
   )
 }

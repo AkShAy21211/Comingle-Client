@@ -4,19 +4,25 @@ import ProfileModal from "../Common/ProfileModal";
 import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
+import User from "../../Interface/interface";
 function ProfileAndBg() {
-     const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [showCoverModal, setShowCoverMdal] = useState(false);
   const [showDpModal, setShowDpMdal] = useState(false);
-  const [userData, setUserData] = useState<any>(null); 
+  const [userData, setUserData] = useState<User | null>(null);
+
 
   //////// fetching user profile ///////////////
 
  async function fetchUserProfile() {
       try {
         const user = await userApi.profile();
+        console.log('profile accessed',user);
+        
+        if(user){
         setUserData(user);
-        console.log(user);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -25,8 +31,10 @@ function ProfileAndBg() {
   useEffect(() => {
 
     fetchUserProfile();
-  }, []);
+  },[]);
 
+
+  
   ///////////////// handle user pprofile pic update /////////////////////
 
   return (

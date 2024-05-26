@@ -9,7 +9,13 @@ import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
 const currentUser = localStorage.getItem("user");
+
 const user = currentUser ? JSON.parse(currentUser) : null;
+
+let token = localStorage.getItem('token');
+
+token = token?JSON.parse(token):null;
+
 
 const userApi = {
   // User signup and send otp start
@@ -170,15 +176,23 @@ const userApi = {
   },
 
   profile: async () => {
+
+    
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${user?.token}`,
+          Authorization: `Bearer ${user?.token||token}`,
         },
       };
 
       const { data } = await axiosInstance.get(userEnpoints.PROFILE, config);
 
+      console.log('caling user');
+      
+      console.log(data);
+
+    
+      
       return data.user;
     } catch (error) {}
   },
@@ -277,8 +291,9 @@ const userApi = {
           "Content-Type": "application/json",
         },
       };
+      console.log(config);
       
-      
+
       const updatedUserInfo = await axiosInstance.patch(
         userEnpoints.PROFILE_UPDATE_INFO,
       JSON.stringify(userData),
@@ -311,7 +326,7 @@ const userApi = {
 
       return updatedUserInfo
     } catch (error: any) {
-      toast.error(error.respponse.data.message, {
+      toast.error(error.respponse, {
         position: "bottom-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -324,6 +339,19 @@ const userApi = {
       return;
     }
   },
+
+  googleLogin: async()=>{
+
+    try {
+    
+    window.location.href = 'http://localhost:5000/user/auth/google'
+
+
+      
+    } catch (error) {
+      
+    }
+  }
 };
 
 export default userApi;

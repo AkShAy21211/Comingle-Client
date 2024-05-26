@@ -5,6 +5,9 @@ import AdminRoute from "./Routes/AdminRoute";
 
 function App() {
  
+
+  console.log(import.meta.env);
+  
   return (
    
       <Router>

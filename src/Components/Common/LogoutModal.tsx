@@ -1,5 +1,7 @@
 import { useDispatch } from "react-redux";
 import { userLogout } from "../../Redux/Slice/User/userSlice";
+import { useNavigate } from "react-router-dom";
+import { persistor } from "../../Redux/store";
 
 
 
@@ -13,7 +15,7 @@ type LogoutModalPro={
 
 function LogoutModal({setLogoutModal}:LogoutModalPro) {
   const dispath = useDispatch();
-
+  const navigate = useNavigate()
   return (
     <>
       <div
@@ -68,7 +70,10 @@ function LogoutModal({setLogoutModal}:LogoutModalPro) {
               <button
                 data-modal-hide="popup-modal"
                 type="button"
-                onClick={()=>dispath(userLogout())}
+                onClick={()=>{dispath(userLogout())
+                  persistor.purge()
+                  navigate('/login')
+                }}
                 className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
               >
                 Yes
