@@ -15,11 +15,7 @@ const usersDymmy = [
     firstName: "Terrill",
     image: "https://robohash.org/Terrill.png?set=set4",
   },
-  {
-    id: 4,
-    firstName: "Miles",
-    image: "https://robohash.org/Miles.png?set=set4",
-  },
+
 ];
 
 export default usersDymmy;

@@ -1,17 +1,17 @@
 
 import { Routes,Route } from 'react-router-dom'
-import Register from '../pages/User/Register';
-import OtpVerify from '../pages/User/OtpVerify';
-import Login from '../pages/User/Login';
-import Home from '../pages/User/Home';
-import Profile from '../pages/User/Profile';
+import Register from '../Pages/User/Register';
+import OtpVerify from '../Pages/User/OtpVerify';
+import Login from '../Pages/User/Login';
+import Home from '../Pages/User/Home';
+import Profile from '../Pages/User/Profile';
 import Layout from '../Components/User/Layout';
 import IsLoggedOut from '../Middleware/User/IsLoggedOut';
 import IslogedIn from  '../Middleware/User/IsLoggedIn';
-import SettingsPage from '../pages/User/Settings';
-import PersonalDetails from '../pages/User/PersonalDetails';
+import SettingsPage from '../Pages/User/Settings';
+import PersonalDetails from '../Pages/User/PersonalDetails';
 import Loading from '../Components/Common/Loading';
-import ForgotPassword from '../pages/User/ForgotPassword';
+import ForgotPassword from '../Pages/User/ForgotPassword';
 
 
 function UserRoute() {

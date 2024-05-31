@@ -2,13 +2,14 @@ import React, { useRef, useState } from "react";
 import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
+import { daysToWeeks } from "date-fns/fp/daysToWeeks";
 
 type ProfileModalProp = {
   showDpModal: boolean;
   showCoverModal: boolean;
   setShowCoverMdal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowDpMdal: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate:()=>void;
+  onUpdate: () => void;
 };
 
 const ProfileModal: React.FC<ProfileModalProp> = ({
@@ -16,16 +17,12 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   showDpModal,
   setShowDpMdal,
   setShowCoverMdal,
-  onUpdate
+  onUpdate,
 }) => {
-
-   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const bgRef = useRef<HTMLInputElement | null>(null);
   const profileRef = useRef<HTMLInputElement | null>(null);
-
-
-
 
   //////////////// OPEN FILE INPUT /////////////////////
 
@@ -37,8 +34,6 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
     profileRef.current?.click();
   };
 
-
-
   ///////////// HANDLE FILE INPUT ////////////////////////////////
 
   const [cover, setCover] = useState<File | null>(null);
@@ -47,45 +42,45 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
 
+  
+
     if (files && files.length) {
       if (name === "background") {
+
         setCover(files[0]);
-        
       } else {
         setDP(files[0]);
-        
       }
     }
-    
   };
 
+  /////////// HANDLE FILE UPPLOAD //////////////////////////////
 
+  const handleSubmit = async (type: string) => {
+    const formData = new FormData();
 
-
-
-/////////// HANDLE FILE UPPLOAD //////////////////////////////  
-
-const handleSubmit =async (type:string)=>{
-
-  try {
-
-
-    console.log('called');
-    
-    
-    const fileUploadResponse = await userApi.updateProfileImage(type,type==='background'?cover:DP)
-    if(fileUploadResponse?.status){
-
-      console.log(fileUploadResponse);
-      
-      onUpdate();
-      type === 'background'?setShowCoverMdal(false):setShowDpMdal(false)
+    if (type === "background" && cover) {
+      formData.append("image", cover);
+      formData.append("type", "background");
+    } else if (type === "profile" && DP) {
+      formData.append("image", DP);
+      formData.append("type", "profile");
     }
-  } catch (error) {
-    
-  }
-}
-  
+    try {
+   
+      const fileUploadResponse = await userApi.updateProfileImage(
+        type,
+        formData
+      );
+
+      if (fileUploadResponse?.status) {
+        onUpdate();
+        type === "background" ? setShowCoverMdal(false) : setShowDpMdal(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -93,7 +88,13 @@ const handleSubmit =async (type:string)=>{
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-xl  border-white">
-              <div className={`border-0 rounded-lg shadow-lg ${isDarkMode?'bg-custom-blue/40  backdrop-blur-xl text-white':'  bg-white'} relative flex flex-col w-full outline-none focus:outline-none`}>
+              <div
+                className={`border-0 rounded-lg shadow-lg ${
+                  isDarkMode
+                    ? "bg-custom-blue/40  backdrop-blur-xl text-white"
+                    : "  bg-white"
+                } relative flex flex-col w-full outline-none focus:outline-none`}
+              >
                 <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
                   <h3 className="text-xl font-semibold txtb">Edit</h3>
                   <button
@@ -111,7 +112,9 @@ const handleSubmit =async (type:string)=>{
                 <div className="relative p-6 flex flex-col justify-center items-center">
                   {showCoverModal && (
                     <div
-                      className={`w-full h-20 cursor-pointer ${isDarkMode?'bg-black':'bg-gray-200'} flex items-center p-4 justify-center text-gray-500`}
+                      className={`w-full h-20 cursor-pointer ${
+                        isDarkMode ? "bg-black" : "bg-gray-200"
+                      } flex items-center p-4 justify-center text-gray-500`}
                       onClick={changeCover}
                     >
                       {cover ? (
@@ -127,7 +130,9 @@ const handleSubmit =async (type:string)=>{
                   )}
                   {showDpModal && (
                     <div
-                      className={`w-52 h-52 rounded-full cursor-pointer mt-4 ${isDarkMode?'bg-black':"bg-gray-200"} p-5  flex items-center justify-center text-gray-500`}
+                      className={`w-52 h-52 rounded-full cursor-pointer mt-4 ${
+                        isDarkMode ? "bg-black" : "bg-gray-200"
+                      } p-5  flex items-center justify-center text-gray-500`}
                       onClick={changeDp}
                     >
                       {DP ? (
@@ -137,7 +142,9 @@ const handleSubmit =async (type:string)=>{
                           alt="Profile"
                         />
                       ) : (
-                        <span  className="text-sm text-center">Click to upload profile image</span>
+                        <span className="text-sm text-center">
+                          Click to upload profile image
+                        </span>
                       )}
                     </div>
                   )}
@@ -153,7 +160,11 @@ const handleSubmit =async (type:string)=>{
                   <button
                     className={`bg-custom-blue  w-full text-whitefont-bold  text-white uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                     type="submit"
-                    onClick={()=>handleSubmit(`${showCoverModal?'background':"profile"}`)}
+                    onClick={() =>
+                      handleSubmit(
+                        `${showCoverModal ? "background" : "profile"}`
+                      )
+                    }
                   >
                     Update
                   </button>

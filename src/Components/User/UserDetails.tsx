@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -7,11 +7,34 @@ import { FiEdit } from "react-icons/fi";
 import { useFormik } from "formik";
 import ProfileUpdation from "../../Validation/User/ProfileUpdation";
 import userApi from "../../Apis/user";
+import User from "../../Interface/interface";
 
 const UserDetails: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-  const user = useSelector((state: RootState) => state.user.user);
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+
+  //////// fetching user profile ///////////////
+
+ async function fetchUserProfile() {
+      try {
+        const user = await userApi.profile();
+        console.log('profile accessed',user);
+        
+        if(user){
+        setUser(user);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+ }
+
+  useEffect(() => {
+
+    fetchUserProfile();
+  },[]);
+
 
 
   ////////////////////////// Handling Form submit for edit user detail///////////////////////////
@@ -24,23 +47,20 @@ const UserDetails: React.FC = () => {
     if (name) userData.name = name;
     if (email) userData.email = email;
     if (phone) userData.phone = phone;
-
-    if (age || gender || country || bio) {
-      userData.profile = {};
-      if (age) userData.profile.age = age;
-      if (gender) userData.profile.gender = gender;
-      if (country) userData.profile.country = country;
-      if (bio) userData.profile.bio = bio;
-    }
+      if (age) userData.age = age;
+      if (gender) userData.gender = gender;
+      if (country) userData.country = country;
+      if (bio) userData.bio = bio;
+    
 
     try {
 
-      console.log(userData);
       
 
       const updateResponse = await userApi.updateUserInfo(userData);
       if (updateResponse) {
         setIsEditing(false);
+        setUser(updateResponse.data)
       }
     } catch (error) {
       console.log(error);
@@ -50,9 +70,7 @@ const UserDetails: React.FC = () => {
     errors,
     handleBlur,
     handleChange,
-    values,
     handleSubmit,
-    handleReset,
   } = useFormik({
     initialValues: {
       name: "",
@@ -91,7 +109,7 @@ const UserDetails: React.FC = () => {
               onBlur={handleBlur}
               id="name"
               name="name"
-              defaultValue={user.name}
+              defaultValue={user?.name}
               onChange={handleChange}
               readOnly={!isEditing}
               className={`w-full ${
@@ -176,7 +194,7 @@ const UserDetails: React.FC = () => {
               id="age"
               name="age"
               onBlur={handleBlur}
-              defaultValue={user?.age}
+              defaultValue={user?.profile?.age}
               onChange={handleChange}
               readOnly={!isEditing}
               className={`w-full px-3  ${
@@ -196,7 +214,7 @@ const UserDetails: React.FC = () => {
               id="gender"
               name="gender"
               onBlur={handleBlur}
-              defaultValue={user?.gender}
+              defaultValue={user?.profile?.gender}
               onChange={handleChange}
               readOnly={!isEditing}
               className={`w-full px-3 py-2 border ${
@@ -218,7 +236,7 @@ const UserDetails: React.FC = () => {
               id="country"
               onBlur={handleBlur}
               name="country"
-              defaultValue={user?.country}
+              defaultValue={user?.profile?.country}
               onChange={handleChange}
               readOnly={!isEditing}
               className={`w-full px-3 py-2 border ${

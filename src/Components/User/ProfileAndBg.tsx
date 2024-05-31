@@ -6,35 +6,30 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import User from "../../Interface/interface";
 function ProfileAndBg() {
-  
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [showCoverModal, setShowCoverMdal] = useState(false);
   const [showDpModal, setShowDpMdal] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
 
-
   //////// fetching user profile ///////////////
 
- async function fetchUserProfile() {
-      try {
-        const user = await userApi.profile();
-        console.log('profile accessed',user);
-        
-        if(user){
+  async function fetchUserProfile() {
+    try {
+      const user = await userApi.profile();
+      console.log("profile accessed", user);
+
+      if (user) {
         setUserData(user);
-        }
-      } catch (error) {
-        console.log(error);
       }
- }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-
     fetchUserProfile();
-  },[]);
+  }, []);
 
-
-  
   ///////////////// handle user pprofile pic update /////////////////////
 
   return (
@@ -58,17 +53,25 @@ function ProfileAndBg() {
       />{" "}
       <div className="relative object-cover border shadow-lg -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52 bg-black">
         <img
-          className={`h-full ${isDarkMode?'bg-black backdrop:blur-lg':'bg-white'} object-cover w-full rounded-full`}
+          className={`h-full ${
+            isDarkMode ? "bg-black backdrop:blur-lg" : "bg-white"
+          } object-cover w-full rounded-full`}
           src={userData?.profile?.image}
         />
       </div>
       <div className="relative w-auto  justify-start flex-col  lg:flex-row lg:justify-center p-5 mb-8  mt-10">
-        <h2 className=" -mt-16 font-bold  lg:text-center ">@{userData?.name.toLowerCase()}</h2>
-        <p className="  font-light  my-2">
-          {userData?.profile.bio}
-        </p>
+        <h2 className=" -mt-16 font-bold  text-center  ">
+          @{userData?.name.toLowerCase()}
+        </h2>
+        <p className="  font-light  my-2">{userData?.profile.bio}</p>
       </div>
-      <ProfileModal onUpdate={fetchUserProfile} showCoverModal={showCoverModal} setShowCoverMdal={setShowCoverMdal} showDpModal={showDpModal} setShowDpMdal={setShowDpMdal} />
+      <ProfileModal
+        onUpdate={fetchUserProfile}
+        showCoverModal={showCoverModal}
+        setShowCoverMdal={setShowCoverMdal}
+        showDpModal={showDpModal}
+        setShowDpMdal={setShowDpMdal}
+      />
     </>
   );
 }

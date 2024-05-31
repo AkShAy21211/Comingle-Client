@@ -1,6 +1,6 @@
 import { Routes,Route } from 'react-router-dom'
-import Login from '../pages/Admin/Login'
-import DashBoard from '../pages/Admin/DashBoard'
+import Login from '../Pages/Admin/Login'
+import DashBoard from '../Pages/Admin/DashBoard'
 function AdminRoute() {
   return (
     <Routes>

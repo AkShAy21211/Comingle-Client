@@ -3,27 +3,12 @@ import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
-const currentUser = localStorage.getItem("user");
-
-const user = currentUser ? JSON.parse(currentUser) : null;
-
-let token = localStorage.getItem("token");
-
-token = token ? JSON.parse(token) : null;
-
 const userApi = {
-  // User signup and send otp start
   signup: async (formData: SignUpType) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
       const signupResponse = await axiosInstance.post(
         userEnpoints.SIGNUP,
-        JSON.stringify(formData),
-        config
+        JSON.stringify(formData)
       );
 
       toast.success(`OTP sent to ${formData.email}`, {
@@ -121,16 +106,9 @@ const userApi = {
 
   signin: async (userData: SignInType) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
       const signinResponse = await axiosInstance.post(
         userEnpoints.SIGNIN,
-        JSON.stringify(userData),
-        config
+        JSON.stringify(userData)
       );
 
       if (signinResponse.data.status) {
@@ -164,13 +142,7 @@ const userApi = {
 
   profile: async () => {
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user?.token || token}`,
-        },
-      };
-
-      const { data } = await axiosInstance.get(userEnpoints.PROFILE, config);
+      const { data } = await axiosInstance.get(userEnpoints.PROFILE);
 
       console.log("caling user");
 
@@ -180,20 +152,14 @@ const userApi = {
     } catch (error) {}
   },
 
-  updateProfileImage: async (type: string, image: any) => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    };
-
+  updateProfileImage: async (type:string, formData: FormData) => {
     try {
+
+
       if (type === "background") {
         const response = await axiosInstance.patch(
           userEnpoints.PROFILE_UPDATE_COVER,
-          { type: type, image: image },
-          config
+         formData
         );
 
         if (response.data.status) {
@@ -224,8 +190,7 @@ const userApi = {
       } else {
         const response = await axiosInstance.patch(
           userEnpoints.PROFILE_UPDATE_DP,
-          { type: type, image: image },
-          config
+          formData
         );
 
         if (response.data.status) {
@@ -268,18 +233,9 @@ const userApi = {
 
   updateUserInfo: async (userData: any) => {
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-          "Content-Type": "application/json",
-        },
-      };
-      console.log(config);
-
       const updatedUserInfo = await axiosInstance.patch(
         userEnpoints.PROFILE_UPDATE_INFO,
-        JSON.stringify(userData),
-        config
+        JSON.stringify(userData)
       );
 
       if (updatedUserInfo.status) {
@@ -330,17 +286,11 @@ const userApi = {
 
   forgotPassword: async (email: string) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
       console.log(email);
 
       const forgetPasswprdResponse = await axiosInstance.post(
         userEnpoints.FORGOT_PASSWORD,
-        { email: email },
-        config
+        { email: email }
       );
 
       if (forgetPasswprdResponse.status) {
@@ -372,15 +322,9 @@ const userApi = {
 
   updatePassword: async (password: string) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
       const updatedResponse = await axiosInstance.post(
         userEnpoints.UPDATE_PASSWORD,
-        { password: password },
-        config
+        { password: password }
       );
 
       if (updatedResponse.status) {
@@ -393,7 +337,6 @@ const userApi = {
           theme: "colored",
           transition: Bounce,
         });
-
 
         return updatedResponse;
       }

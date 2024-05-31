@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Suggestions from "./Suggestions";
 import Settings from "./Settings";
 import { useSelector } from "react-redux";
+import { MdOutlineExplore } from "react-icons/md";
 import { RootState } from "../../Redux/store";
 function LeftPanel({isProfile}:{isProfile?:boolean}) {
 
@@ -33,6 +34,12 @@ function LeftPanel({isProfile}:{isProfile?:boolean}) {
 					<Link rel="noopener noreferrer" to="#" className="flex items-center p-2 space-x-3 rounded-md">
 						<BsPersonAdd size={30}/>
 						<span>Request</span>
+					</Link>
+				</li>
+				<li className="rounded-sm">
+					<Link rel="noopener noreferrer" to="#" className="flex items-center p-2 space-x-3 rounded-md">
+						<MdOutlineExplore size={30}/>
+						<span>Explore</span>
 					</Link>
 				</li>
 				<li className="rounded-sm">
