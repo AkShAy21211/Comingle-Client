@@ -152,14 +152,12 @@ const userApi = {
     } catch (error) {}
   },
 
-  updateProfileImage: async (type:string, formData: FormData) => {
+  updateProfileImage: async (type: string, formData: FormData) => {
     try {
-
-
       if (type === "background") {
         const response = await axiosInstance.patch(
           userEnpoints.PROFILE_UPDATE_COVER,
-         formData
+          formData
         );
 
         if (response.data.status) {
@@ -354,6 +352,43 @@ const userApi = {
       });
 
       return;
+    }
+  },
+  getAllUsers: async () => {
+    try {
+      const usersReponse = await axiosInstance.get(userEnpoints.GET_ALL_USERS);
+
+      if (usersReponse.status) {
+        return usersReponse.data;
+      }
+      return usersReponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  followRequest: async (id: string) => {
+    try {
+      const followRequest = await axiosInstance.post(
+        userEnpoints.FOLLOW_REQUEST,
+        { recipientId: id }
+      );
+
+      if(followRequest.status){
+
+          toast.success('Follow request sent', {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
+
+      return followRequest.data;
+    } catch (error) {
+      console.log(error);
     }
   },
 };

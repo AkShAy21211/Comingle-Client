@@ -37,7 +37,7 @@ function MobileBottomNav() {
             <span className="not-sr-only text-sm">Request</span>
         </Link> */}
        
-       <Link to="" data-tooltip-target="tooltip-settings" type="button" className="inline-flex flex-col items-center justify-center px-5  group">
+       <Link to="/explore" data-tooltip-target="tooltip-settings" type="button" className="inline-flex flex-col items-center justify-center px-5  group">
            <MdOutlineExplore size={30}/>
             <span className="not-sr-only text-sm">Explore</span>
         </Link>

@@ -29,7 +29,7 @@ export interface CurrentUser {
 }
 
 
-interface User{
+export interface User{
 
     _id:string;
     name:string;
@@ -53,4 +53,25 @@ interface User{
     
 }
 
-export default User;
+
+
+ export interface PostsType{
+
+    _id:string;
+    userId:string;
+    image:string[];
+    description:string;
+    likes:string[];
+    comments:string[];
+    isHidden:boolean;
+    timestamp:Date;
+}
+
+export interface Follow {
+  _id: string;
+  requester: string;
+  recipient: string;
+  status:string;
+  timestamp?: Date;
+}
+

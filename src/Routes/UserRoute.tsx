@@ -12,6 +12,8 @@ import SettingsPage from '../Pages/User/Settings';
 import PersonalDetails from '../Pages/User/PersonalDetails';
 import Loading from '../Components/Common/Loading';
 import ForgotPassword from '../Pages/User/ForgotPassword';
+import Explore from '../Pages/User/Explore';
+import OtherUserProfile from '../Pages/User/OtherUserProfile';
 
 
 function UserRoute() {
@@ -32,6 +34,9 @@ function UserRoute() {
     <Route path='/details' element={<IslogedIn><Layout isProflie><PersonalDetails/></Layout></IslogedIn>}/>
     <Route path='/forgot-password' element={<IsLoggedOut><ForgotPassword/></IsLoggedOut>}/>
     <Route path='/login/success'  element={<Loading size={25}/>}/>
+    <Route path='/explore' element={<IslogedIn><Layout><Explore/></Layout></IslogedIn>} />
+    <Route path='/profile/:username' element={<IslogedIn><Layout><OtherUserProfile  /></Layout></IslogedIn>} />
+
    </Routes>
   )
 }

@@ -6,7 +6,8 @@ export default {
       colors:{
 
         'custom-blue':"#004080",
-        'custom-gold':"#FFD700"
+        'custom-gold':"#FFD700",
+        'custom-teal':'#007F86'
       }
     },
   },

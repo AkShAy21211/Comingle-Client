@@ -37,7 +37,7 @@ function LeftPanel({isProfile}:{isProfile?:boolean}) {
 					</Link>
 				</li>
 				<li className="rounded-sm">
-					<Link rel="noopener noreferrer" to="#" className="flex items-center p-2 space-x-3 rounded-md">
+					<Link rel="noopener noreferrer" to="/explore" className="flex items-center p-2 space-x-3 rounded-md">
 						<MdOutlineExplore size={30}/>
 						<span>Explore</span>
 					</Link>

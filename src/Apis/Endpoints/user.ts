@@ -11,7 +11,9 @@ const userEnpoints = {
     PROFILE_UPDATE_DP:'/user/profile/update/dp',
     PROFILE_UPDATE_INFO:'user/profile/update/info',
     FORGOT_PASSWORD:'/user/forgot-password',
-    UPDATE_PASSWORD:'/user/new-password'
+    UPDATE_PASSWORD:'/user/new-password',
+    GET_ALL_USERS:'/user/list-all',
+    FOLLOW_REQUEST:'/user/follow-request'
 
 
 
