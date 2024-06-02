@@ -14,6 +14,7 @@ import Loading from '../Components/Common/Loading';
 import ForgotPassword from '../Pages/User/ForgotPassword';
 import Explore from '../Pages/User/Explore';
 import OtherUserProfile from '../Pages/User/OtherUserProfile';
+import Notifications from '../Pages/User/Notifications';
 
 
 function UserRoute() {
@@ -36,6 +37,8 @@ function UserRoute() {
     <Route path='/login/success'  element={<Loading size={25}/>}/>
     <Route path='/explore' element={<IslogedIn><Layout><Explore/></Layout></IslogedIn>} />
     <Route path='/profile/:username' element={<IslogedIn><Layout><OtherUserProfile  /></Layout></IslogedIn>} />
+    <Route path='/notifications' element={<IslogedIn><Layout><Notifications /></Layout></IslogedIn>} />
+
 
    </Routes>
   )

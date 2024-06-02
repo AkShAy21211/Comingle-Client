@@ -69,9 +69,26 @@ export interface User{
 
 export interface Follow {
   _id: string;
-  requester: string;
   recipient: string;
+  requester: {
+    _id:string;
+    name:string;
+    email:string;
+    profile:{
+      image:string
+    }
+  };
   status:string;
   timestamp?: Date;
+}
+
+export interface NotificationsType{
+
+    _id:string;
+    userId: string;
+    content:string;
+    type:string;
+    isRead:boolean;
+    createdAt:Date;
 }
 

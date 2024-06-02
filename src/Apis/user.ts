@@ -2,6 +2,7 @@ import axiosInstance from "./axios";
 import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
+import { log } from "console";
 
 const userApi = {
   signup: async (formData: SignUpType) => {
@@ -142,14 +143,16 @@ const userApi = {
 
   profile: async () => {
     try {
+      console.log("calling suer");
+
       const { data } = await axiosInstance.get(userEnpoints.PROFILE);
 
-      console.log("caling user");
-
-      console.log(data);
+      console.log("userdata", data);
 
       return data.user;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   updateProfileImage: async (type: string, formData: FormData) => {
@@ -373,9 +376,8 @@ const userApi = {
         { recipientId: id }
       );
 
-      if(followRequest.status){
-
-          toast.success('Follow request sent', {
+      if (followRequest.status) {
+        toast.success("Follow request sent", {
           position: "bottom-center",
           autoClose: 3000,
           hideProgressBar: true,
@@ -391,6 +393,20 @@ const userApi = {
       console.log(error);
     }
   },
+
+  notifications:async()=>{
+
+    try {
+      console.log('called noti');
+      
+      const notificationsResponse = await axiosInstance.get(userEnpoints.NOTIFICATIONS);       
+      return notificationsResponse.data;
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
+  }
 };
 
 export default userApi;

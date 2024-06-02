@@ -1,4 +1,6 @@
+import { useSelector } from "react-redux";
 import { Follow, User } from "../../Interface/interface";
+import { RootState } from "../../Redux/store";
 
 type PeopleProps = {
   users: User[];
@@ -7,6 +9,11 @@ type PeopleProps = {
 };
 
 function People({ users, handleFollow, followers }: PeopleProps) {
+
+  const currentUser = useSelector((state:RootState)=> state.user.user._id);
+  
+  console.log(followers);
+  
   return (
     <>
       <div className="container mx-auto p-4">
@@ -15,38 +22,41 @@ function People({ users, handleFollow, followers }: PeopleProps) {
 
             // Check if the user has a follow status
 
-            const followStatus = followers?followers.find(
+            const followStatus = followers.find(
               (follow) => follow.recipient === user._id
-            ):null;
+            );
 
+
+            
+            
             return (
               <div
                 key={user._id}
                 className="w-full h-52 md:h-72 shadow-lg rounded-lg flex flex-col items-center"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  src={user.profile.image}
                   className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover mt-5"
                   alt={user.name}
                 />
                 <h6 className="mt-3">{user.name}</h6>
-                {followStatus ? (
-                  followStatus.status === "Pending" ? (
-                    <button className="border border-custom-teal rounded-2xl px-5 py-1 mt-4 text-custom-teal">
-                      Pending
-                    </button>
-                  ) : (
-                    <button className="border border-custom-teal rounded-2xl px-5 py-1 mt-4 text-custom-teal">
-                      Following
-                    </button>
-                  )
-                ) : (
-                  <button
+                {followStatus && (
+
+                  followStatus.status === 'Pending' && followStatus.requester._id === currentUser ? (
+                    <button
+                    onClick={() => handleFollow(user._id)}
+                    className="border border-custom-teal rounded-2xl px-5 py-1 mt-4 text-custom-teal"
+                  >
+                    Following
+                  </button>
+                  ):(
+                    <button
                     onClick={() => handleFollow(user._id)}
                     className="bg-custom-teal rounded-2xl px-5 py-1 mt-4 text-white"
                   >
-                    Follow
+                    Follow Back
                   </button>
+                  )
                 )}
               </div>
             );

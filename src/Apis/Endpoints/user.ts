@@ -13,7 +13,8 @@ const userEnpoints = {
     FORGOT_PASSWORD:'/user/forgot-password',
     UPDATE_PASSWORD:'/user/new-password',
     GET_ALL_USERS:'/user/list-all',
-    FOLLOW_REQUEST:'/user/follow-request'
+    FOLLOW_REQUEST:'/user/follow-request',
+    NOTIFICATIONS:'/user/notifications'
 
 
 

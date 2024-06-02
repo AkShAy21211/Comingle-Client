@@ -12,8 +12,6 @@ let token = localStorage.getItem("token");
 
 token = token ? JSON.parse(token) : null;
 
-console.log(user);
-console.log(token);
 
 const authFreeEndpoints = [
   "/user/signup",
