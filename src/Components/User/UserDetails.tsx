@@ -7,35 +7,31 @@ import { FiEdit } from "react-icons/fi";
 import { useFormik } from "formik";
 import ProfileUpdation from "../../Validation/User/ProfileUpdation";
 import userApi from "../../Apis/user";
-import User from "../../Interface/interface";
+import { User } from "../../Interface/interface";
 
 const UserDetails: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-
   //////// fetching user profile ///////////////
 
- async function fetchUserProfile() {
-      try {
-        const user = await userApi.profile();
-        console.log('profile accessed',user);
-        
-        if(user){
+  async function fetchUserProfile() {
+    try {
+      const user = await userApi.profile();
+      console.log("profile accessed", user);
+
+      if (user) {
         setUser(user);
-        }
-      } catch (error) {
-        console.log(error);
       }
- }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-
     fetchUserProfile();
-  },[]);
-
-
+  }, []);
 
   ////////////////////////// Handling Form submit for edit user detail///////////////////////////
 
@@ -47,43 +43,35 @@ const UserDetails: React.FC = () => {
     if (name) userData.name = name;
     if (email) userData.email = email;
     if (phone) userData.phone = phone;
-      if (age) userData.age = age;
-      if (gender) userData.gender = gender;
-      if (country) userData.country = country;
-      if (bio) userData.bio = bio;
-    
+    if (age) userData.age = age;
+    if (gender) userData.gender = gender;
+    if (country) userData.country = country;
+    if (bio) userData.bio = bio;
 
     try {
-
-      
-
       const updateResponse = await userApi.updateUserInfo(userData);
       if (updateResponse) {
         setIsEditing(false);
-        setUser(updateResponse.data)
+        setUser(updateResponse.data);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const {
-    errors,
-    handleBlur,
-    handleChange,
-    handleSubmit,
-  } = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      phone: 0,
-      bio: "",
-      age: 0,
-      country: "",
-      gender: "",
-    },
-    onSubmit: onSubmit,
-    validationSchema: ProfileUpdation,
-  });
+  const { errors, handleBlur, handleChange, handleSubmit} =
+    useFormik({
+      initialValues: {
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        bio: user?.profile?.bio || "",
+        age: user?.profile?.age || "",
+        country: user?.profile?.country || "",
+        gender: user?.profile?.gender || "",
+      },
+      onSubmit: onSubmit,
+      validationSchema: ProfileUpdation,
+    });
 
   /////////////////////// TOOGLE USEDETAIL FORM TO EDIT AND SUBMIT//////////////////////
   const handleEdit = () => {
@@ -106,8 +94,8 @@ const UserDetails: React.FC = () => {
             </label>
             <input
               type="text"
-              onBlur={handleBlur}
               id="name"
+              onBlur={handleBlur}
               name="name"
               defaultValue={user?.name}
               onChange={handleChange}
@@ -192,8 +180,8 @@ const UserDetails: React.FC = () => {
             <input
               type="number"
               id="age"
-              name="age"
               onBlur={handleBlur}
+              name="age"
               defaultValue={user?.profile?.age}
               onChange={handleChange}
               readOnly={!isEditing}
@@ -209,7 +197,26 @@ const UserDetails: React.FC = () => {
             <label className="block  text-sm font-bold mb-2" htmlFor="phone">
               Gender
             </label>
-            <input
+
+            <select
+              defaultValue={user?.profile?.gender}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              disabled={!isEditing}
+              className={`w-full px-3 py-2 border ${
+                isDarkMode ? "bg-gray-900" : ""
+              } ${
+                isEditing ? "border-blue-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200`}
+              name="gender"
+              id="gender"
+            >
+              <option value="male">male</option>
+              <option value="female">female</option>
+              <option value="other">other</option>
+            </select>
+
+            {/* <input
               type="text"
               id="gender"
               name="gender"
@@ -222,7 +229,7 @@ const UserDetails: React.FC = () => {
               } ${
                 isEditing ? "border-blue-500" : "border-gray-300"
               } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200`}
-            />
+            /> */}
             <p className="text-sm mt-1 font-light text-red-400">
               {errors.gender}
             </p>
@@ -233,8 +240,8 @@ const UserDetails: React.FC = () => {
             </label>
             <input
               type="text"
-              id="country"
               onBlur={handleBlur}
+              id="country"
               name="country"
               defaultValue={user?.profile?.country}
               onChange={handleChange}
@@ -271,7 +278,7 @@ const UserDetails: React.FC = () => {
             type="button"
             data-tooltip-target="tooltip-default"
             onClick={handleEdit}
-            className="  text-center text-center  px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+            className="  text-center px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
           >
             <FiEdit size={20} />
           </button>
