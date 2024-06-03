@@ -75,6 +75,20 @@ export interface Follow {
   timestamp?: Date;
 }
 
+export interface FollowNotification{
+ _id: string;
+  recipient: string;
+  requester: {
+    name:string;
+    profile:{
+      image:string;
+    }
+  }
+  status:string;
+  timestamp?: Date;
+
+}
+
 export interface NotificationsType{
 
     _id:string;
