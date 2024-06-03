@@ -7,10 +7,13 @@ import { GoFileMedia } from "react-icons/go";
 import { TbPremiumRights } from "react-icons/tb";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { adminLogout } from "../../../Redux/Slice/Admin/adminSlice";
+import { persistor } from "../../../Redux/store";
 
 function SideBar() {
   const [showSidebar, setShowSidebar] = useState(false);
-
+  const dispatch = useDispatch()
   return (
     <>
       {showSidebar ? (
@@ -83,7 +86,10 @@ function SideBar() {
               </Link>
             </li>
             <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
-              <Link to="" className="flex">
+              <Link to="" onClick={()=>{
+                dispatch(adminLogout())
+                persistor.purge()
+              }} className="flex">
                 <RiLogoutBoxRLine size={30} />
                 <p className="mx-4 m-1">Logout</p>
               </Link>

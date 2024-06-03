@@ -11,6 +11,7 @@ import { adminLogin } from "../../Redux/Slice/Admin/adminSlice";
 
 function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const {
     formState: { errors },
     handleSubmit,
@@ -27,13 +28,13 @@ function Login() {
   const onSubmit = async (adminData: SignInType) => {
     try {
       const signupResponse = await adminApi.signin(adminData);
+      
       if(signupResponse?.data.status){
-
-        console.log(signupResponse);
         
         dispatch(adminLogin(signupResponse.data.admin))
+
+        navigate('/admin/dashboard')
       }
-      console.log(signupResponse);
     } catch (error) {
       console.log(error);
     }

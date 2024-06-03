@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const storedAdmin = localStorage.getItem('admin');
 
 const initialState = {
 
-    admin:null,
+    admin:storedAdmin?JSON.parse(storedAdmin):null,
 }
 
 
@@ -17,10 +18,12 @@ const adminSlice = createSlice({
 
             
             state.admin = action.payload;
+            localStorage.setItem('admin',JSON.stringify(action.payload));
         },
         adminLogout:(state)=>{
 
             state.admin = null;
+            localStorage.clear()
         }
     }
 });
