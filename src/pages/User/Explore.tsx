@@ -115,13 +115,6 @@ function Explore() {
         )}
         {isPosts && <Posts allPosts={allPosts} />}
 
-       {
-        isPeople &&  <People users={allUsers}/>
-       }
-       {
-        isPosts &&  <Posts allPosts={allPosts}/>
-       }
-
       </div>
     </div>
   );

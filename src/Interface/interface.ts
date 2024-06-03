@@ -70,14 +70,7 @@ export interface User{
 export interface Follow {
   _id: string;
   recipient: string;
-  requester: {
-    _id:string;
-    name:string;
-    email:string;
-    profile:{
-      image:string
-    }
-  };
+  requester: string
   status:string;
   timestamp?: Date;
 }
