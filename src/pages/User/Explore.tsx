@@ -5,6 +5,10 @@ import Posts from "../../Components/Common/Posts";
 import { User } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 
+
+
+
+
 function Explore() {
   const [isFocused, setIsFocused] = useState(false);
   const [isPosts, setIsPosts] = useState(true);
@@ -44,6 +48,9 @@ function Explore() {
     const follow = await userApi.followRequest(id);
     setFollowers(follow.follow);
   }
+
+
+
 
   //////////////////// HANDLE SHOW PEOPLE //////////////////////////////////
 
@@ -104,11 +111,17 @@ function Explore() {
         {isPeople && (
           <People
             users={allUsers}
-            handleFollow={handleFollow}
-            followers={followers}
           />
         )}
         {isPosts && <Posts allPosts={allPosts} />}
+
+       {
+        isPeople &&  <People users={allUsers}/>
+       }
+       {
+        isPosts &&  <Posts allPosts={allPosts}/>
+       }
+
       </div>
     </div>
   );

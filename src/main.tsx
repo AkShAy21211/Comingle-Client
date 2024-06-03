@@ -8,12 +8,12 @@ import ToastProvider from "./Components/Common/ToastProvider.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
    
       <Provider store={store}>
         <ToastProvider>
           <App />
         </ToastProvider>
       </Provider>
-  </React.StrictMode>
+  // {/* </React.StrictMode> */}
 );

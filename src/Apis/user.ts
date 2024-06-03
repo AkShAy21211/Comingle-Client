@@ -403,6 +403,39 @@ const userApi = {
       return notificationsResponse.data;
     } catch (error) {
       
+    }
+  },
+  getFollowStatus: async (requesterId:String,recipitentId :string) => {
+    try {
+      const status = await axiosInstance.get(userEnpoints.FOLLOW_STATUS+`/${requesterId}/${recipitentId}`);
+      return status;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  acceptFollow: async(followId:string)=>{
+
+    try {
+      
+      const followStatus = await axiosInstance.post(userEnpoints.ACCEPT_FOLLOW+`/${followId}`);
+
+      if(followStatus.status){
+
+        toast.success("Follow request accepted", {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        }); 
+        return followStatus;
+      }
+      
+    } catch (error) {
+
       console.log(error);
       
     }
