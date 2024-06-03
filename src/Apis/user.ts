@@ -373,9 +373,8 @@ const userApi = {
         { recipientId: id }
       );
 
-      if(followRequest.status){
-
-          toast.success('Follow request sent', {
+      if (followRequest.status) {
+        toast.success("Follow request sent", {
           position: "bottom-center",
           autoClose: 3000,
           hideProgressBar: true,
@@ -391,6 +390,41 @@ const userApi = {
       console.log(error);
     }
   },
+
+  getFollowStatus: async (requesterId:String,recipitentId :string) => {
+    try {
+      const status = await axiosInstance.get(userEnpoints.FOLLOW_STATUS+`/${requesterId}/${recipitentId}`);
+      return status;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  acceptFollow: async(followId:string)=>{
+
+    try {
+      
+      const followStatus = await axiosInstance.post(userEnpoints.ACCEPT_FOLLOW+`/${followId}`);
+
+      if(followStatus.status){
+
+        toast.success("Follow request accepted", {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        }); 
+        return followStatus;
+      }
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 };
 
 export default userApi;

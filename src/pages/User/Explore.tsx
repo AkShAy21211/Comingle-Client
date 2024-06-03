@@ -6,6 +6,7 @@ import {User} from "../../Interface/interface";
 import userApi from "../../Apis/user";
 
 
+
 function Explore() {
   const [isFocused, setIsFocused] = useState(false);
   const [isPosts,setIsPosts] = useState(true);
@@ -56,15 +57,7 @@ function Explore() {
 
   /////////////////// HANDLE FOLLOWING /////////////////////////////////////
 
-  async function handleFollow(id:string){
 
-
-    const follow = await userApi.followRequest(id);
-    setFollowers(follow.follow)
-    
-    
-
-  }
 
   //////////////////// HANDLE SHOW PEOPLE //////////////////////////////////
 
@@ -120,7 +113,7 @@ function Explore() {
 
       <div className="h-screen p-5 flex gap-16 mt-8 w-full justify-center">
        {
-        isPeople &&  <People users={allUsers} handleFollow={handleFollow} followers={followers}/>
+        isPeople &&  <People users={allUsers}  followers={followers}/>
        }
        {
         isPosts &&  <Posts allPosts={allPosts}/>
