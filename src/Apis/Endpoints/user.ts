@@ -17,6 +17,7 @@ const userEnpoints = {
     NOTIFICATIONS:'/user/notifications',
     FOLLOW_STATUS:'/user/follow/status',
     ACCEPT_FOLLOW:'/user/follow/accept',
+    LOGOUT:'/user/logout'
 
     
 

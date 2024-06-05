@@ -1,3 +1,4 @@
+import { data } from "../Components/Admin/DashBoard/SectionThree";
 export interface SignUpType {
   name: string;
   email: string;
@@ -28,74 +29,70 @@ export interface CurrentUser {
   token: string;
 }
 
-
-export interface User{
-
-    _id:string;
-    name:string;
-    email:string;
-    phone:number;
-    password?:string;
-    isVerified?:boolean;
-    isBlocked?:boolean;
-    profile:{
-        image?:string;
-        background?:string;
-        bio:string;
-        age:number;
-        country:string;
-        gender:string;
-        isPremium?:boolean;
-        followers?:string[];
-        following?:string[];
-        posts?:number;
-    }
-    
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  phone: number;
+  password?: string;
+  isVerified?: boolean;
+  isBlocked?: boolean;
+  profile: {
+    image?: string;
+    background?: string;
+    bio: string;
+    age: number;
+    country: string;
+    gender: string;
+    isPremium?: boolean;
+    followers?: string[];
+    following?: string[];
+    posts?: number;
+  };
 }
 
-
-
- export interface PostsType{
-
-    _id:string;
-    userId:string;
-    image:string[];
-    description:string;
-    likes:string[];
-    comments:string[];
-    isHidden:boolean;
-    timestamp:Date;
+export interface PostsType {
+  _id: string;
+  userId: string;
+  image: string[];
+  description: string;
+  likes: string[];
+  comments: string[];
+  isHidden: boolean;
+  timestamp: Date;
 }
 
 export interface Follow {
   _id: string;
   recipient: string;
-  requester: string
-  status:string;
+  requester: string;
+  status: string;
   timestamp?: Date;
 }
 
-export interface FollowNotification{
- _id: string;
-  recipient: string;
-  requester: {
-    name:string;
-    profile:{
-      image:string;
-    }
-  }
-  status:string;
-  timestamp?: Date;
-
+export interface NotificationsType {
+  _id: string;
+  userId: string;
+  content: string;
+  sourceId: {
+    recipient: {
+      name: string;
+      _id: string;
+      profile: {
+        image: string;
+      };
+    };
+    requester: {
+      name: string;
+      _id: string;
+      profile: {
+        image: string;
+      };
+    };
+    status: string;
+    _id: string;
+  };
+  type: string;
+  isRead: boolean;
+  createdAt: Date;
 }
-
-export interface NotificationsType{
-
-    _id:string;
-    userId: string;
-    content:string;
-    type:string;
-    isRead:boolean;
-    createdAt:Date;
-}
-

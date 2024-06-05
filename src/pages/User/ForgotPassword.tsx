@@ -78,6 +78,11 @@ function ForgotPassword() {
   const [passwordError, setpasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [toogle, setTogle] = useState(false);
+
+
+
+
+
 async function handleNewPassword() {
   let errors = [];
 
@@ -116,6 +121,8 @@ async function handleNewPassword() {
   setpasswordError("");
 
   try {
+    console.log('new password',password);
+    
     const response = await userApi.updatePassword(password);
     if (response?.status) {
       navigate("/");

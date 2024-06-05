@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { userLogin } from "../../Redux/Slice/User/userSlice";
-import {User} from "../../Interface/interface";
 import userApi from "../../Apis/user";
 
 interface LoadingProps {
@@ -13,10 +12,11 @@ const Loading: React.FC<LoadingProps> = ({ size }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get("token")||null;
   localStorage.setItem("token", JSON.stringify(token));
-console.log(token);
 
+  console.log('token',token);
+  
   //////// fetching user profile ///////////////
 
   const fetchUserProfile = async () => {
@@ -24,6 +24,8 @@ console.log(token);
       const user = await userApi.profile();
       console.log("profile accessed");
 
+      console.log(user);
+      
       if (token) {
         user.token = token;
         dispatch(userLogin(user))

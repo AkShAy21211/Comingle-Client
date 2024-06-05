@@ -20,7 +20,7 @@ function OtherUserProfile() {
        bg-red flex flex-col 
         items-center mb-10`}
       >
-        <ProfileAndBg notOwnProfile />
+        <ProfileAndBg notOwnProfile={notOwnPrfile} />
         <CountBox/>
         <PostGrid/>
 

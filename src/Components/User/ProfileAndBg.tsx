@@ -4,7 +4,8 @@ import ProfileModal from "../Common/ProfileModal";
 import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import User from "../../Interface/interface";
+import {User} from "../../Interface/interface";
+import Avatar from 'react-avatar';
 
 
 
@@ -63,22 +64,24 @@ function ProfileAndBg({notOwnProfile}:ProfileProp) {
         className="float-end relative  top-24   right-0 lg:top-36 lg:mt-3  lg:right-0"
       />
     }
-      <div className="relative object-cover border shadow-lg -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52 bg-black">
-        <img
+      <div className={`relative object-cover  ${userData?.profile.image?'border shadow-lg':' border-none shadow-none'}  flex justify-center -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52`}>
+      {
+        userData?.profile.image?  <img
           className={`h-full ${
             isDarkMode ? "bg-black backdrop:blur-lg" : "bg-white"
           } object-cover w-full rounded-full`}
           src={userData?.profile?.image}
-        />
+        />:<Avatar className=" rounded-full" size="140" name={userData?.name} />
+      }
   
       </div>
-      <div className="relative w-auto  justify-start flex-col  lg:flex-row lg:justify-center p-5 mb-8  mt-10">
-        <h2 className=" -mt-20 font-bold  text-center  ">
+      <div className="relative w-auto  justify-start flex-col  lg:flex-row lg:justify-center mb-8 mt-10 lg:mt-1 ">
+        <h2 className=" -mt-14 font-bold  text-center  ">
           @{userData?.name.toLowerCase()}
         </h2>
         <p className="  font-light ">{userData?.profile.bio}</p>
            {
-      notOwnProfile &&  <div className="w-96 flex gap-1 justify-center  mt-3">
+      notOwnProfile &&  <div className="w-96 flex gap-1 justify-center mb-5 mt-3">
         <button className="bg-custom-blue px-5 py-3 rounded-lg text-white ">Follow</button>
         <button className="bg-custom-blue px-5 py-3 rounded-lg text-white ">Message</button>
       </div>

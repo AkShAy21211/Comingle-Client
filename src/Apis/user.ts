@@ -394,34 +394,34 @@ const userApi = {
     }
   },
 
-  notifications:async()=>{
+  notifications: async () => {
+    try {
+      console.log("called noti");
 
-    try {
-      console.log('called noti');
-      
-      const notificationsResponse = await axiosInstance.get(userEnpoints.NOTIFICATIONS);       
+      const notificationsResponse = await axiosInstance.get(
+        userEnpoints.NOTIFICATIONS
+      );
       return notificationsResponse.data;
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   },
-  getFollowStatus: async (requesterId:String,recipitentId :string) => {
+  getFollowStatus: async (requesterId: String, recipitentId: string) => {
     try {
-      const status = await axiosInstance.get(userEnpoints.FOLLOW_STATUS+`/${requesterId}/${recipitentId}`);
-      return status;
+      const response = await axiosInstance.get(
+        userEnpoints.FOLLOW_STATUS + `/${requesterId}/${recipitentId}`
+      );
+      return response;
     } catch (error) {
       console.log(error);
     }
   },
 
-  acceptFollow: async(followId:string)=>{
-
+  acceptFollow: async (followId: string,notificationId:string) => {
     try {
-      
-      const followStatus = await axiosInstance.post(userEnpoints.ACCEPT_FOLLOW+`/${followId}`);
+      const followStatus = await axiosInstance.post(
+        userEnpoints.ACCEPT_FOLLOW + `/${followId}/${notificationId}`
+      );
 
-      if(followStatus.status){
-
+      if (followStatus.status) {
         toast.success("Follow request accepted", {
           position: "bottom-center",
           autoClose: 3000,
@@ -430,16 +430,34 @@ const userApi = {
           progress: undefined,
           theme: "light",
           transition: Bounce,
-        }); 
+        });
         return followStatus;
       }
-      
     } catch (error) {
-
       console.log(error);
-      
     }
-  }
+  },
+
+  logout: async () => {
+    try {
+      const logoutResponse = await axiosInstance.post(userEnpoints.LOGOUT);
+      if (logoutResponse.status) {
+        toast.success(logoutResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return logoutResponse;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 export default userApi;

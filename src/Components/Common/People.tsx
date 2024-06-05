@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Follow, User } from "../../Interface/interface";
-
+import Avatar from "react-avatar";
 import FollowButton from "../User/FollowButton";
 import { RootState } from "../../Redux/store";
 
@@ -28,17 +28,21 @@ function People({ users }: PeopleProps) {
             return (
               <div
                 key={user._id}
-                className="w-full h-52 md:h-72 shadow-lg rounded-lg flex flex-col items-center"
+                className="w-full h-36 md:h-52 rounded-lg flex flex-col items-center"
               >
-                <img
+
+                {
+                  user?.profile?.image?  <img
                   src={user.profile.image}
-                  className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover mt-5"
+                  className="w-20  rounded-full object-cover mt-5"
                   alt={user.name}
-                />
-                <h6 className="mt-3">{user.name}</h6>
+                />:<Avatar name={user.name} className="rounded-full mt-2" size="90"/>
+                }
+              
+                <h6 className="mt-3 text-center">{'@'+user.name.toLowerCase()}</h6>
                
                 
-               <FollowButton recipientId={user._id} requesterId={currentUser}/>
+               {/* <FollowButton recipientId={user._id} requesterId={currentUser}/> */}
 
               </div>
               
