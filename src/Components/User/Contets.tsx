@@ -4,8 +4,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 
 
-const Contents = ({ images }:any) => {
-  console.log(images);
+const Contents = ({ images,url }:any) => {
   
   
     const settings = {
@@ -25,7 +24,7 @@ const Contents = ({ images }:any) => {
          {images.map((image:any) => (
 
           <img
-            src={image.url}
+            src={image.url||url}
             className=" aspect-[4/4] h-auto object-cover rounded "
           />
       ))}

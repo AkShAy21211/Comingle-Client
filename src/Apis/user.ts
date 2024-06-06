@@ -415,7 +415,7 @@ const userApi = {
     }
   },
 
-  acceptFollow: async (followId: string,notificationId:string) => {
+  acceptFollow: async (followId: string, notificationId: string) => {
     try {
       const followStatus = await axiosInstance.post(
         userEnpoints.ACCEPT_FOLLOW + `/${followId}/${notificationId}`
@@ -455,6 +455,41 @@ const userApi = {
         return logoutResponse;
       }
     } catch (error) {
+      console.log(error);
+    }
+  },
+
+  createNewPost: async (data: FormData) => {
+    try {
+      const newPostResponse = await axiosInstance.post(
+        userEnpoints.NEW_POST,
+        data
+      );
+
+      if (newPostResponse.data.status) {
+        toast.success(newPostResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return newPostResponse;
+      }
+  
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       console.log(error);
     }
   },

@@ -15,12 +15,11 @@ function LogoutModal({ setLogoutModal }: LogoutModalPro) {
 
   const logout = async () => {
     try {
-      const logutResponse = await userApi.logout();
-      if (logutResponse) {
+
         dispath(userLogout());
         persistor.purge();
         navigate("/login");
-      }
+      
     } catch (error) {
       console.log(error);
       

@@ -7,6 +7,8 @@ import FormattedRelativeTime from "../../Utils/Time";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { is } from "date-fns/locale";
+import { useState } from "react";
+import CreatePostModal from "./CreatePostModal";
 const images = [
   {
     id: 1,
@@ -41,7 +43,7 @@ function Posts() {
         }  flex flex-col items-center col-span-full lg:col-start-2 lg:col-end-5  overflow-auto overscroll-y-auto`}
       >
         <CreatePost />
-
+      
         <div
           className={` w-full mt-32 lg:mt-0  shadow-sm ${
             isDarkMode ? "bg-black text-white  " : ""
@@ -75,7 +77,7 @@ function Posts() {
           </div>
         </div>
 
- <div
+        <div
           className={` w-full  lg:mt-0  shadow-sm ${
             isDarkMode ? "bg-black text-white  " : ""
           }  flex flex-col justify-between items-center w-5/6 lg:w-3/5 mb-10`}
