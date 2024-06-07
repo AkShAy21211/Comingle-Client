@@ -508,6 +508,20 @@ const userApi = {
       console.log(error);
       
     }
+  },
+
+  likePost: async(postId:string,userId:string)=>{
+
+    try {
+      
+      const likePostResponse = await axiosInstance.put(userEnpoints.LIKE_POST+`/${postId}/${userId}`);
+
+      return likePostResponse.data;
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
   }
 };
 

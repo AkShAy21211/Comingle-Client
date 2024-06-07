@@ -9,30 +9,40 @@ import FormattedRelativeTime from "../../Utils/Time";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { useEffect, useState, useRef } from "react";
-import { PostsType } from "../../Interface/interface";
+import { Likes, PostsType } from '../../Interface/interface';
 import userApi from "../../Apis/user";
 import Avatar from "react-avatar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostSkeleton from "../Skleton/PostSkleton";
+import postModel from '../../../../backend/src/infrastructure/database/postModel';
 
 function Posts() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-
+  const currentUser = useSelector((state: RootState) => state.user.user);
   const [posts, setPosts] = useState<PostsType[]>([]);
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [likes, setLikes] = useState(null);
+
+  //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
   async function fetchAllPosts() {
     try {
+      setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
+        setLoading(false);
+
         setPosts(getPosts.posts);
         setHasMore(getPosts.posts.length > 0);
         console.log(posts);
       }
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   }
@@ -40,6 +50,8 @@ function Posts() {
   useEffect(() => {
     fetchAllPosts();
   }, []);
+
+  /////////////////////////// HANDLE POST REPORT //////////////////////////
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -62,15 +74,23 @@ function Posts() {
     setShowDropdown(showDropdown === postId ? null : postId);
   };
 
+  /////////////// HANDLE FETCH POT ON SCROLL ///////////////////////////////
+
   async function fetchPosts() {
     try {
+      setLoading(true);
+
       const getPosts = await userApi.getAllPosts(index);
       if (getPosts) {
+        setLoading(false);
+
         setPosts((prevPosts) => [...prevPosts, ...getPosts.posts]);
         setHasMore(getPosts.posts.length > 0);
         console.log(posts);
       }
     } catch (error) {
+      setLoading(false);
+
       console.log(error);
     }
   }
@@ -85,6 +105,24 @@ function Posts() {
     }
   }, [index]);
 
+  //////////////////////// HANDLE USER LIKE POST //////////////////////////
+
+  async function likePost(postId: string, userId: string) {
+    try {
+      const likeResponse = await userApi.likePost(postId, userId);
+      if (likeResponse) {
+        console.log(likeResponse);
+
+        setLikes(likeResponse.likes);
+
+       const post = posts.find(post=>post._id === postId);
+
+=      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div
       className={` mt-16 pt-1 lg:mt-0 ${
@@ -97,7 +135,7 @@ function Posts() {
         dataLength={posts.length}
         next={fetchPostOnScroll}
         hasMore={hasMore}
-        loader={<PostSkeleton />}
+        loader={loading && <PostSkeleton />}
         endMessage={
           <div className="text-center py-4 text-xs text-gray-500 w-full  h-40">
             <p> You have seen it all! </p>
@@ -116,21 +154,21 @@ function Posts() {
                 } flex flex-col justify-between items-center mb-10 relative`}
               >
                 <div className="flex items-center mb-3 p-2 w-full">
-                  {post.userId.profile.image ? (
+                  {post.postedUser.profile.image ? (
                     <img
                       className="w-10 h-10 mr-4 rounded-full"
-                      src={post.userId.profile?.image}
+                      src={post.postedUser.profile.image}
                     />
                   ) : (
                     <Avatar
-                      name={post.userId.name}
+                      name={post.postedUser.name}
                       className="rounded-full me-4"
                       size="35"
                     />
                   )}
                   <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
                     <h3 className="text-base md:text-lg font-semibold">
-                      {post.userId.name.toLowerCase()}
+                      {post.postedUser.name.toLowerCase()}
                     </h3>
                     <p className="text-xs text-gray-500 mt-1 md:mt-0">
                       {FormattedRelativeTime(post.createdAt)}
@@ -171,11 +209,22 @@ function Posts() {
                   } flex justify-around gap-8 p-4`}
                 >
                   <div className="flex w-full gap-5">
-                    <IoMdHeartEmpty size={25} />
+                    <IoMdHeartEmpty
+                      onClick={() => {
+                        likePost(post._id, currentUser._id);
+                      }}
+                      size={25}
+                    />
                     <FaRegComment size={20} />
                     <PiShareFatThin size={25} className="font-bold" />
                   </div>
+
                   <CiSaveDown2 size={27} className="font-bold" />
+                </div>
+                <div className="flex w-full px-4 gap-5">
+                  <p className="text-xs">
+                    {post.likes.length ? post.likes.length : 0} likes
+                  </p>
                 </div>
               </div>
             ))}

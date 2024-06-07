@@ -51,22 +51,60 @@ export interface User {
   };
 }
 
+export interface Comment {
+  comments: [
+    {
+      _id: string;
+      postId: string;
+      comment: [
+        {
+          _id: string;
+          postId: string;
+          comment: [
+            {
+              _id: string;
+              comment: string;
+              userDetails: {
+                name: string;
+                image: string;
+              };
+            }
+          ];
+        }
+      ];
+      createdAt: Date;
+    }
+  ];
+}
+
+export interface Likes {
+  userId: any;
+  likes: [
+    {
+      _id: string;
+      userId: [string];
+      postId: string;
+      createdAt: Date;
+    }
+  ];
+}
 export interface PostsType {
   _id: string;
-  userId: {
-
-    _id:string;
-    name:string;
-    profile:{
-      image:string;
-    }
+  comments: Comment[];
+  likes: Likes[];
+  postedUser: {
+    _id: string;
+    name: string;
+    profile: {
+      image: string;
+    };
   };
   image: string[];
   description: string;
   isHidden: boolean;
   timestamp: Date;
-  createdAt:string;
-  updatedAt:string
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Follow {

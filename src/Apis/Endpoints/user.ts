@@ -19,6 +19,7 @@ const userEnpoints = {
     ACCEPT_FOLLOW:'/user/follow/accept',
     NEW_POST:'/user//new-post',
     GET_ALL_POSTS:'/user/posts/all',
+    LIKE_POST:'/user/posts/like',
     LOGOUT:'/user/logout'
 
     
