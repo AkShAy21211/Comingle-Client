@@ -13,7 +13,7 @@ function Layout({ children ,isProflie}: LayoutProps) {
   return (
     <>
       <Header />
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-5 ">
       <LeftPanel isProfile={isProflie}/>
       {children}
       <RightPanel /> 

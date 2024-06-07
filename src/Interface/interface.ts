@@ -53,13 +53,20 @@ export interface User {
 
 export interface PostsType {
   _id: string;
-  userId: string;
+  userId: {
+
+    _id:string;
+    name:string;
+    profile:{
+      image:string;
+    }
+  };
   image: string[];
   description: string;
-  likes: string[];
-  comments: string[];
   isHidden: boolean;
   timestamp: Date;
+  createdAt:string;
+  updatedAt:string
 }
 
 export interface Follow {

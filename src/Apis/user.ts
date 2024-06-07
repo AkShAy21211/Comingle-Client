@@ -493,6 +493,22 @@ const userApi = {
       console.log(error);
     }
   },
+
+  getAllPosts: async(page:number)=>{
+
+    try {
+      
+      const postResponse  = await axiosInstance.get(userEnpoints.GET_ALL_POSTS+`?page=${page}`);
+
+      if(postResponse.data.status){
+
+        return postResponse.data
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 };
 
 export default userApi;

@@ -3,10 +3,14 @@ import { LuSendHorizonal } from "react-icons/lu";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import React, { useState } from "react";
-
 import CreatePostModal from "./CreatePostModal";
 
-function CreatePost() {
+
+type CreatePostProps={
+
+  fetchPost():Promise<void>
+}
+function CreatePost({fetchPost}:CreatePostProps) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [openModal, setOpenModal] = useState(false);
 
@@ -15,7 +19,7 @@ function CreatePost() {
       <div
         className={` hidden h-24 lg:flex mt-32 ${
           isDarkMode ? "bg-black border" : "bg-gray-100"
-        } items-center shadow-md rounded-xl border-gray-600  lg:w-3/5 mb-20  `}
+        } items-center  mx-auto shadow-md rounded-xl border-gray-600  lg:w-3/5 mb-20  `}
       >
         <img
           className="w-10 h-10 m-7 rounded-full"
@@ -37,7 +41,7 @@ function CreatePost() {
         </div>
       </div>
     {
-      openModal && <CreatePostModal  setOpenModal={setOpenModal}/>
+      openModal && <CreatePostModal  fetchPost={fetchPost}  setOpenModal={setOpenModal}/>
     }
     </>
   );
