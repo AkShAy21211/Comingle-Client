@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { useMediaQuery } from "@react-hook/media-query";
 import { FaRegBell } from "react-icons/fa6";
 import LogoutModal from "../Common/LogoutModal";
-import { NotificationsType } from "../../Interface/interface";
+import { FollowNotification,LikeNotfication } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 function Header() {
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
-  const [notifications, setNotifications] = useState<NotificationsType[] | null[]>([]);
+  const [notifications, setNotifications] = useState<number | null>(0);
 
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
@@ -19,10 +19,9 @@ function Header() {
       
       const notifications = await userApi.notifications();
 
-      console.log('geted notificatiions.',notifications);
       
-      if (notifications?.status) {
-        setNotifications(notifications.notifications);
+      if (notifications) {
+        setNotifications(notifications.length);
 
       }
     } catch (error) {
@@ -58,7 +57,7 @@ function Header() {
               to="/notifications"
                 className="relative rounded-fullp-1  text-gray-400 hover:text-white focus:outline-none  focus:ring-offset-2 focus:ring-offset-gray-800"
               >
-                <span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">{notifications?notifications.length:null}</span>
+                {notifications && notifications>0?<span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">{notifications?notifications:null}</span>:''}
                <FaRegBell size={23} />
           
               </Link>

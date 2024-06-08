@@ -7,12 +7,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { MdOutlineExplore } from "react-icons/md";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import CreatePostModal from "./CreatePostModal";
 function MobileBottomNav() {
+
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [openModal, setOpenModal] = useState(false);
-
-
+  const shoPostButton = ['/']
+  const location = useLocation()
   return (
     <>
     <div
@@ -42,6 +44,7 @@ function MobileBottomNav() {
 
         <div className="flex items-center justify-center">
           <button
+            disabled={!shoPostButton.includes(location.pathname)}
             data-tooltip-target="tooltip-new"
             type="button"
             onClick={()=>setOpenModal(true)}

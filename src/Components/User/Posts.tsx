@@ -8,7 +8,7 @@ import { PiShareFatThin } from "react-icons/pi";
 import FormattedRelativeTime from "../../Utils/Time";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Likes, PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import Avatar from "react-avatar";
@@ -26,11 +26,18 @@ function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [liked,setLike] = useState(false);
+  const [liked, setLike] = useState(false);
+
+
+
+
+
+
+
 
   //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
-  async function fetchAllPosts() {
+  const fetchAllPosts = useCallback(async () => {
     try {
       setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
@@ -46,11 +53,20 @@ function Posts() {
 
       console.log(error);
     }
-  }
+  }, [posts]);
 
   useEffect(() => {
     fetchAllPosts();
   }, []);
+
+
+
+
+
+
+
+
+
 
   /////////////////////////// HANDLE POST REPORT //////////////////////////
 
@@ -75,30 +91,41 @@ function Posts() {
     setShowDropdown(showDropdown === postId ? null : postId);
   };
 
+
+
+
+
+
+
+
+
+
+
+
   /////////////// HANDLE FETCH POT ON SCROLL ///////////////////////////////
 
-  async function fetchPosts() {
+   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
-
       const getPosts = await userApi.getAllPosts(index);
       if (getPosts) {
         setLoading(false);
-
         setPosts((prevPosts) => [...prevPosts, ...getPosts.posts]);
         setHasMore(getPosts.posts.length > 0);
         console.log(posts);
       }
     } catch (error) {
       setLoading(false);
-
       console.log(error);
     }
-  }
+  }, [index, posts]);
 
-  const fetchPostOnScroll = () => {
+
+//////////// FETCH NEXT SET OF POST ON SCROLL ///////////////////////////
+
+ const fetchPostOnScroll = useCallback(() => {
     setIndex((prev) => prev + 1);
-  };
+  }, []);
 
   useEffect(() => {
     if (index > 0) {
@@ -108,11 +135,12 @@ function Posts() {
 
   //////////////////////// HANDLE USER LIKE POST //////////////////////////
 
-  async function likePost(postId: string, userId: string) {
+   const likePost = useCallback(async (postId: string, userId: string, authorId: string) => {
     try {
-      const likeResponse = await userApi.likePost(postId, userId);
-      if (likeResponse) {
+      const likeResponse = await userApi.likePost(postId, userId, authorId);
+      console.log('like', likeResponse);
 
+      if (likeResponse) {
         setPosts((prevPosts) =>
           prevPosts.map((post) => {
             if (post._id === postId) {
@@ -125,19 +153,59 @@ function Posts() {
             return post;
           })
         );
-
         console.log(posts);
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  }, [posts]);
+
+
+
+
+
+    //////////////////////// HANDLE USER UNLIKE POST //////////////////////////
+
+  const unLikePost = useCallback(async (postId: string, userId: string) => {
+    try {
+      const likeResponse = await userApi.unLikePost(postId, userId);
+      if (likeResponse) {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) => {
+            if (post._id === postId) {
+              const newLike: Likes = likeResponse.likes;
+              return {
+                ...post,
+                likes: { ...post.likes, ...newLike },
+              };
+            }
+            return post;
+          })
+        );
+        console.log(posts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [posts]);
+
+  const handleCopyLink = (postId: string) => {
+    const postUrl = `${window.location.origin}/${postId}`;
+    navigator.clipboard
+      .writeText(postUrl)
+      .then(() => {
+        alert("Post link copied to clipboard!");
+      })
+      .catch((error) => {
+        console.error("Failed to copy the link:", error);
+      });
+  };
 
   return (
     <div
       className={` mt-16 pt-1 lg:mt-0 ${
         isDarkMode ? "bg-black text-white" : ""
-      } col-span-full   overflow-scroll h-svh lg:col-start-2 lg:col-end-5`}
+      } col-span-full   overflow-auto h-svh lg:col-start-2 lg:col-end-5`}
       id="scrollableDiv"
     >
       <CreatePost fetchPost={fetchAllPosts} />
@@ -218,16 +286,33 @@ function Posts() {
                     isDarkMode ? "bg-black" : ""
                   } flex justify-around gap-8 p-4`}
                 >
-                  <div className="flex w-full gap-5">
+                  <div className="flex w-full gap-8">
                     <IoMdHeartEmpty
-                    className={post.likes.userId &&post.likes.userId.includes(currentUser._id)?'text-red-500':''}
+                      className={
+                        post.likes.userId &&
+                        post.likes.userId.includes(currentUser._id)
+                          ? `text-red-500`
+                          : `${isDarkMode ? "text-white" : "text-black"}`
+                      }
                       onClick={() => {
-                        likePost(post._id, currentUser._id);
+                        post.likes.userId &&
+                        post.likes.userId.length > 0 &&
+                        post.likes.userId.includes(currentUser._id)
+                          ? unLikePost(post._id, currentUser._id)
+                          : likePost(
+                              post._id,
+                              currentUser._id,
+                              post.postedUser._id
+                            );
                       }}
                       size={25}
                     />
                     <FaRegComment size={20} />
-                    <PiShareFatThin size={25} className="font-bold" />
+                    <PiShareFatThin
+                      onClick={() => handleCopyLink(post._id)}
+                      size={25}
+                      className="font-bold"
+                    />
                   </div>
 
                   <CiSaveDown2 size={27} className="font-bold" />

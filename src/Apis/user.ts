@@ -396,13 +396,16 @@ const userApi = {
 
   notifications: async () => {
     try {
-      console.log("called noti");
 
       const notificationsResponse = await axiosInstance.get(
         userEnpoints.NOTIFICATIONS
       );
-      return notificationsResponse.data;
-    } catch (error) {}
+      return notificationsResponse.data.notifications;
+    } catch (error) {
+
+      console.log(error);
+      
+    }
   },
   getFollowStatus: async (requesterId: String, recipitentId: string) => {
     try {
@@ -510,13 +513,26 @@ const userApi = {
     }
   },
 
-  likePost: async(postId:string,userId:string)=>{
+  likePost: async(postId:string,userId:string,authorId:string)=>{
 
     try {
       
-      const likePostResponse = await axiosInstance.put(userEnpoints.LIKE_POST+`/${postId}/${userId}`);
+      const likePostResponse = await axiosInstance.put(userEnpoints.LIKE_POST+`/${postId}/${userId}/${authorId}`);
 
       return likePostResponse.data;
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
+  },
+  unLikePost: async(postId:string,userId:string)=>{
+
+    try {
+      
+      const unlikeResponse = await axiosInstance.put(userEnpoints.UNLIKE_POST+`/${postId}/${userId}`);
+
+      return unlikeResponse.data;
     } catch (error) {
       
       console.log(error);

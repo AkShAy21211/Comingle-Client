@@ -110,7 +110,7 @@ export interface Follow {
   timestamp?: Date;
 }
 
-export interface NotificationsType {
+export interface FollowNotification {
   _id: string;
   userId: string;
   content: string;
@@ -130,6 +130,26 @@ export interface NotificationsType {
       };
     };
     status: string;
+    _id: string;
+  };
+  type: string;
+  isRead: boolean;
+  createdAt: Date;
+}
+export interface LikeNotfication {
+  _id: string;
+  userId: string;
+  content: string;
+  sourceId: {
+    createdAt:Date;
+    postId:string;
+    userId:[{
+      _id:string;
+      name:string;
+      profile:{
+        image:string;
+      }
+    }]
     _id: string;
   };
   type: string;

@@ -34,7 +34,7 @@ function People({ users }: PeopleProps) {
                 {
                   user?.profile?.image?  <img
                   src={user.profile.image}
-                  className="w-20  rounded-full object-cover mt-5"
+                  className="w-20 h-20 rounded-full object-cover mt-5"
                   alt={user.name}
                 />:<Avatar name={user.name} className="rounded-full mt-2" size="90"/>
                 }

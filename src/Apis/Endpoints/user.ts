@@ -20,6 +20,7 @@ const userEnpoints = {
     NEW_POST:'/user//new-post',
     GET_ALL_POSTS:'/user/posts/all',
     LIKE_POST:'/user/posts/like',
+    UNLIKE_POST:'/user/posts/unlike',
     LOGOUT:'/user/logout'
 
     
