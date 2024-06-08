@@ -9,12 +9,13 @@ import FormattedRelativeTime from "../../Utils/Time";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { useEffect, useState, useRef } from "react";
-import { Likes, PostsType } from '../../Interface/interface';
+import { Likes, PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import Avatar from "react-avatar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostSkeleton from "../Skleton/PostSkleton";
-import postModel from '../../../../backend/src/infrastructure/database/postModel';
+import postModel from "../../../../backend/src/infrastructure/database/postModel";
+import Like from "../../../../backend/src/domain/entities/like";
 
 function Posts() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -25,7 +26,7 @@ function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [likes, setLikes] = useState(null);
+  const [liked,setLike] = useState(false);
 
   //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
@@ -111,13 +112,22 @@ function Posts() {
     try {
       const likeResponse = await userApi.likePost(postId, userId);
       if (likeResponse) {
-        console.log(likeResponse);
 
-        setLikes(likeResponse.likes);
+        setPosts((prevPosts) =>
+          prevPosts.map((post) => {
+            if (post._id === postId) {
+              const newLike: Likes = likeResponse.likes;
+              return {
+                ...post,
+                likes: { ...post.likes, ...newLike },
+              };
+            }
+            return post;
+          })
+        );
 
-       const post = posts.find(post=>post._id === postId);
-
-=      }
+        console.log(posts);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -210,6 +220,7 @@ function Posts() {
                 >
                   <div className="flex w-full gap-5">
                     <IoMdHeartEmpty
+                    className={post.likes.userId &&post.likes.userId.includes(currentUser._id)?'text-red-500':''}
                       onClick={() => {
                         likePost(post._id, currentUser._id);
                       }}
@@ -223,7 +234,7 @@ function Posts() {
                 </div>
                 <div className="flex w-full px-4 gap-5">
                   <p className="text-xs">
-                    {post.likes.length ? post.likes.length : 0} likes
+                    {post.likes.userId ? post.likes.userId.length : 0} likes
                   </p>
                 </div>
               </div>

@@ -78,20 +78,15 @@ export interface Comment {
 }
 
 export interface Likes {
-  userId: any;
-  likes: [
-    {
-      _id: string;
-      userId: [string];
-      postId: string;
-      createdAt: Date;
-    }
-  ];
+  _id: string;
+  userId: [string];
+  postId: string;
+  createdAt: Date;
 }
 export interface PostsType {
   _id: string;
   comments: Comment[];
-  likes: Likes[];
+  likes: Likes;
   postedUser: {
     _id: string;
     name: string;
