@@ -3,6 +3,7 @@ import { Follow, User } from "../../Interface/interface";
 import Avatar from "react-avatar";
 import FollowButton from "../User/FollowButton";
 import { RootState } from "../../Redux/store";
+import { useNavigate } from "react-router-dom";
 
 type PeopleProps = {
   users: User[];
@@ -12,7 +13,7 @@ type PeopleProps = {
 function People({ users }: PeopleProps) {
 
     const currentUser = useSelector((state:RootState)=>state.user.user._id);
-
+    const navigate = useNavigate();
     
   return (
     <>
@@ -28,7 +29,8 @@ function People({ users }: PeopleProps) {
             return (
               <div
                 key={user._id}
-                className="w-full h-36 md:h-52 rounded-lg flex flex-col items-center"
+                className="w-full h-36 md:h-52 rounded-lg flex flex-col items-center cursor-pointer"
+                onClick={()=>navigate(`/profile/${user._id}`)}
               >
 
                 {

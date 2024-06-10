@@ -32,6 +32,14 @@ function Settings() {
       <ul className="h-auto  w-full  text-nowrap space-y-5  pl-10 lg:pl-0 text-md">
         <li className="lg:text-center">Change password</li>
       </ul>
+ <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
+       Subscription
+      </h1>
+      <ul className="h-auto     text-nowrap space-y-5  pl-10 lg:pl-0 text-md">
+        <li className="lg:text-center text-custom-gold font-bold">
+          <Link to={''}>Upgrade to premium</Link>
+        </li>
+      </ul>
 
       <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
         App seetings

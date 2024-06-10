@@ -21,6 +21,8 @@ const userEnpoints = {
     GET_ALL_POSTS:'/user/posts/all',
     LIKE_POST:'/user/posts/like',
     UNLIKE_POST:'/user/posts/unlike',
+    COMMENT:'/user/posts/comment',
+    CHECK_USERNAME:'/user/signup',
     LOGOUT:'/user/logout'
 
     

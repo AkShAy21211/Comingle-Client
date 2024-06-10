@@ -51,7 +51,7 @@ function LoginFrom() {
           <strong className="text-black lg:text-blue-800"> IN</strong>
         </h1>
         <form
-          className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-auto"
+          className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-96"
           onSubmit={handleSubmit(onSubmit)}
           noValidate
         >

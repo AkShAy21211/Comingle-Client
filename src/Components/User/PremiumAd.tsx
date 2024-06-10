@@ -10,7 +10,7 @@ function PremiumAd() {
       <ul className={`hidden xl:block text-nowrap lg:text-sm md:text-f-10 list-inside space-y-1  list-disc ${isDarkMode?'text-white':'text-gray-500'} `}>
         <li className='mt-3 '>Exclusive content</li>
         <li className=' mt-3 '>Verified Badge</li>
-        <li className=' mt-3 '>Networking</li>
+        <li className=' mt-3 '>Ads free experience</li>
       </ul>
       <button className={` ${isDarkMode?'bg-custom-gold  text-black':' bg-custom-gold hover:bg-yellow-400'} mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full  font-bold py-2 md:px-0 px-4 rounded-full xl:text-sm`}>
   Upgrade

@@ -5,6 +5,8 @@ import userApi from "../../Apis/user";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "@ant-design/react-slick";
+import { useSelector } from "react-redux";
+import { RootState } from '../../Redux/store';
 
 type CreatePostProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +27,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const imageRef = useRef<HTMLInputElement | null>(null);
+  const [posting,setPosting] = useState(false);
+  const isDarkMode = useSelector((state:RootState) => state.ui.isDarkMode);
 
   const handleOpenImageInput = () => {
     if (imageRef.current) {
@@ -42,7 +46,6 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
-console.log('called');
 
       if (images && images.length > 0) {
         images.forEach((image) => {
@@ -52,7 +55,7 @@ console.log('called');
       }
         formData.append("text", text);
         formData.append("type", "post");
-
+        setPosting(true);
     
         
         const newPost = await userApi.createNewPost(formData);
@@ -64,16 +67,18 @@ console.log('called');
           setImages([]);
           setText("");
           fetchPost && fetchPost();
+          setPosting(false)
         }
       
     } catch (error) {
+      setPosting(false)
       console.error("Error creating post:", error);
     }
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[80]">
-      <div className="rounded-xl shadow-2xl bg-gray-200 w-80 md:w-1/4 h-auto">
+    <div className={` fixed top-0 left-0 w-full h-full flex items-center justify-center z-[80]`}>
+      <div className={`rounded-xl shadow-2xl ${isDarkMode?'bg-neutral-950':"bg-gray-200"} w-80 md:w-1/4 h-auto`}>
         <div className="flex justify-end items-center py-3 px-4 dark:border-neutral-700">
           <IoCloseCircleSharp
             onClick={() => setOpenModal(false)}
@@ -85,7 +90,7 @@ console.log('called');
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full p-5 bg-gray-200 resize-none text-xl text-gray-900 focus:outline-none h-auto rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full ${isDarkMode?'bg-neutral-950 text-white':"bg-gray-200 text-black"}  p-5 bg-gray-200 resize-none text-xlfocus:outline-none h-auto rounded-lg focus:outline-none`}
             placeholder="Type something"
           ></textarea>
         </div>
@@ -125,7 +130,7 @@ console.log('called');
             type="button"
             className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700"
           >
-            Post
+            {posting?'Posting...':"Post"}
           </button>
         </div>
       </div>

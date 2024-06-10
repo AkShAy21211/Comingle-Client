@@ -2,7 +2,6 @@ import axiosInstance from "./axios";
 import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
-import { log } from "console";
 
 const userApi = {
   signup: async (formData: SignUpType) => {
@@ -36,7 +35,19 @@ const userApi = {
       console.log(error);
     }
   },
+checkUsername: async (username: string) => {
+    try {
+      const checkUsernameReponse = await axiosInstance.get(
+        userEnpoints.CHECK_USERNAME+`?username=${username}`,
+      );
 
+
+      return checkUsernameReponse.data;
+    } catch (error: any) {
+      
+      console.log(error);
+    }
+  },
   // User signup and send otp end
 
   verifyOtp: async (otp: Otp) => {
@@ -441,26 +452,7 @@ const userApi = {
     }
   },
 
-  logout: async () => {
-    try {
-      const logoutResponse = await axiosInstance.post(userEnpoints.LOGOUT);
-      if (logoutResponse.status) {
-        toast.success(logoutResponse.data.message, {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-        });
-
-        return logoutResponse;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
+ 
 
   createNewPost: async (data: FormData) => {
     try {
@@ -538,7 +530,54 @@ const userApi = {
       console.log(error);
       
     }
-  }
+  },
+
+
+  commentPost:async(comment:string,postId:string,userId:string)=>{
+
+    try {
+
+      const commetnResponse = await axiosInstance.put(userEnpoints.COMMENT+`/${postId}/${userId}`,{comment:comment})
+      
+      if(commetnResponse.data.status){
+        toast.success(commetnResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return commetnResponse.data.comment
+      }
+
+    } catch (error) {
+      console.log(error);
+      
+    }
+  },
+
+   logout: async () => {
+    try {
+      const logoutResponse = await axiosInstance.post(userEnpoints.LOGOUT);
+      if (logoutResponse.status) {
+        toast.success(logoutResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return logoutResponse;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 export default userApi;

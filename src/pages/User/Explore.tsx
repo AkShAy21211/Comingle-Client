@@ -4,9 +4,8 @@ import People from "../../Components/Common/People";
 import Posts from "../../Components/Common/Posts";
 import { User } from "../../Interface/interface";
 import userApi from "../../Apis/user";
-
-
-
+import { RootState } from "../../Redux/rootReducer";
+import { useSelector } from "react-redux";
 
 
 function Explore() {
@@ -16,6 +15,7 @@ function Explore() {
   const [allUsers, setAllUsers] = useState<User[] | []>([]);
   const [allPosts, setAllPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   //////////////////// HANDLE SHOW POSTS ///////////////////////////////
 
@@ -60,7 +60,9 @@ function Explore() {
   }
 
   return (
-    <div className=" h-full  col-span-full lg:col-span-3  ">
+    <div className={` h-full ${
+        isDarkMode ? "bg-black text-white" : ""
+      }  col-span-full lg:col-span-3  `}>
       <div className="   flex  md:flex   mt-20 px-5" id="top-search-bar">
         {/* SEARCH BAR FOR EXPLORE */}
 
@@ -107,7 +109,6 @@ function Explore() {
         </div>
       </div>
 
-      <div className="h-screen p-5 flex gap-16 mt-8 w-full justify-center">
         {isPeople && (
           <People
             users={allUsers}
@@ -115,7 +116,7 @@ function Explore() {
         )}
         {isPosts && <Posts allPosts={allPosts} />}
 
-      </div>
+  
     </div>
   );
 }

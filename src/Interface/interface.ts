@@ -1,6 +1,7 @@
 import { data } from "../Components/Admin/DashBoard/SectionThree";
 export interface SignUpType {
   name: string;
+  username:string;
   email: string;
   password: string;
   confirmpassword: string;
@@ -32,6 +33,7 @@ export interface CurrentUser {
 export interface User {
   _id: string;
   name: string;
+  username:string;
   email: string;
   phone: number;
   password?: string;
@@ -52,29 +54,14 @@ export interface User {
 }
 
 export interface Comment {
-  comments: [
-    {
-      _id: string;
-      postId: string;
-      comment: [
-        {
-          _id: string;
-          postId: string;
-          comment: [
-            {
-              _id: string;
-              comment: string;
-              userDetails: {
-                name: string;
-                image: string;
-              };
-            }
-          ];
-        }
-      ];
-      createdAt: Date;
-    }
-  ];
+
+    _id: string;
+    comment: string;
+    commenter: string;
+    commenterImage: string;
+
+    createdAt: Date;
+  
 }
 
 export interface Likes {
@@ -89,7 +76,7 @@ export interface PostsType {
   likes: Likes;
   postedUser: {
     _id: string;
-    name: string;
+    username: string;
     profile: {
       image: string;
     };
@@ -141,15 +128,17 @@ export interface LikeNotfication {
   userId: string;
   content: string;
   sourceId: {
-    createdAt:Date;
-    postId:string;
-    userId:[{
-      _id:string;
-      name:string;
-      profile:{
-        image:string;
+    createdAt: Date;
+    postId: string;
+    userId: [
+      {
+        _id: string;
+        name: string;
+        profile: {
+          image: string;
+        };
       }
-    }]
+    ];
     _id: string;
   };
   type: string;

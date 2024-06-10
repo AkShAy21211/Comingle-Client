@@ -14,8 +14,7 @@ import userApi from "../../Apis/user";
 import Avatar from "react-avatar";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostSkeleton from "../Skleton/PostSkleton";
-import postModel from "../../../../backend/src/infrastructure/database/postModel";
-import Like from "../../../../backend/src/domain/entities/like";
+import { IoMdSend } from "react-icons/io";
 
 function Posts() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -26,23 +25,24 @@ function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [liked, setLike] = useState(false);
+  const [showComment, setShowComment] = useState<string | null>(null);
+  const [visibleComments, setVisibleComments] = useState<{
+    [key: string]: number;
+  }>({});
 
-
-
-
-
-
-
+  const [newComment,setNewComment] = useState<string>('');
+  const [commetError, setCommentError] = useState<{postId:string,error:string}>({postId:'',error:''});
 
   //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
   const fetchAllPosts = useCallback(async () => {
     try {
+      
       setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
         setLoading(false);
+      console.log(getPosts);
 
         setPosts(getPosts.posts);
         setHasMore(getPosts.posts.length > 0);
@@ -58,15 +58,6 @@ function Posts() {
   useEffect(() => {
     fetchAllPosts();
   }, []);
-
-
-
-
-
-
-
-
-
 
   /////////////////////////// HANDLE POST REPORT //////////////////////////
 
@@ -91,20 +82,9 @@ function Posts() {
     setShowDropdown(showDropdown === postId ? null : postId);
   };
 
-
-
-
-
-
-
-
-
-
-
-
   /////////////// HANDLE FETCH POT ON SCROLL ///////////////////////////////
 
-   const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
       const getPosts = await userApi.getAllPosts(index);
@@ -120,10 +100,9 @@ function Posts() {
     }
   }, [index, posts]);
 
+  //////////// FETCH NEXT SET OF POST ON SCROLL ///////////////////////////
 
-//////////// FETCH NEXT SET OF POST ON SCROLL ///////////////////////////
-
- const fetchPostOnScroll = useCallback(() => {
+  const fetchPostOnScroll = useCallback(() => {
     setIndex((prev) => prev + 1);
   }, []);
 
@@ -135,59 +114,61 @@ function Posts() {
 
   //////////////////////// HANDLE USER LIKE POST //////////////////////////
 
-   const likePost = useCallback(async (postId: string, userId: string, authorId: string) => {
-    try {
-      const likeResponse = await userApi.likePost(postId, userId, authorId);
-      console.log('like', likeResponse);
+  const likePost = useCallback(
+    async (postId: string, userId: string, authorId: string) => {
+      try {
+        const likeResponse = await userApi.likePost(postId, userId, authorId);
+        console.log("like", likeResponse);
 
-      if (likeResponse) {
-        setPosts((prevPosts) =>
-          prevPosts.map((post) => {
-            if (post._id === postId) {
-              const newLike: Likes = likeResponse.likes;
-              return {
-                ...post,
-                likes: { ...post.likes, ...newLike },
-              };
-            }
-            return post;
-          })
-        );
-        console.log(posts);
+        if (likeResponse) {
+          setPosts((prevPosts) =>
+            prevPosts.map((post) => {
+              if (post._id === postId) {
+                const newLike: Likes = likeResponse.likes;
+                return {
+                  ...post,
+                  likes: { ...post.likes, ...newLike },
+                };
+              }
+              return post;
+            })
+          );
+          console.log(posts);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [posts]);
+    },
+    [posts]
+  );
 
+  //////////////////////// HANDLE USER UNLIKE POST //////////////////////////
 
-
-
-
-    //////////////////////// HANDLE USER UNLIKE POST //////////////////////////
-
-  const unLikePost = useCallback(async (postId: string, userId: string) => {
-    try {
-      const likeResponse = await userApi.unLikePost(postId, userId);
-      if (likeResponse) {
-        setPosts((prevPosts) =>
-          prevPosts.map((post) => {
-            if (post._id === postId) {
-              const newLike: Likes = likeResponse.likes;
-              return {
-                ...post,
-                likes: { ...post.likes, ...newLike },
-              };
-            }
-            return post;
-          })
-        );
-        console.log(posts);
+  const unLikePost = useCallback(
+    async (postId: string, userId: string) => {
+      try {
+        const likeResponse = await userApi.unLikePost(postId, userId);
+        if (likeResponse) {
+          setPosts((prevPosts) =>
+            prevPosts.map((post) => {
+              if (post._id === postId) {
+                const newLike: Likes = likeResponse.likes;
+                return {
+                  ...post,
+                  likes: { ...post.likes, ...newLike },
+                };
+              }
+              return post;
+            })
+          );
+          console.log(posts);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [posts]);
+    },
+    [posts]
+  );
 
   const handleCopyLink = (postId: string) => {
     const postUrl = `${window.location.origin}/${postId}`;
@@ -199,6 +180,61 @@ function Posts() {
       .catch((error) => {
         console.error("Failed to copy the link:", error);
       });
+  };
+
+  const handleCommentShow = async (postId: string) => {
+    setShowComment(showComment === postId ? null : postId);
+  };
+
+
+
+
+
+
+  // Function to handle "Show More" comments
+  const handleShowMoreComments = (postId: string) => {
+    setVisibleComments((prev) => ({
+      ...prev,
+      [postId]: (prev[postId] || 2) + 2,
+    }));
+  };
+
+
+
+
+
+  ///////////////// HANDLE NEW COMMETN BY USER TO POSTS ////////////////////
+
+  const handleCommentSubmit = async (postId: string,userId:string) => {
+
+    
+
+    if (!newComment.trim()){
+
+      setCommentError({postId:postId,error:"Enter a comment"})
+      return;
+    };
+    setCommentError({postId:'',error:""})
+
+    try {
+      const commentResponse = await userApi.commentPost(newComment,postId,userId);
+      if (commentResponse) {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) => {
+             if (post._id === postId) {
+              return {
+                ...post,
+                comments: [...post.comments, commentResponse],
+              };
+            }
+            return post;
+          })
+        );
+       setNewComment('')
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -216,15 +252,15 @@ function Posts() {
         loader={loading && <PostSkeleton />}
         endMessage={
           <div className="text-center py-4 text-xs text-gray-500 w-full  h-40">
-            <p> You have seen it all! </p>
-            <p>Stay tuned for more updates.</p>
+            {/* <p> You have seen it all! </p>
+            <p>Stay tuned for more updates.</p> */}
           </div>
         }
         scrollableTarget="scrollableDiv"
       >
         <div className="flex justify-center">
           <div className="w-full lg:w-3/5">
-            {posts.map((post) => (
+            {posts.length>0&&posts.map((post) => (
               <div
                 key={post._id}
                 className={`w-full ${
@@ -239,14 +275,14 @@ function Posts() {
                     />
                   ) : (
                     <Avatar
-                      name={post.postedUser.name}
+                      name={post.postedUser.username.slice(1)}
                       className="rounded-full me-4"
                       size="35"
                     />
                   )}
                   <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
                     <h3 className="text-base md:text-lg font-semibold">
-                      {post.postedUser.name.toLowerCase()}
+                      {post.postedUser.username}
                     </h3>
                     <p className="text-xs text-gray-500 mt-1 md:mt-0">
                       {FormattedRelativeTime(post.createdAt)}
@@ -259,7 +295,7 @@ function Posts() {
                       onClick={() => handleDropdownToggle(post._id)}
                     />
                     {showDropdown === post._id && (
-                      <div className="absolute mt-2 right-0 z-10 bg-gray-200 divide-y shadow-lg border divide-gray-100 rounded-lg w-44">
+                      <div className={`absolute mt-2 right-0 z-10  divide-y shadow-lg border ${isDarkMode?'bg-neutral-950':"bg-gray-200"}  rounded-lg w-32`}>
                         <ul className="py-2 text-sm">
                           <li>
                             <a href="#" className="block px-4 py-2">
@@ -286,7 +322,7 @@ function Posts() {
                     isDarkMode ? "bg-black" : ""
                   } flex justify-around gap-8 p-4`}
                 >
-                  <div className="flex w-full gap-8">
+                  <div className="flex w-full gap-10">
                     <IoMdHeartEmpty
                       className={
                         post.likes.userId &&
@@ -307,7 +343,10 @@ function Posts() {
                       }}
                       size={25}
                     />
-                    <FaRegComment size={20} />
+                    <FaRegComment
+                      size={20}
+                      onClick={() => handleCommentShow(post._id)}
+                    />
                     <PiShareFatThin
                       onClick={() => handleCopyLink(post._id)}
                       size={25}
@@ -321,7 +360,87 @@ function Posts() {
                   <p className="text-xs">
                     {post.likes.userId ? post.likes.userId.length : 0} likes
                   </p>
+                  <p className="text-xs">
+                    {post.comments[0]? post.comments.length : 0}{" "}
+                    comments
+                  </p>
                 </div>
+                {showComment === post._id && (
+                  <div
+                    className={`w-full ${
+                      isDarkMode ? "bg-black text-white" : ""
+                    } ${
+                      showComment ? "h-auto " : "h-full"
+                    } transition-all duration-500 ease-in-out flex flex-col`}
+                  >
+                    <div className="w-full px-4">
+                      <div className="mt-4">
+                        {post.comments &&
+                          post.comments[0].comment &&
+                          post.comments
+                            .slice(0, visibleComments[post._id] || 2)
+                            .map((comment, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center mb-2"
+                              >
+                                <Avatar
+                                  name={comment.commenter.slice(1)}
+                                  className="rounded-full me-4"
+                                  size="30"
+                                />
+                                <div className="flex flex-col break-words w-80 md:w-96">
+                                  <p className="text-sm font-semibold  text-wrap">
+                                    {comment.commenter}
+                                  </p>
+                                  <p className="text-xs">{comment.comment}</p>
+                                </div>
+                              </div>
+                            ))}
+                      </div>
+                      {post.comments.length >
+                        (visibleComments[post._id] || 2) && (
+                        <button
+                          className="text-xs text-blue-500 mt-2"
+                          onClick={() => handleShowMoreComments(post._id)}
+                        >
+                          Show more
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex justify-start p-4 gap-3">
+                      <input
+                        value={newComment}
+                        onChange={(e) =>
+                          setNewComment(e.target.value)
+                        }
+                        type="text"
+                        className={`${
+                          isDarkMode ? "bg-gray-950" : "bg-gray-200"
+                        } w-80 md:w-96 h-10 p-3 rounded-full`}
+                        placeholder="Add a comment..."
+                      />
+                      <span className="p-3">
+                        <IoMdSend
+                          onClick={() => handleCommentSubmit(post._id,currentUser._id)
+                          }
+                          size={23}
+                        />
+                      </span>
+                    </div>
+                    {commetError.error&& commetError.postId === post._id&&(
+                      <p className="text-red-500 text-sm px-4 -mt-2">
+                        {commetError.error}
+                      </p>
+                    )}
+                    <button
+                      className="text-xs text-blue-500 mt-2"
+                      onClick={() => setShowComment(null)}
+                    >
+                      hide
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
