@@ -52,7 +52,7 @@ function SideBar() {
       <div className="flex z-50 flex-col fixed items-center justify-center min-h-screen py-2">
        <div
   className={classNames(
-    "top-20 border-t left-0 w-64 shadow-white  backdrop-blur-sm bg-custom-blue/90 p-10 pl-20 text-white fixed h-full z-40 transition-transform",
+    "top-20 border-t left-0 w-64 shadow-white  backdrop-blur-lg bg-blue-800/30 p-10 pl-20 text-white fixed h-full z-40 transition-transform",
     {
       "transform translate-x-0": showSidebar,
       "transform -translate-x-full": !showSidebar,
@@ -60,32 +60,32 @@ function SideBar() {
   )}
 >
 
-          <ul className="space-y-10 mt-4 relative -space-x-10">
+          <ul className="space-y-10 mt-4   relative -space-x-10">
             <li></li>
-            <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white ">
-              <Link to="" className="flex">
+            <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
+              <Link to="/admin/dashboard" className="flex">
                 <MdOutlineDashboard size={30} />
               <p className="mx-4 m-1">DashBoard</p></Link>
             </li>
-            <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg  active:bg-white focus-within:text-custom-blue focus-within:bg-white">
+            <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
               <Link to="" className="flex">
                 <MdOutlinePeopleAlt size={30} />
                 <p className="mx-4 m-1">Users</p>
               </Link>
             </li>
-            <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
+            <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
               <Link to="" className="flex">
                 <GoFileMedia size={30} />
                 <p className="mx-4 m-1">Contents</p>
               </Link>
             </li>
-             <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
-              <Link to="" className="flex">
+            <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
+              <Link to="/admin/premium" className="flex">
                 <TbPremiumRights size={30} />
                 <p className="mx-4 m-1">Premium</p>
               </Link>
             </li>
-            <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
+            <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
               <Link to="" onClick={()=>{
                 dispatch(adminLogout())
                 persistor.purge()
