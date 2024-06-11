@@ -16,7 +16,11 @@ const userSlice = createSlice({
         userLogout: (state) => {
             state.user = null;
             localStorage.clear();
-        }
+        },
+         updateUser: (state,action) => {
+            state.user.isPremium = action.payload;
+
+        },
     }
 });
 

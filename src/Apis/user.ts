@@ -35,16 +35,14 @@ const userApi = {
       console.log(error);
     }
   },
-checkUsername: async (username: string) => {
+  checkUsername: async (username: string) => {
     try {
       const checkUsernameReponse = await axiosInstance.get(
-        userEnpoints.CHECK_USERNAME+`?username=${username}`,
+        userEnpoints.CHECK_USERNAME + `?username=${username}`
       );
-
 
       return checkUsernameReponse.data;
     } catch (error: any) {
-      
       console.log(error);
     }
   },
@@ -407,15 +405,12 @@ checkUsername: async (username: string) => {
 
   notifications: async () => {
     try {
-
       const notificationsResponse = await axiosInstance.get(
         userEnpoints.NOTIFICATIONS
       );
       return notificationsResponse.data.notifications;
     } catch (error) {
-
       console.log(error);
-      
     }
   },
   getFollowStatus: async (requesterId: String, recipitentId: string) => {
@@ -452,8 +447,6 @@ checkUsername: async (username: string) => {
     }
   },
 
- 
-
   createNewPost: async (data: FormData) => {
     try {
       const newPostResponse = await axiosInstance.post(
@@ -474,7 +467,6 @@ checkUsername: async (username: string) => {
 
         return newPostResponse;
       }
-  
     } catch (error: any) {
       toast.error(error.response.data.message, {
         position: "bottom-center",
@@ -489,57 +481,51 @@ checkUsername: async (username: string) => {
     }
   },
 
-  getAllPosts: async(page:number)=>{
-
+  getAllPosts: async (page: number) => {
     try {
-      
-      const postResponse  = await axiosInstance.get(userEnpoints.GET_ALL_POSTS+`?page=${page}`);
+      const postResponse = await axiosInstance.get(
+        userEnpoints.GET_ALL_POSTS + `?page=${page}`
+      );
 
-      if(postResponse.data.status){
-
-        return postResponse.data
+      if (postResponse.data.status) {
+        return postResponse.data;
       }
     } catch (error) {
       console.log(error);
-      
     }
   },
 
-  likePost: async(postId:string,userId:string,authorId:string)=>{
-
+  likePost: async (postId: string, userId: string, authorId: string) => {
     try {
-      
-      const likePostResponse = await axiosInstance.put(userEnpoints.LIKE_POST+`/${postId}/${userId}/${authorId}`);
+      const likePostResponse = await axiosInstance.put(
+        userEnpoints.LIKE_POST + `/${postId}/${userId}/${authorId}`
+      );
 
       return likePostResponse.data;
     } catch (error) {
-      
       console.log(error);
-      
     }
   },
-  unLikePost: async(postId:string,userId:string)=>{
-
+  unLikePost: async (postId: string, userId: string) => {
     try {
-      
-      const unlikeResponse = await axiosInstance.put(userEnpoints.UNLIKE_POST+`/${postId}/${userId}`);
+      const unlikeResponse = await axiosInstance.put(
+        userEnpoints.UNLIKE_POST + `/${postId}/${userId}`
+      );
 
       return unlikeResponse.data;
     } catch (error) {
-      
       console.log(error);
-      
     }
   },
 
-
-  commentPost:async(comment:string,postId:string,userId:string)=>{
-
+  commentPost: async (comment: string, postId: string, userId: string) => {
     try {
+      const commetnResponse = await axiosInstance.put(
+        userEnpoints.COMMENT + `/${postId}/${userId}`,
+        { comment: comment }
+      );
 
-      const commetnResponse = await axiosInstance.put(userEnpoints.COMMENT+`/${postId}/${userId}`,{comment:comment})
-      
-      if(commetnResponse.data.status){
+      if (commetnResponse.data.status) {
         toast.success(commetnResponse.data.message, {
           position: "bottom-center",
           autoClose: 3000,
@@ -549,16 +535,14 @@ checkUsername: async (username: string) => {
           theme: "light",
           transition: Bounce,
         });
-        return commetnResponse.data.comment
+        return commetnResponse.data.comment;
       }
-
     } catch (error) {
       console.log(error);
-      
     }
   },
 
-   logout: async () => {
+  logout: async () => {
     try {
       const logoutResponse = await axiosInstance.post(userEnpoints.LOGOUT);
       if (logoutResponse.status) {
@@ -574,6 +558,46 @@ checkUsername: async (username: string) => {
 
         return logoutResponse;
       }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getRazorpayKey: async () => {
+    try {
+      const keyResponse = await axiosInstance.get(userEnpoints.GET_KEY);
+      return keyResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  upgradeToPremium: async (amount: number) => {
+    try {
+      const orderResponse = await axiosInstance.post(
+        userEnpoints.UPGRADE_PREMIUM,
+        { amount: amount }
+      );
+
+      return orderResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  verifyPremiumOrder: async (
+    razorpay_payment_id: string,
+    razorpay_order_id: string,
+    razorpay_signature: string,
+    orderId:string,
+    amount:string,
+    product:string
+  ) => {
+    try {
+      const orderResponse = await axiosInstance.post(
+        userEnpoints.VERIFY_PREMIUM,
+        { razorpay_payment_id, razorpay_order_id, razorpay_signature,orderId,amount,product }
+      );
+
+      return orderResponse.data;
     } catch (error) {
       console.log(error);
     }

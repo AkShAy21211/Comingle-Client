@@ -23,6 +23,9 @@ const userEnpoints = {
     UNLIKE_POST:'/user/posts/unlike',
     COMMENT:'/user/posts/comment',
     CHECK_USERNAME:'/user/signup',
+    GET_KEY:'/user/rozarpay/get-key_id',
+    UPGRADE_PREMIUM:"/user/rozarpay/create-premium-order",
+    VERIFY_PREMIUM:"/user/rozarpay/premium-order/verify",
     LOGOUT:'/user/logout'
 
     

@@ -9,7 +9,6 @@ function Settings() {
   const [logoutModal, setLogoutModal] = useState(false);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
-  console.log(isDarkMode);
 
   const dispatch = useDispatch();
   return (
@@ -37,7 +36,7 @@ function Settings() {
       </h1>
       <ul className="h-auto     text-nowrap space-y-5  pl-10 lg:pl-0 text-md">
         <li className="lg:text-center text-custom-gold font-bold">
-          <Link to={''}>Upgrade to premium</Link>
+          <Link to={'/settings/subscription'}>Upgrade to premium</Link>
         </li>
       </ul>
 
