@@ -68,7 +68,7 @@ function SideBar() {
               <p className="mx-4 m-1">DashBoard</p></Link>
             </li>
             <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg  active:bg-white focus-within:text-custom-blue focus-within:bg-white">
-              <Link to="" className="flex">
+              <Link to="/admin/users" className="flex">
                 <MdOutlinePeopleAlt size={30} />
                 <p className="mx-4 m-1">Users</p>
               </Link>
