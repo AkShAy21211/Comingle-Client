@@ -67,8 +67,13 @@ function SideBar() {
                 <MdOutlineDashboard size={30} />
               <p className="mx-4 m-1">DashBoard</p></Link>
             </li>
+<<<<<<< HEAD:src/Components/Admin/Nav/SideBar.tsx
             <li className="hover:border bg-custom-blue hover:border-white border border-transparent   p-3 rounded-lg  ">
               <Link to="" className="flex">
+=======
+            <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg  active:bg-white focus-within:text-custom-blue focus-within:bg-white">
+              <Link to="/admin/users" className="flex">
+>>>>>>> AdminDash:src/Components/Admin/NavBar/SideBar.tsx
                 <MdOutlinePeopleAlt size={30} />
                 <p className="mx-4 m-1">Users</p>
               </Link>
