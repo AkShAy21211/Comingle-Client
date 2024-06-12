@@ -15,7 +15,7 @@ const userSlice = createSlice({
         },
         userLogout: (state) => {
             state.user = null;
-            localStorage.clear();
+            localStorage.removeItem('users');
         },
          updateUser: (state,action) => {
             state.user.isPremium = action.payload;

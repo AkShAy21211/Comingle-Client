@@ -2,7 +2,7 @@ import { Plans, SignInType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import adminEndPoints from "./Endpoints/admin";
-import axiosInstance from "./userAxios";
+import axiosInstance from "./adminAxios";
 
 const adminApi = {
   signin: async (adminData: SignInType) => {
@@ -73,6 +73,32 @@ const adminApi = {
       );
 
       return planResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+    getUsers: async () => {
+    try {
+      const userResponse = await axiosInstance.get(
+        adminEndPoints.GET_USERS,
+      );
+
+      return userResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+
+    blockOrUnblockUser: async (userId:string) => {
+    try {
+      const userResponse = await axiosInstance.patch(
+        adminEndPoints.BLOCK_UNBLOCK_USER+`/${userId}`,
+      );
+
+      return userResponse.data;
+      
     } catch (error) {
       console.log(error);
     }

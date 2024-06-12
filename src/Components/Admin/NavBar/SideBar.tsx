@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-import Header from "./Header";
+import Header from "../Nav/Header";
 import { MdOutlineDashboard } from "react-icons/md";
 import { MdOutlinePeopleAlt } from "react-icons/md";
 import { GoFileMedia } from "react-icons/go";
@@ -74,13 +74,13 @@ function SideBar() {
               </Link>
             </li>
             <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
-              <Link to="" className="flex">
+              <Link to="/admin/posts" className="flex">
                 <GoFileMedia size={30} />
                 <p className="mx-4 m-1">Contents</p>
               </Link>
             </li>
              <li className="hover:border hover:border-white border border-transparent  p-3 rounded-lg active:bg-white focus-within:text-custom-blue focus-within:bg-white">
-              <Link to="" className="flex">
+              <Link to="/admin/premium" className="flex">
                 <TbPremiumRights size={30} />
                 <p className="mx-4 m-1">Premium</p>
               </Link>

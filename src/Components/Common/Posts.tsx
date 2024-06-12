@@ -6,9 +6,11 @@ import People from "../Skleton/Posts";
 
 type PostProps = {
   allPosts: PostsType[];
+  getPostedUser?: (data: any) => void;
+  isAdminview?: boolean;
 };
 
-function Posts({ allPosts }: PostProps) {
+function Posts({ allPosts, getPostedUser, isAdminview }: PostProps) {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,12 @@ function Posts({ allPosts }: PostProps) {
       if (getPosts) {
         setPosts(getPosts.posts);
         setHasMore(getPosts.posts.length > 0);
+      }
+      console.log(getPosts);
+      const postedUsers = getPosts.posts.map((post: any) => post.postedUser);
+
+      if (getPostedUser) {
+        getPostedUser(postedUsers);
       }
       setLoading(false);
     } catch (error) {
@@ -52,7 +60,7 @@ function Posts({ allPosts }: PostProps) {
 
   // Fetch next set of posts on scroll
   const fetchPostOnScroll = useCallback(() => {
-    console.log('Fetching next set of posts...'); // Add logging
+    console.log("Fetching next set of posts..."); // Add logging
     setIndex((prev) => prev + 1);
   }, []);
 
@@ -68,7 +76,7 @@ function Posts({ allPosts }: PostProps) {
         dataLength={posts.length}
         next={fetchPostOnScroll}
         hasMore={hasMore}
-        loader={<People/>}
+        loader={<People />}
         endMessage={
           <div className="text-center py-4 text-xs text-gray-500 w-full h-40">
             <p>You have seen it all!</p>
@@ -79,12 +87,20 @@ function Posts({ allPosts }: PostProps) {
       >
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-min gap-5">
           {posts.map((post) => (
-            <img
-              key={post._id} // Ensure each element has a unique key
-              src={post.image[0] || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-              alt="Post"
-              className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
-            />
+            <div>
+              <img
+                key={post._id} // Ensure each element has a unique key
+                src={
+                  post.image[0] ||
+                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                }
+                alt="Post"
+                className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
+              />
+
+              {isAdminview && <div className="flex mt-5 justify-between p-2"><p>By: <b>{post.postedUser.username}</b> </p>
+              <button className="bg-red-600 px-3  text-white rounded-xl text-sm">Hide</button></div>}
+            </div>
           ))}
         </div>
       </InfiniteScroll>
