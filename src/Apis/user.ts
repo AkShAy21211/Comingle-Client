@@ -1,4 +1,4 @@
-import axiosInstance from "./axios";
+import axiosInstance from "./userAxios";
 import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";

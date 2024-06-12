@@ -145,3 +145,16 @@ export interface LikeNotfication {
   isRead: boolean;
   createdAt: Date;
 }
+
+
+
+//////////////////////////////////////////
+
+
+export interface Plans{
+
+  _id:string;
+  title:string;
+  benefits:string[];
+  amount:number;
+}

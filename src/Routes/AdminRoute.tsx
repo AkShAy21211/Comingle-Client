@@ -10,7 +10,7 @@ function AdminRoute() {
     <Routes>
       <Route path='/login' element={<IsLoggedOut><Login/></IsLoggedOut>}/>
       <Route path='/dashboard' element={<AuIsLoggedIn><Layout><DashBoard/></Layout></AuIsLoggedIn>}/>
-      <Route path='/premium' element={<AuIsLoggedIn><Layout><></></Layout></AuIsLoggedIn>}/>
+      <Route path='/premium' element={<AuIsLoggedIn><Layout><Premium></Premium></Layout></AuIsLoggedIn>}/>
     </Routes>
   )
 }

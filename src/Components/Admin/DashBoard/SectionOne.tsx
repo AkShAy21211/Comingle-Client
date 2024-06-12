@@ -1,24 +1,50 @@
 import React from 'react'
+import QuickViewBox from '../QuickViewBox';
+import { da } from 'date-fns/locale/da';
 
+
+const data = [
+  {
+    title:'users',
+    count:100,
+    background:'bg-custom-blue',
+    textColor:"text-white"
+  },
+   {
+    title:'Contents',
+    count:100,
+    background:'bg-white',
+    textColor:"text-black"
+
+
+  },
+   {
+    title:'Blocked Users',
+    count:100,
+    background:'bg-custom-blue',
+    textColor:"text-white"
+
+
+  },
+   {
+    title:'Premium Users',
+    count:100,
+    background:'bg-white',
+    textColor:"text-black"
+
+
+  }
+  
+]
 function SectionOne() {
   return (
-    <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start  w-full gap-10 space-y-8 lg:space-y-0 lg:pt-32  pt-32 h-auto lg:h-scrautoeen">
-        <div className="w-4/5 text-3xl  font-bold sm:w-3/4 md:w-1/2 lg:w-1/6 h-1/5 p-20 shadow-xl bg-custom-blue flex flex-col text-white gap-y-1 justify-center items-center rounded-xl">
-          100
-          <h2 className="text-xl font-light">Users</h2>
-        </div>
-        <div className="w-4/5 sm:w-3/4 md:w-1/2 lg:w-1/6 h-1/5 p-20 font-bold text-3xl bg-white shadow-xl border  border-gray-300 flex flex-col  justify-center items-center rounded-xl">
-          100
-        <h2 className="text-xl font-light">Contents</h2>
-        </div>
-        <div className="w-4/5 text-3xl  font-bold sm:w-3/4 md:w-1/2 lg:w-1/6 h-1/5 p-20 shadow-xl bg-custom-blue flex flex-col text-white gap-y-1 justify-center items-center rounded-xl">
-          100
-          <h2 className="text-xl font-light text-center text-nowrap">Blocked Users</h2>
-        </div>
-        <div className="w-4/5 sm:w-3/4 md:w-1/2 lg:w-1/6 h-1/5 p-20 font-bold text-3xl bg-white shadow-xl border  border-gray-300 flex flex-col  justify-center items-center rounded-xl">
-          100
-        <h2 className="text-xl font-light text-center text-nowrap">Premium Users</h2>
-        </div>
+    <div className="flex flex-col lg:flex-row  justify-center items-center lg:items-start  w-full gap-10 space-y-8 lg:space-y-0 lg:pt-32  pt-32 h-auto lg:h-scrautoeen">
+       
+       {
+        data.map(data=>(
+          <QuickViewBox textColor={data.textColor} background={data.background} title={data.title} count={data.count} />
+        ))
+       }
       </div>
   )
 }
