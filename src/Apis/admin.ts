@@ -103,6 +103,49 @@ const adminApi = {
       console.log(error);
     }
   },
+
+  getAllPosts: async (page:number) => {
+    try {
+      const postResponse = await axiosInstance.get(
+        adminEndPoints.GET_POSTS+`/${page}`,
+      );
+      return postResponse.data;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  },
+   hideUnhidePost: async (postId:string) => {
+    try {
+      const postResponse = await axiosInstance.patch(
+        adminEndPoints.HIDE_UNHIDE_POST+`/${postId}`,
+      );
+      if(postResponse.data.status){
+        toast.success(postResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return;
+      }
+      
+    } catch (error:any) {
+      toast.error(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+    }
+  },
 };
 
 export default adminApi;

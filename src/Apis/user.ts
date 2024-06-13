@@ -495,6 +495,30 @@ const userApi = {
     }
   },
 
+  reportPost: async (postId: string, reason: string) => {
+    try {
+      const repostResponse = await axiosInstance.post(
+        userEnpoints.REPORT_POST,
+        { postId, reason }
+      );
+
+      if (repostResponse.data.status) {
+        toast.success(repostResponse.data.message, {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   likePost: async (postId: string, userId: string, authorId: string) => {
     try {
       const likePostResponse = await axiosInstance.put(
@@ -587,14 +611,21 @@ const userApi = {
     razorpay_payment_id: string,
     razorpay_order_id: string,
     razorpay_signature: string,
-    orderId:string,
-    amount:string,
-    product:string
+    orderId: string,
+    amount: string,
+    product: string
   ) => {
     try {
       const orderResponse = await axiosInstance.post(
         userEnpoints.VERIFY_PREMIUM,
-        { razorpay_payment_id, razorpay_order_id, razorpay_signature,orderId,amount,product }
+        {
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_signature,
+          orderId,
+          amount,
+          product,
+        }
       );
 
       return orderResponse.data;

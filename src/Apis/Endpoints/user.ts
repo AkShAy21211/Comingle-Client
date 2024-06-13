@@ -26,6 +26,7 @@ const userEnpoints = {
     GET_KEY:'/user/rozarpay/get-key_id',
     UPGRADE_PREMIUM:"/user/rozarpay/create-premium-order",
     VERIFY_PREMIUM:"/user/rozarpay/premium-order/verify",
+    REPORT_POST:'/user/posts/report',
     LOGOUT:'/user/logout'
 
     

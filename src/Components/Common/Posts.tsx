@@ -1,16 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Dispatch, SetStateAction } from "react";
 import { PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import InfiniteScroll from "react-infinite-scroll-component";
 import People from "../Skleton/Posts";
 
-type PostProps = {
-  allPosts: PostsType[];
-  getPostedUser?: (data: any) => void;
-  isAdminview?: boolean;
-};
 
-function Posts({ allPosts, getPostedUser, isAdminview }: PostProps) {
+
+function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -28,9 +24,7 @@ function Posts({ allPosts, getPostedUser, isAdminview }: PostProps) {
       console.log(getPosts);
       const postedUsers = getPosts.posts.map((post: any) => post.postedUser);
 
-      if (getPostedUser) {
-        getPostedUser(postedUsers);
-      }
+     
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -50,6 +44,7 @@ function Posts({ allPosts, getPostedUser, isAdminview }: PostProps) {
       if (getPosts) {
         setPosts((prevPosts) => [...prevPosts, ...getPosts.posts]);
         setHasMore(getPosts.posts.length > 0);
+
       }
       setLoading(false);
     } catch (error) {
@@ -98,8 +93,7 @@ function Posts({ allPosts, getPostedUser, isAdminview }: PostProps) {
                 className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
               />
 
-              {isAdminview && <div className="flex mt-5 justify-between p-2"><p>By: <b>{post.postedUser.username}</b> </p>
-              <button className="bg-red-600 px-3  text-white rounded-xl text-sm">Hide</button></div>}
+            
             </div>
           ))}
         </div>

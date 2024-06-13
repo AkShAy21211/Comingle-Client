@@ -89,6 +89,12 @@ export interface PostsType {
   updatedAt: string;
 }
 
+export interface ReportType{
+
+  postId:string;
+  reason:string;
+
+}
 export interface Follow {
   _id: string;
   recipient: string;
