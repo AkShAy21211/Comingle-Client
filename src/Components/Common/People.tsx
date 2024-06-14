@@ -45,7 +45,7 @@ function People({ users,isAdminView }: PeopleProps) {
               <div
                 key={user._id}
                 className="w-full h-36 md:h-52 rounded-lg flex flex-col items-center cursor-pointer"
-                onClick={isAdminView?()=>handleViewUser(user._id):()=>navigate(`/profile/${user._id}`)}
+                onClick={isAdminView?()=>handleViewUser(user._id):()=>navigate(`/profile/${user.username}`)}
               >
 
                 {

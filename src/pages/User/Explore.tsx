@@ -114,7 +114,7 @@ function Explore() {
             users={allUsers}
           />
         )}
-        {isPosts && <Posts allPosts={allPosts} />}
+        {isPosts && <Posts />}
 
   
     </div>

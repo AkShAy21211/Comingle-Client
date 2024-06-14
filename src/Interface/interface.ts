@@ -1,7 +1,7 @@
 import { data } from "../Components/Admin/DashBoard/SectionThree";
 export interface SignUpType {
   name: string;
-  username:string;
+  username: string;
   email: string;
   password: string;
   confirmpassword: string;
@@ -30,38 +30,37 @@ export interface CurrentUser {
   token: string;
 }
 
+export interface Profile {
+  image?: string;
+  background?: string;
+  bio: string;
+  age: number;
+  country: string;
+  gender: string;
+  isPremium?: boolean;
+  followers?: string[];
+  following?: string[];
+  posts?: number;
+}
 export interface User {
   _id: string;
   name: string;
-  username:string;
+  username: string;
   email: string;
   phone: number;
   password?: string;
   isVerified?: boolean;
   isBlocked?: boolean;
-  profile: {
-    image?: string;
-    background?: string;
-    bio: string;
-    age: number;
-    country: string;
-    gender: string;
-    isPremium?: boolean;
-    followers?: string[];
-    following?: string[];
-    posts?: number;
-  };
+  profile: Profile;
 }
 
 export interface Comment {
+  _id: string;
+  comment: string;
+  commenter: string;
+  commenterImage: string;
 
-    _id: string;
-    comment: string;
-    commenter: string;
-    commenterImage: string;
-
-    createdAt: Date;
-  
+  createdAt: Date;
 }
 
 export interface Likes {
@@ -89,11 +88,9 @@ export interface PostsType {
   updatedAt: string;
 }
 
-export interface ReportType{
-
-  postId:string;
-  reason:string;
-
+export interface ReportType {
+  postId: string;
+  reason: string;
 }
 export interface Follow {
   _id: string;
@@ -152,15 +149,65 @@ export interface LikeNotfication {
   createdAt: Date;
 }
 
-
-
 //////////////////////////////////////////
 
+export interface Plans {
+  _id: string;
+  title: string;
+  benefits: string[];
+  amount: number;
+}
 
-export interface Plans{
+export interface ChatType {
+  _id: string;
+  chatName: string;
+  isGroupChat: boolean;
+  participants: User[];
+  createdAt: string;
+  latestMessage: {
+    _id: string;
+    chat: string;
+    content: string;
+    sender: {
+      email: string;
+      username: string;
+      _id: string;
+    };
+    updatedAt: Date;
+  };
+  updatedAt: string;
+  __v: number;
+}
 
-  _id:string;
-  title:string;
-  benefits:string[];
-  amount:number;
+export interface Sender {
+  _id: string;
+  name: string;
+  username: string;
+  email: string;
+  isVerified: boolean;
+  isBlocked: boolean;
+  profile: {
+    image:string;
+    bio: string;
+    country: string;
+    gender: string;
+    isPremium: boolean;
+    followers: any[];
+    following: any[]; 
+    posts: any[]; 
+  };
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+
+export interface Message {
+  _id: string;
+  sender: Sender;
+  content: string;
+  chat: ChatType;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }

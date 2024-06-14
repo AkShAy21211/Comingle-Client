@@ -27,6 +27,11 @@ const userEnpoints = {
     UPGRADE_PREMIUM:"/user/rozarpay/create-premium-order",
     VERIFY_PREMIUM:"/user/rozarpay/premium-order/verify",
     REPORT_POST:'/user/posts/report',
+    FETCH_ALL_CHAT:'/user/chat/fetch-all',
+    ACCESS_CHAT:'/user/chat/access',
+    FETCH_ALL_MESSAGES:'/user/chat',
+    SEND_NEW_MESSAGE:"/user/chat/new-message",
+    OTHER_USER_PROFILE:'/user/profile',
     LOGOUT:'/user/logout'
 
     

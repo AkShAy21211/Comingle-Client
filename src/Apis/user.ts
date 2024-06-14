@@ -149,7 +149,16 @@ const userApi = {
       }
     }
   },
+ getOtherUserProfile: async (  username:string ) => {
+    try {
+      const userReponse = await axiosInstance.get(userEnpoints.OTHER_USER_PROFILE+`/${username}`);
 
+      return userReponse.data;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  },
   profile: async () => {
     try {
       console.log("calling suer");
@@ -599,7 +608,7 @@ const userApi = {
     try {
       const orderResponse = await axiosInstance.post(
         userEnpoints.UPGRADE_PREMIUM,
-        { amount: amount }
+        { amount }
       );
 
       return orderResponse.data;
@@ -612,7 +621,7 @@ const userApi = {
     razorpay_order_id: string,
     razorpay_signature: string,
     orderId: string,
-    amount: string,
+    amount: number,
     product: string
   ) => {
     try {
@@ -629,6 +638,48 @@ const userApi = {
       );
 
       return orderResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  fetchAllChats: async () => {
+    try {
+      const chatsReponse = await axiosInstance.get(userEnpoints.FETCH_ALL_CHAT);
+
+      return chatsReponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  accessChat: async (participantId:string) => {
+    try {
+      const chatsReponse = await axiosInstance.post(userEnpoints.ACCESS_CHAT,{participantId});
+
+      return chatsReponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+    fetchAllMessages: async (chatId:string) => {
+    try {
+      const chatsReponse = await axiosInstance.get(userEnpoints.FETCH_ALL_MESSAGES+`/${chatId}`);
+
+      return chatsReponse.data;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+    sendNewMessage: async (  chatId:string, message:string ) => {
+    try {
+      const chatsReponse = await axiosInstance.post(userEnpoints.SEND_NEW_MESSAGE,{chatId,message});
+
+      return chatsReponse.data;
+      
     } catch (error) {
       console.log(error);
     }

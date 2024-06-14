@@ -16,73 +16,75 @@ type PremiumProp = {
 function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [Razorpay] = useRazorpay();
-  const [orderDetails, setOrderDetails] = useState({
-    orderId: "",
-    currency: "",
-    amount: "",
-  });
+
   const handlePremium = async (amount: number) => {
     try {
       const { key } = await userApi.getRazorpayKey();
 
       const { order } = await userApi.upgradeToPremium(amount);
-      console.log(order);
 
-      if (order) {
-        setOrderDetails({
-          orderId: order.id,
-          currency: order.currency,
-          amount: order.amount,
-        });
+      const options: any = {
+        key: key, // Enter the Key ID generated from the Dashboard
+        amount: order.amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        currency: "INR",
+        name: "Commingle",
+        description: "Test Transaction",
+        image: "https://example.com/your_logo",
+        order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        handler: function (response: any) {
+          console.log(response);
+          
+          handlePaymentVerification(
+            response.razorpay_payment_id,
+            response.razorpay_order_id,
+            response.razorpay_signature,
+            order.id,
+            amount,
+            "Premium"
+          );
+        },
+        notes: {
+          address: "Razorpay Corporate Office",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
 
-        console.log(key);
+      const rzp1 = new Razorpay(options);
+      rzp1.on("payment.failed", function (response: any) {
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+      });
 
-        const options: any = {
-          key: key, // Enter the Key ID generated from the Dashboard
-          amount: amount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-          currency: "INR",
-          name: "Commingle",
-          description: "Test Transaction",
-          image: "https://example.com/your_logo",
-          order_id: orderDetails.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-          handler: async function (response: any) {
-            
-            await userApi.verifyPremiumOrder(
-              response.razorpay_payment_id,
-              response.razorpay_order_id,
-              response.razorpay_signature,
-              order.id,
-              order.amount,
-              'Premium'
+      rzp1.open();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-            ).then(data=>{
-
-              console.log('fwijfwjofjneiouwfniuenwfiun',data);
-              
-            });
-          },
-          notes: {
-            address: "Razorpay Corporate Office",
-          },
-          theme: {
-            color: "#3399cc",
-          },
-        };
-        console.log(options);
-
-        const rzp1 = new Razorpay(options);
-        rzp1.on("payment.failed", function (response: any) {
-          alert(response.error.code);
-          alert(response.error.description);
-          alert(response.error.source);
-          alert(response.error.step);
-          alert(response.error.reason);
-          alert(response.error.metadata.order_id);
-          alert(response.error.metadata.payment_id);
-        });
-
-        rzp1.open();
-      }
+  const handlePaymentVerification = async (
+    razorpay_payment_id: string,
+    razorpay_order_id: string,
+    razorpay_signature: string,
+    orderId: string,
+    amount: number,
+    product: string
+  ) => {
+    try {
+      await userApi.verifyPremiumOrder(
+        razorpay_payment_id,
+        razorpay_order_id,
+        razorpay_signature,
+        orderId,
+        amount,
+        product
+      );
     } catch (error) {
       console.log(error);
     }

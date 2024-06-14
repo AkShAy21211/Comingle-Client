@@ -16,6 +16,7 @@ import Explore from '../Pages/User/Explore';
 import OtherUserProfile from '../Pages/User/OtherUserProfile';
 import Notifications from '../Pages/User/Notifications';
 import Subscription from '../Pages/User/Subscription';
+import Chat from '../Pages/User/Chat';
 
 
 function UserRoute() {
@@ -40,7 +41,7 @@ function UserRoute() {
     <Route path='/profile/:username' element={<IslogedIn><Layout><OtherUserProfile  /></Layout></IslogedIn>} />
     <Route path='/notifications' element={<IslogedIn><Layout><Notifications /></Layout></IslogedIn>} />
     <Route path='/settings/subscription' element={<IslogedIn><Layout><Subscription /></Layout></IslogedIn>} />
-
+    <Route path='/chats' element={<IslogedIn><Chat /></IslogedIn>} />
 
    </Routes>
   )

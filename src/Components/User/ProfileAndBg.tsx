@@ -4,7 +4,7 @@ import ProfileModal from "../Common/ProfileModal";
 import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import {User} from "../../Interface/interface";
+import { User } from '../../Interface/interface';
 import Avatar from 'react-avatar';
 
 
@@ -12,9 +12,13 @@ import Avatar from 'react-avatar';
 type ProfileProp={
 
   notOwnProfile?:boolean;
+  user?:User|null;
 }
 
-function ProfileAndBg({notOwnProfile}:ProfileProp) {
+function ProfileAndBg({notOwnProfile,user}:ProfileProp) {
+
+  console.log(user);
+  
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [showCoverModal, setShowCoverMdal] = useState(false);
   const [showDpModal, setShowDpMdal] = useState(false);
@@ -52,7 +56,7 @@ function ProfileAndBg({notOwnProfile}:ProfileProp) {
         />
        }
         <img
-          src={userData?.profile?.background}
+          src={notOwnProfile?user?.profile.background:userData?.profile?.background}
           className="object-cover h-52 lg:h-72 w-full "
           alt=""
         />
@@ -64,22 +68,22 @@ function ProfileAndBg({notOwnProfile}:ProfileProp) {
         className="float-end relative  top-24   right-0 lg:top-36 lg:mt-3  lg:right-0"
       />
     }
-      <div className={`relative object-cover  ${userData?.profile.image?'border shadow-lg':' border-none shadow-none'}  flex justify-center -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52`}>
+      <div className={`relative object-cover  ${notOwnProfile?user?.profile.image:userData?.profile.image?'border shadow-lg':' border-none shadow-none'}  flex justify-center -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52`}>
       {
         userData?.profile.image?  <img
           className={`h-full ${
             isDarkMode ? "bg-black backdrop:blur-lg" : "bg-white"
           } object-cover w-full rounded-full`}
-          src={userData?.profile?.image}
-        />:<Avatar className=" rounded-full" size="140" name={userData?.name} />
+          src={notOwnProfile?user?.profile.image:userData?.profile?.image}
+        />:<Avatar className=" rounded-full" size="140" name={notOwnProfile?user?.name:userData?.name} />
       }
   
       </div>
       <div className="relative w-auto  justify-start flex-col  lg:flex-row lg:justify-center mb-8 mt-10 lg:mt-1 ">
         <h2 className=" -mt-14 font-bold  text-center  ">
-          @{userData?.name.toLowerCase()}
+          {notOwnProfile?user?.username:userData?.username}
         </h2>
-        <p className="  font-light ">{userData?.profile.bio}</p>
+        <p className="  font-light ">{notOwnProfile?user?.profile.bio:userData?.profile.bio}</p>
            {
       notOwnProfile &&  <div className="w-96 flex gap-1 justify-center mb-5 mt-3">
         <button className="bg-custom-blue px-5 py-3 rounded-lg text-white ">Follow</button>
