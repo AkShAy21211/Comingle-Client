@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  selectedChat:null
+  selectedChat:null,
+  reciver:null
 };
 
 console.log(initialState);
@@ -15,11 +16,12 @@ const chatSlice = createSlice({
           
             console.log(action);
             
-            state.selectedChat = action.payload;
+            state.selectedChat = action.payload.chatId;
+            state.reciver = action.payload.reciver
         },
 
         removeSlectedChat:(state)=>{
-            state.selectedChat = null;;
+            state.selectedChat = null;
         }
       
     }

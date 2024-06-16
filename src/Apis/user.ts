@@ -391,7 +391,7 @@ const userApi = {
     try {
       const followRequest = await axiosInstance.post(
         userEnpoints.FOLLOW_REQUEST,
-        { recipientId: id }
+        { recipient: id }
       );
 
       if (followRequest.status) {
@@ -673,10 +673,9 @@ const userApi = {
       console.log(error);
     }
   },
-
-    sendNewMessage: async (  chatId:string, message:string ) => {
+    sendNewMessage: async (formData:FormData ) => {
     try {
-      const chatsReponse = await axiosInstance.post(userEnpoints.SEND_NEW_MESSAGE,{chatId,message});
+      const chatsReponse = await axiosInstance.post(userEnpoints.SEND_NEW_MESSAGE,formData);
 
       return chatsReponse.data;
       

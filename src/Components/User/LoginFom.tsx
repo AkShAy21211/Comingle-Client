@@ -7,6 +7,7 @@ import userApi from "../../Apis/user";
 import { useDispatch } from "react-redux";
 import { FcGoogle } from "react-icons/fc";
 import { userLogin } from "../../Redux/Slice/User/userSlice";
+import socket from "../../Apis/Endpoints/socket";
 function LoginFrom() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ function LoginFrom() {
     try {
       const signupRespnse = await userApi.signin(userData);
       if (signupRespnse?.status) {
+        socket.emit('login',signupRespnse.data.userData._id)
         dispatch(userLogin(signupRespnse.data.userData));
         setTimeout(() => {
           reset();

@@ -80,7 +80,7 @@ export interface PostsType {
       image: string;
     };
   };
-  image: string[];
+  image: {url:string,type:string}[];
   description: string;
   isHidden: boolean;
   timestamp: Date;
@@ -167,7 +167,7 @@ export interface ChatType {
   latestMessage: {
     _id: string;
     chat: string;
-    content: string;
+    message: string;
     sender: {
       email: string;
       username: string;
@@ -205,7 +205,8 @@ export interface Sender {
 export interface Message {
   _id: string;
   sender: Sender;
-  content: string;
+  message: string;
+  files:{url:string,type:string,_id:string}[];
   chat: ChatType;
   createdAt: string;
   updatedAt: string;

@@ -3,7 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 type ContentsProps = {
-  content: string[]; // Assuming each post has an array of image URLs
+  content: { url: string; type: string }[]; // Assuming each post has an array of image URLs
 };
 
 const Contents = ({ content }: ContentsProps) => {
@@ -17,19 +17,41 @@ const Contents = ({ content }: ContentsProps) => {
 
   return (
     <>
-    {
-      content.length>1?<div className="w-full h-full">
-      <Slider {...settings}>
-        {content.map((image: string, index: number) => (
-          <img src={image} alt={`Image ${index}`} className=" object-contain w-full h-full" />
-        ))}
-      </Slider>
-    </div>:<div className="w-full h-full">
-   
-          <img src={content[0]} alt={`Image`} className=" object-contain w-full h-full" />
-     
-    </div>
-    }
+      {content.length > 1 ? (
+        <div className="w-full h-full ">
+          <Slider {...settings}>
+            {content.map(
+              (content: { url: string; type: string }, index: number) =>
+                content.type === "image" ? (
+                  <img
+                    src={content.url}
+                    alt={`Image ${index}`}
+                    className=" object-cover w-full h-full"
+                  />
+                ) : (
+                    <video
+                    controls
+                    autoPlay
+                    src={content.url}
+                  ></video>
+                
+                )
+            )}
+          </Slider>
+        </div>
+      ) : (
+        <div className="w-full h-full">
+          {content[0].type === "image" ? (
+            <img
+              src={content[0].url}
+              alt={`Image`}
+              className=" object-cover w-full h-full"
+            />
+          ) : (
+            <video src={content[0].url} controls autoPlay></video>
+          )}
+        </div>
+      )}
     </>
   );
 };

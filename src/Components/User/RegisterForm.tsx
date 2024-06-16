@@ -5,11 +5,15 @@ import { SignUpType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
+import { GiConfirmed } from "react-icons/gi";
+
 import { ChangeEvent, useCallback, useState } from "react";
+import { Bounce, toast } from "react-toastify";
 function RegisterForm() {
   const [username, setUsername] = useState<string | null>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [validUsername, setValidUsername] = useState(false);
 
   const navigate = useNavigate();
   const {
@@ -40,31 +44,49 @@ function RegisterForm() {
       try {
         setLoading(true);
         setUsernameError(null);
-        const response = await userApi.checkUsername(usernamae.toLowerCase());
-
-        console.log(response);
+        const response = await userApi.checkUsername(
+          "@" + usernamae.toLowerCase()
+        );
 
         if (!response.status) {
           setUsernameError(response.message);
+          setValidUsername(false);
+        } else {
+          setValidUsername(true);
         }
         setLoading(false);
       } catch (err) {
+        setValidUsername(false);
+
         setUsernameError("");
       }
     }, 800),
-    [] // This ensures the debounce function is created only once
+    []
   );
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setUsername(value);
     checkUsername(value);
+
   };
 
   async function onSubmit(formData: SignUpType) {
-    try {
+    if (!validUsername) {
+      toast.warn("Please choose a diffrent username", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
 
-      formData.username = '@'+formData.username
+      });
+
+      return;
+    }
+    try {
       const response = await userApi.signup(formData);
 
       if (response?.data.status) {
@@ -77,6 +99,9 @@ function RegisterForm() {
       console.log(error);
     }
   }
+
+
+  
   return (
     <div className="w-full  flex  flex-col justify-center items-center  ">
       <div className=" space-y-2 md:space-y-2 w-full flex flex-col  items-center">
@@ -150,6 +175,11 @@ function RegisterForm() {
                   />
                 </svg>
                 <span className="sr-only">Loading...</span>
+              </div>
+            )}
+            {validUsername && (
+              <div role="status" className="float-end w">
+                <GiConfirmed size={20} color="green" />
               </div>
             )}
           </div>

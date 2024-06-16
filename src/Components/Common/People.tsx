@@ -1,12 +1,8 @@
-import { useSelector } from "react-redux";
-import { Follow, User } from "../../Interface/interface";
 import Avatar from "react-avatar";
-import FollowButton from "../User/FollowButton";
-import { RootState } from "../../Redux/store";
 import { useNavigate } from "react-router-dom";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import ViewUserModal from "../Admin/ViewUserModal";
-import adminApi from "../../Apis/admin";
+import { User } from "../../Interface/interface";
 
 type PeopleProps = {
   users: User[];
@@ -16,7 +12,6 @@ type PeopleProps = {
 
 function People({ users,isAdminView }: PeopleProps) {
     const [showUserModal,setShowUserModal] = useState(false);
-    const currentUser = useSelector((state:RootState)=>state.user.user._id);
     const [user,setUser] = useState<User|null>(null)
     const navigate = useNavigate();
 
@@ -49,14 +44,14 @@ function People({ users,isAdminView }: PeopleProps) {
               >
 
                 {
-                  user?.profile?.image?  <img
+                  user?.profile.image?  <img
                   src={user.profile.image}
                   className={`${isAdminView?'w-36 h-36':'w-20 h-20'} rounded-full object-cover mt-5`}
                   alt={user.name}
                 />:<Avatar name={user.name} className="rounded-full mt-2" size={isAdminView?'150':'90'}/>
                 }
               
-                <h6 className="mt-3 text-center">{'@'+user.name.toLowerCase()}</h6>
+                <h6 className="mt-3 text-center">{user.username.toLowerCase()}</h6>
                
                 
                {/* <FollowButton recipientId={user._id} requesterId={currentUser}/> */}

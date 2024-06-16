@@ -213,6 +213,9 @@ function Posts() {
         userId
       );
       if (commentResponse) {
+        console.log(commentResponse);
+      console.log(posts);
+      
         setPosts((prevPosts) =>
           prevPosts.map((post) => {
             if (post._id === postId) {
@@ -412,7 +415,7 @@ function Posts() {
                                   className="flex items-center mb-2"
                                 >
                                   <Avatar
-                                    name={comment.commenter.slice(2)}
+                                    name={comment.commenter.slice(0)}
                                     className="rounded-full me-4"
                                     size="30"
                                   />

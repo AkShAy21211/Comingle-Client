@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { removeSlectedChat } from "../../Redux/Slice/User/chatSlice";
@@ -10,28 +16,25 @@ import { PiSpinnerBold } from "react-icons/pi";
 import { IoSend } from "react-icons/io5";
 import Avatar from "react-avatar";
 import socket from "../../Apis/Endpoints/socket";
+import { CgAttachment } from "react-icons/cg";
 
-function SingleChat() {
+type SingleChatProp = {
+  fetchAgain: boolean;
+  setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [receiver, setReceiver] = useState<Sender | null>(null);
   const selectedChat = useSelector(
     (state: RootState) => state.chat.selectedChat
   );
+  const receiver: any = useSelector((state: RootState) => state.chat.reciver);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const [loading, setLoading] = useState(false);
-
-
-
-
-
-
-
-
-
-
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
   const fetchMessages = async () => {
@@ -46,75 +49,152 @@ function SingleChat() {
           (msg: Message) => msg.sender._id !== currentUser._id
         );
 
-        if (findReciver) {
-          setReceiver(findReciver.sender);
-        }
-              setLoading(false);
+        console.log(response);
 
+        if (findReciver) {
+        }
+        socket.emit("Chat", selectedChat);
+        setLoading(false);
       }
     } catch (error) {
-                    setLoading(false);
+      setLoading(false);
 
       console.error(error);
     }
   };
 
-
-
-
-
-
-
-
-  
   useEffect(() => {
     fetchMessages();
-  }, [selectedChat]);
-
-
-
-
-
+  }, []);
 
   /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
-
-
-
 
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
   };
 
-
-
-
   const handleSendMessage = async () => {
-    if (!newMessage || !selectedChat) return;
+    if (!selectedChat) return;
 
-    try {
-      setLoading(true);
-      const response = await userApi.sendNewMessage(selectedChat, newMessage);
-      if (response) {
-        setNewMessage("");
-        setAllMessages([...allMessages, response.message]);
+    if (newMessage.trim() || selectedFiles) {
+      try {
+        setLoading(true);
+        setFetchAgain(fetchAgain);
+        setLoading(true);
+        const formData = new FormData();
+
+        if (selectedFiles) {
+          selectedFiles.forEach((file) => {
+            formData.append("files", file);
+          });
+        }
+
+        if (newMessage) {
+          formData.append("message", newMessage);
+        }
+
+        formData.append("chatId", selectedChat);
+
+        const response = await userApi.sendNewMessage(formData);
+        if (response) {
+          setNewMessage("");
+          setAllMessages([...allMessages, response.message]);
+          socket.emit("message", response.message);
+          setSelectedFiles([]);
+          setFetchAgain(true);
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    socket.on("message recived", (newMessageRecived) => {
+      if (!selectedChat || selectedChat !== newMessageRecived.chat._id) {
+        return;
+      } else {
+        setAllMessages([...allMessages, newMessageRecived]);
+        setFetchAgain(true);
+      }
+    });
+  });
 
+  const previewFile = (file: File, i: number) => {
+    const fileType = file.type.split("/")[0];
+    const fileExtension = file.name.split(".");
+    const extension = fileExtension.pop()?.toLowerCase();
 
+    console.log(extension);
 
-useEffect(()=>{
+    if (fileType === "image") {
+      return (
+        <div key={i} className="w-20 h-20 flex-shrink-0">
+          <img
+            src={URL.createObjectURL(file)}
+            className="object-cover border-custom-blue/90 border-4 w-full h-full"
+            alt=""
+          />
+        </div>
+      );
+    } else if (fileType === "video") {
+      return (
+        <div key={i} className="w-20 h-20 flex-shrink-0">
+          <video
+            src={URL.createObjectURL(file)}
+            muted
+            className="object-cover border-custom-blue/90 border-4 w-full h-full"
+            controls
+          />
+        </div>
+      );
+    } else if (fileType === "audio") {
+      return (
+        <div key={i} className="w-20 h-20 flex-shrink-0">
+          <audio
+            src={URL.createObjectURL(file)}
+            className="object-cover border-custom-blue/90 border-4 w-full h-full"
+            controls
+          />
+        </div>
+      );
+    } else if (extension === "pdf") {
+      return (
+        <div key={i} className="w-20 h-20 flex-shrink-0">
+          <iframe
+            src={URL.createObjectURL(file)}
+            className="border-custom-blue/90 border-4 w-full h-full"
+            title="PDF Preview"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={i}
+          className="w-20 h-20 flex-shrink-0 flex items-center justify-center border-custom-blue/90 border-4"
+        >
+          <span className="text-xs">Unsupported file</span>
+        </div>
+      );
+    }
+  };
 
-  socket.emit("setup",(currentUser))
+  const handleOpenFiles = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
-},[])
-
-
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const files = Array.from(event.target.files);
+      setSelectedFiles([...selectedFiles, ...files]);
+    }
+  };
 
   return (
     <div
@@ -154,6 +234,13 @@ useEffect(()=>{
           >
             <ScrollableChat messages={allMessages} />
           </div>
+
+          {selectedFiles && (
+            <div className=" h-fit w-fit  flex bg-slate-400 gap-1 overflow-auto overflow-x-scroll">
+              {selectedFiles.map((file, index) => previewFile(file, index))}
+            </div>
+          )}
+
           <div className="flex justify-center w-full items-center border-t-2 p-2">
             <input
               type="text"
@@ -162,28 +249,35 @@ useEffect(()=>{
               placeholder="Type your message..."
               className="flex-1 bg-gray-200 border rounded-lg py-2 px-4 mr-2 focus:outline-none focus:ring-2"
             />
-           
-           
-              <button
-                onClick={handleSendMessage}
-                className="text-white px-4 py-2  border-none  rounded-lg focus:outline-none "
-              >
-                <IoSend className="text-blue-600" size={25} />
-              </button>
-          
-          </div>
 
+            <button className="text-white px-4 py-2  border-none  rounded-lg focus:outline-none ">
+              <CgAttachment
+                onClick={handleOpenFiles}
+                className="text-blue-600"
+                size={20}
+              />
+            </button>
+
+            <button
+              onClick={handleSendMessage}
+              className="text-white px-4 py-2  border-none  rounded-lg focus:outline-none "
+            >
+              {loading?<PiSpinnerBold size={20} className="animate-spin text-blue-600"/>:<IoSend className="text-blue-600" size={20} />}
+            </button>
+          </div>
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            ref={fileInputRef}
+          />
         </>
-      ) 
-      : (
+      ) : (
         <div className="flex text-xl justify-center items-center h-[calc(100vh-192px)] mt-16">
           Select a chat to start messaging
         </div>
-
-        
       )}
-
-     
     </div>
   );
 }

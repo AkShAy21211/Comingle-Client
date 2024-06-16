@@ -86,7 +86,7 @@ function ProfileAndBg({notOwnProfile,user}:ProfileProp) {
         <p className="  font-light ">{notOwnProfile?user?.profile.bio:userData?.profile.bio}</p>
            {
       notOwnProfile &&  <div className="w-96 flex gap-1 justify-center mb-5 mt-3">
-        <button className="bg-custom-blue px-5 py-3 rounded-lg text-white ">Follow</button>
+        <button className="bg-custom-blue px-5 py-3 rounded-lg text-white " onClick={()=>{userApi.followRequest(user?._id as string)}}>Follow</button>
         <button className="bg-custom-blue px-5 py-3 rounded-lg text-white ">Message</button>
       </div>
      }
