@@ -1,22 +1,6 @@
 import React from 'react'
 import { Chart } from "react-google-charts";
 
- const data = [
-  [
-    "Element",
-    "Total",
-    { role: "style" },
-    {
-      sourceColumn: 0,
-      role: "annotation",
-      type: "string",
-      calc: "stringify",
-    },
-  ],
-  ["15-25", 18.94, "gold", null],
-  ["26-35", 10.49, "gold", null],
-  ["35+", 5.3, "gold", null],
-];
 
  const options = {
    height: 260,
@@ -53,7 +37,34 @@ import { Chart } from "react-google-charts";
     }
   },
 };
-function SectionTwo() {
+
+type SectionTwoPro={
+
+  ageRoup:{'<15':number,'15-25':number,'26-35':number,'35+':number};
+}
+
+function SectionTwo({ageRoup}:SectionTwoPro) {
+
+
+ const data = [
+  [
+    "Element",
+    "Total",
+    { role: "style" },
+    {
+      sourceColumn: 0,
+      role: "annotation",
+      type: "string",
+      calc: "stringify",
+    },
+  ],
+  ["<15", ageRoup['<15'], "gold", null],
+  ["15-25", ageRoup['15-25'], "gold", null],
+  ["25-35", ageRoup['26-35'], "gold", null],
+  ["35+",ageRoup['35+'], "gold", null],
+];
+
+
   return (
      <div className="mt-10  z-0 h-80 m-5   p-6 rounded-lg">
               <h2 className="text-2xl m-5 font-bold">User By Age</h2>

@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
 import userApi from "../../Apis/user";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { daysToWeeks } from "date-fns/fp/daysToWeeks";
+import { update } from "lodash";
+import { updateUser } from "../../Redux/Slice/User/userSlice";
+
 
 type ProfileModalProp = {
   showDpModal: boolean;
@@ -20,7 +22,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   onUpdate,
 }) => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-
+  const dispatch = useDispatch();
   const bgRef = useRef<HTMLInputElement | null>(null);
   const profileRef = useRef<HTMLInputElement | null>(null);
 
@@ -74,8 +76,9 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
       );
 
       if (fileUploadResponse?.status) {
-        onUpdate();
+        onUpdate();        
         type === "background" ? setShowCoverMdal(false) : setShowDpMdal(false);
+        dispatch(updateUser(fileUploadResponse.data.user.profile.image))
       }
     } catch (error) {
       console.log(error);

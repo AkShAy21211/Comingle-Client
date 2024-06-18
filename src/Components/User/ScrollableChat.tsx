@@ -14,6 +14,7 @@ type ScrollableChatPro = {
 
 const ScrollableChat = ({ messages }: ScrollableChatPro) => {
   const currentUser = useSelector((state: RootState) => state.user.user);
+  const isDarMode = useSelector((state:RootState)=>state.ui.isDarkMode);
 
   return (
     <ScrollableFeed>
@@ -90,7 +91,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                       }
                     )}
                   {message.message && message.message.trim() !== "" && (  // Check if message.message exists and is not empty
-                    <p className="text-sm bg-gray-300 p-3 rounded-lg">
+                    <p className={`text-sm ${isDarMode?'bg-custom-blue/30 text-white':"bg-gray-200"} p-3 rounded-lg`}>
                       {message.message}
                     </p>
                   )}
@@ -156,7 +157,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                       }
                     )}
                   {message.message && message.message.trim() !== "" && (  // Check if message.message exists and is not empty
-                    <p className="text-sm bg-gray-300 p-3 rounded-lg">
+                    <p className={`text-sm  ${isDarMode?'bg-gray-900 text-white':"bg-gray-200"} p-3 rounded-lg`}>
                       {message.message}
                     </p>
                   )}

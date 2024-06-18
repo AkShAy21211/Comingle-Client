@@ -1,62 +1,49 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "react-avatar";
-import InfiniteScroll from "react-infinite-scroll-component";
-import PostSkeleton from "../../Components/Skleton/PostSkleton";
-import Contents from "../../Components/User/Contets";
 import FormattedRelativeTime from "../../Utils/Time";
 import adminApi from "../../Apis/admin";
 import { PostsType, ReportType } from "../../Interface/interface";
+import { FaEye } from "react-icons/fa";
+import Slider from "react-slick";
+import ViewPostsModal from "../../Components/Admin/ViewPostModal";
 
 function Posts() {
   const [totalPosts, setTotalPosts] = useState(0);
-  const [index, setIndex] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<PostsType[]>([]);
   const [totalReports, setTotalReport] = useState<ReportType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [report, setReport] = useState<ReportType[]>([]);
-  const getPosts = useCallback(async () => {
-    try {
-      const response = await adminApi.getAllPosts(index);
-      if (response) {
-        console.log(response);
+  const [selectedPost, setSelectedPost] = useState<PostsType | null>(null);
 
-        setPosts((prevPosts) => [...prevPosts, ...response.posts]);
-        setHasMore(response.posts.length > 0);
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+  };
+
+  const getPosts = async () => {
+    try {
+      const response = await adminApi.getAllPosts(0);
+      if (response) {
+        setPosts(response.posts);
         setTotalPosts((prev) => prev + response.posts.length);
         setTotalReport(response.retports);
+        setReport(response.retports);
       }
     } catch (error) {
       console.error(error);
     }
-  }, [index]);
+  };
 
   useEffect(() => {
     getPosts();
-  }, [index, getPosts]);
-
-  const fetchPostOnScroll = () => {
-    setIndex((prev) => prev + 1);
-  };
+  }, []);
 
   const handleViewReport = (report: ReportType[]) => {
     setReport(report);
     setShowModal(true);
-  };
-
-
-  const handleTooglrPostStatus = async (postId: string) => {
-    try {
-      await adminApi.hideUnhidePost(postId);
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post._id === postId ? { ...post, isHidden: !post.isHidden } : post
-        )
-      );
-      
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -73,80 +60,184 @@ function Posts() {
         </div>
       </div>
 
-      <InfiniteScroll
-        dataLength={posts.length}
-        next={fetchPostOnScroll}
-        hasMore={hasMore}
-        loader={<></>}
-        endMessage={<></>}
-        scrollableTarget="scrollableDiv"
-      >
-        <div className="flex s justify-center">
-          <div className="w-full  lg:w-4/5">
-            <div className="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-              {posts.length > 0 &&
-                posts.map((post) => {
-                  const hasReports =
-                    totalReports &&
-                    totalReports.filter((report) => report.postId === post._id);
-                  return (
-                    <div
-                      key={post._id}
-                      className="w-full border border-custom-blue p-5 flex flex-col justify-between items-center mb-10 relative"
-                    >
-                      <div className="flex items-center mb-3 p-2 w-full">
-                        {post.postedUser.profile.image ? (
-                          <img
-                            className="w-10 h-8 mr-4 rounded-full"
-                            src={post.postedUser.profile.image}
-                            alt="User avatar"
-                          />
-                        ) : (
-                          <Avatar
-                            name={post.postedUser.username.slice(1)}
-                            className="rounded-full me-4"
-                            size="35"
-                          />
-                        )}
-                        <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
-                          <h3 className="text-base md:text-lg font-semibold">
-                            {post.postedUser.username}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1 md:mt-0">
-                            {FormattedRelativeTime(post.createdAt)}
-                          </p>
-                        </div>
-                      </div>
+      <div className="flex flex-col lg:px-20 pt-20">
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="flex justify-between w-full px-2 ">
+              <input
+                type="text"
+                placeholder="Search......"
+                className="placeholder:text-sm p-2 h-8 border border-custom-blue w-72 rounded-lg mb-5"
+              />
+              <p className="bg-custom-teal shadow-xl flex justify-center items-center text-sm p-2 text-white rounded-lg mb-5">
+                Total {posts.length}
+              </p>
+            </div>
+            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg h-[75vh]">
+              <div className="overflow-y-auto h-full">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Posts
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        By
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Reports
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Status
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase"
+                      >
+                        {/* Action */}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {posts.map((post) => {
+                      const postReport = report.filter(
+                        (r) => r.postId === post._id
+                      );
 
-                      {post.image?.length > 0 ? (
-                        <Contents content={post.image} />
-                      ) : (
-                        <p className="font-bold">No image</p>
-                      )}
-                      <div className="w-full flex items-center mt-2 p-2 md:p-0 sm:text-sm font-light md:font-normal break-words">
-                        <p className="text-wrap w-full">{post.description}</p>
-                      </div>
-
-                      <div className="flex gap-5">
-                        <button  onClick={()=>handleTooglrPostStatus(post._id)} className={` ${post.isHidden?'bg-green-600':"bg-red-600"} px-2 py-1 text-white rounded-lg text-sm`}>
-                          {post.isHidden?'UNHIDE':"HIDE"}
-                        </button>
-                        {hasReports.length > 0 && (
-                          <button
-                            onClick={() => handleViewReport(hasReports)}
-                            className="bg-custom-blue px-2 py-1  text-white rounded-lg text-sm"
+                      return (
+                        <tr className="hover:bg-gray-200" key={post._id}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-10 w-10">
+                                {post.image.length > 1 ? (
+                                  <div className="w-full h-full">
+                                    <Slider {...settings}>
+                                      {post.image.map((content, index) => (
+                                        <div key={index}>
+                                          {content.type === "image" ? (
+                                            <>
+                                              <img
+                                                src={content.url}
+                                                alt={`Image ${index}`}
+                                                className="object-cover w-full h-full"
+                                              />
+                                              <span className="text-xs">
+                                                {content.type}
+                                              </span>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <video
+                                                controls
+                                                autoPlay
+                                                src={content.url}
+                                              ></video>
+                                              <span className="text-xs">
+                                                {content.type}
+                                              </span>
+                                            </>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </Slider>
+                                  </div>
+                                ) : (
+                                  <div className="w-full h-full">
+                                    {post.image[0].type === "image" ? (
+                                      <>
+                                        <img
+                                          src={post.image[0].url}
+                                          alt="Image"
+                                          className="object-cover w-full h-full"
+                                        />
+                                        <span className="text-xs">
+                                          {post.image[0].type}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <video
+                                          src={post.image[0].url}
+                                          controls
+                                          autoPlay
+                                        ></video>
+                                        <span className="text-xs">
+                                          {post.image[0].type}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                              {post.postedUser.username}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                              <FaEye
+                                size={20}
+                                onClick={() => handleViewReport(postReport)}
+                                className="text-custom-blue cursor-pointer"
+                              />
+                              <small
+                                className={`mx-2 ${
+                                  postReport.length
+                                    ? "text-red-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                {postReport.length}
+                              </small>
+                            </span>
+                          </td>
+                          <td
+                            className={`py-4 ${
+                              post.isHidden
+                                ? "text-red-600"
+                                : "text-green-600"
+                            } whitespace-nowrap text-sm flex justify-center text-center font-medium`}
                           >
-                            View Reports
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                            {post.isHidden ? "Hidden" : "Active"}
+                          </td>
+                          <td
+                            className={`py-4 ${
+                              post.isHidden
+                                ? "text-red-600"
+                                : "text-green-600"
+                            } whitespace-nowrap text-sm text-end font-medium`}
+                          >
+                            <FaEye
+                              onClick={() => setSelectedPost(post)}
+                              size={20}
+                              className="float-end mx-10 text-custom-blue hover:animate-pulse cursor-pointer"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </InfiniteScroll>
+      </div>
       {showModal && (
         <div
           id="modal"
@@ -154,15 +245,13 @@ function Posts() {
           className="fixed inset-0 z-50 flex items-center justify-center w-full h-full"
         >
           <div className="relative p-4 w-full max-w-md max-h-full">
-            {/* Modal content */}
-            <div className="relative pb-5 rounded-lg shadow  text-white bg-custom-blue h-auto">
-              <div className="flex items-center justify-between p-4 md:p-5 rounded-t ">
+            <div className="relative pb-5 rounded-lg shadow bg-gray-200 h-auto">
+              <div className="flex items-center justify-between p-4 md:p-5 rounded-t">
                 <h2 className="pt-5 text-xl">Post Reports</h2>
-
                 <button
                   onClick={() => setShowModal(false)}
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center "
+                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
                   data-modal-hide="authentication-modal"
                 >
                   <svg
@@ -182,18 +271,27 @@ function Posts() {
                   </svg>
                 </button>
               </div>
-
               <div className="p-4 md:p-5">
-                {report.length > 0 &&
-                  report.map((report) => (
-                    <ul className="list-disc p-3">
+                {report.length ? (
+                  report.map((report,i) => (
+                    <ul className="list-disc p-3" key={i}>
                       <li className="border p-3">{report.reason}</li>
                     </ul>
-                  ))}
+                  ))
+                ) : (
+                  <p>No reports yet</p>
+                )}
               </div>
             </div>
           </div>
         </div>
+      )}
+      {selectedPost && (
+        <ViewPostsModal
+          setPosts={setPosts}
+          setSelectedPost={setSelectedPost}
+          selectedPost={selectedPost}
+        />
       )}
     </>
   );

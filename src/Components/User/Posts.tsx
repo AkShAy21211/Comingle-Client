@@ -58,10 +58,13 @@ function Posts() {
     }
   }, [posts]);
 
+
+
   useEffect(() => {
     fetchAllPosts();
   }, []);
 
+  
   /////////////////////////// HANDLE POST REPORT //////////////////////////
 
   useEffect(() => {

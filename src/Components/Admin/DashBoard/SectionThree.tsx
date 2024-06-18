@@ -1,12 +1,6 @@
 import React from "react";
 import { Chart } from "react-google-charts";
 
-export const data = [
-  ["Element", "Density", { role: "style" }],
-  ["Gold", 19.3, "gold"],
-  ["Green", 8.94, "green"],
-  ["Blue", 10.49, "blue"], 
-];
 
 const options = {
   height: 360,
@@ -42,18 +36,32 @@ const options = {
     }
   },
 };
+ 
 
-export const data2 = [
-  ["Pizza", "Popularity"],
-  ["Premium", 15],
-  ["Normal", 56],
+type SectionThreeProp = {
 
-];
+  premiumUsers:number;
+  normalUsers:number;
+}
 
 export const options2 = {
-  sliceVisibilityThreshold: 0.2, // 20%
+  sliceVisibilityThreshold: 0.2,
+  is3D:true
 };
-function SectionThree() {
+function SectionThree({premiumUsers,normalUsers}:SectionThreeProp) {
+   const data2 = [
+  ["",""], 
+  ["Premium", premiumUsers],
+  ["Normal", normalUsers],
+
+];
+ const data = [
+  ["Element", "Density", { role: "style" }],
+  ["Gold", 19.3, "gold"],
+  ["Green", 8.94, "green"],
+  ["Blue", 10.49, "blue"], 
+];
+
   return (
     <div className="mt-16 flex flex-col lg:flex-row z-0 h-auto m-5 p-6 rounded-lg bg-white">
       <div className="w-full lg:w-1/2 mb-5 lg:mb-0">

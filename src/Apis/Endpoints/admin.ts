@@ -8,7 +8,10 @@ const adminEndPoints = {
     GET_USERS:'/admin/users',
     BLOCK_UNBLOCK_USER:'/admin/user/block-unblock',
     GET_POSTS:'/admin/post/all',
-    HIDE_UNHIDE_POST:'/admin/post/hide-unhide'
+    HIDE_UNHIDE_POST:'/admin/post/hide-unhide',
+    DISMISS_REPORT:"/admin/post/dismiss/reports",
+    GET_POST_REACTIOINS:"/admin/post/reactions",
+    ANALYTICS:"/admin/dashboard/analytics"
 
 
 

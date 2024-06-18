@@ -1,4 +1,3 @@
-import { data } from "../Components/Admin/DashBoard/SectionThree";
 export interface SignUpType {
   name: string;
   username: string;

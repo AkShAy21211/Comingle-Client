@@ -203,7 +203,6 @@ const userApi = {
           });
         }
 
-        console.log(response.data.message);
 
         return response;
       } else {

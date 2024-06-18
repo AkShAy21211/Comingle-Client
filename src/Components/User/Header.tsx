@@ -5,13 +5,18 @@ import { FaRegBell } from "react-icons/fa6";
 import LogoutModal from "../Common/LogoutModal";
 import { FollowNotification,LikeNotfication } from "../../Interface/interface";
 import userApi from "../../Apis/user";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
+import Avatar from "react-avatar";
 function Header() {
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
   const [notifications, setNotifications] = useState<number | null>(0);
-
+  const currentUser = useSelector((state:RootState)=>state.user.user)
+ 
+  
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
@@ -74,11 +79,14 @@ function Header() {
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">Open user menu</span>
-                    <img
+                    {
+                      currentUser.profile?<img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src={currentUser.profile}
                       alt=""
-                    />
+                    />:<Avatar size="35" className="rounded-full" name={currentUser.name}/>
+
+                    }
                     {isSmallScreen ? (
                       <Link to="/profile" className="absolute inset-0 z-50" />
                     ) : null}

@@ -1,0 +1,158 @@
+import React, { useEffect, useState } from "react";
+import { User } from "../../Interface/interface";
+import adminApi from "../../Apis/admin";
+import Avatar from "react-avatar";
+import ViewUserModal from "./ViewUserModal";
+import { FaEye } from "react-icons/fa";
+
+function ListUsers() {
+    
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const getUsers = async () => {
+    try {
+      const user = await adminApi.getUsers();
+      if (user) {
+        setUsers(user);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const handleSearchUsers = (name: string) => {
+
+    const fullUsers = users;
+    if (!name.trim()) {
+      setUsers(fullUsers); // Reset to original list if search is empty
+      return;
+    }
+
+    const lowerCaseName = name.toLowerCase();
+    const filteredUsers = users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(lowerCaseName) ||
+        user.email.toLowerCase().includes(lowerCaseName)
+    );
+
+    setUsers(filteredUsers);
+  };
+  return (
+    <div className="flex flex-col lg:px-20 pt-20">
+      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="flex justify-between w-full px-2 ">
+            <input
+              type="text"
+              onChange={(e) => handleSearchUsers(e.target.value)}
+              placeholder="Seach user......"
+              className=" placeholder:text-sm p-2  h-8 border border-custom-blue w-72 rounded-lg mb-5"
+            />
+            <p className="bg-custom-teal shadow-xl flex justify-center items-center text-sm p-2 text-white rounded-lg mb-5">
+              Total {users.length} 
+            </p>
+          </div>
+          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg h-[75vh]">
+            {" "}
+            {/* Adjust the height as needed */}
+            <div className="overflow-y-auto h-full">
+              {" "}
+              {/* Make the table scrollable */}
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-6 py-3 tee  text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      ACTION
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {users.map((person) => (
+                    <tr key={person.email}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            {person.profile.image ? (
+                              <img
+                                className="h-10 w-10 rounded-full"
+                                src={person.profile.image}
+                                alt=""
+                              />
+                            ) : (
+                              <Avatar
+                                size="40"
+                                className="rounded-full "
+                                name={person.name}
+                              />
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {person.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {person.email}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs text-white leading-5
+                          font-semibold rounded-full ${
+                            person.isBlocked ? "bg-red-400" : "bg-green-300"
+                          }`}
+                        >
+                          {person.isBlocked ? "BLOCKED" : "ACTIVE"}
+                        </span>
+                      </td>
+
+                      <td className=" py-4 whitespace-nowrap text-sm  flex justify-center text-center font-medium">
+                        <FaEye
+                          onClick={() => setSelectedUser(person)}
+                          className="text-custom-blue  text-center cursor-pointer hover:animate-pulse"
+                          size={20}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {selectedUser && (
+                <ViewUserModal
+                  fetchUsers={getUsers}
+                  user={selectedUser}
+                  setSelectedUser={setSelectedUser}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ListUsers;

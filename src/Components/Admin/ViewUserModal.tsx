@@ -1,15 +1,17 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { User } from "../../Interface/interface";
+import { User } from '../../Interface/interface';
 import Avatar from "react-avatar";
 import adminApi from "../../Apis/admin";
 import AlertModal from "../Common/AlertModal";
+import { FaEye } from "react-icons/fa";
 
 type ViewUserModalProps = {
   user: User | null;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  setSelectedUser: Dispatch<SetStateAction<User|null>>;
+  fetchUsers:()=>Promise<void>;
 };
 
-function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
+function ViewUserModal({ user, setSelectedUser,fetchUsers }: ViewUserModalProps) {
   const [userStatus, setUserStatus] = useState(user?.isBlocked);
   const [showAlert,setShoAlert] = useState(false);
 
@@ -19,8 +21,9 @@ function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
 
       if (userResponse) {
         const updatedUserStatus = userResponse.user.isBlocked;
-        setUserStatus(updatedUserStatus);
-        setShoAlert(false)
+        setUserStatus(prev=>!prev);
+        setShoAlert(false);
+        fetchUsers();
       }
     } catch (error) {
       console.log(error);
@@ -32,18 +35,18 @@ function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
     <div
       id="modal"
       aria-hidden="true"
-      className="fixed inset-0 z-50 flex items-center justify-center w-full h-full"
+      className="fixed inset-0 z-50 flex items-center justify-center w-full "
     >
-      <div className="relative p-4 w-full max-w-md max-h-full">
+      <div className="relative p-4 w-full max-w-md  ">
         {/* Modal content */}
-        <div className="relative bg-custom-blue/30 pb-5 rounded-lg shadow backdrop-blur-lg h-auto">
+        <div className="relative   rounded-lg  bg-gray-200 shadow-xl border mt-20 h-auto pb-8">
           {/* Modal header */}
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+          <div className="flex items-center justify-between p-4 md:p-5  rounded-t dark:border-gray-600">
             <h3 className="text-xl bg-yellow-400/80 px-2 rounded-lg text-white font-semibold">
               {user?.profile.isPremium ? " Premium user " : ""}
             </h3>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => setSelectedUser(null)}
               type="button"
               className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="authentication-modal"
@@ -78,7 +81,7 @@ function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
               ) : (
                 <Avatar
                   name={user?.name}
-                  className="rounded-full mt-2"
+                  className="rounded-full "
                   size={"150"}
                 />
               )}
@@ -88,7 +91,7 @@ function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
               </h6>
             </div>
 
-            <div className="flex justify-around gap-3 mt-5 mb-5">
+            {/* <div className="flex justify-around gap-3 ">
               <div className="flex rounded-md flex-col w-20 justify-center items-center bg-custom-blue text-white p-2 text-sm">
                 <p>Following</p>
                 <p className="text-center">2</p>
@@ -101,14 +104,12 @@ function ViewUserModal({ user, setShowModal }: ViewUserModalProps) {
                 <p>Posts</p>
                 <p className="text-center">5</p>
               </div>
-            </div>
+            </div> */}
           </div>
-          <div className="flex flex-col items-center justify-center gap-3 mt-5 mb-5">
+          <div className="flex flex-col items-center justify-center gap-3 ">
             <p className="font-bold">Name: {user?.name.toUpperCase()}</p>
-            <p className="font-bold">Email: {user?.email.toUpperCase()}</p>
-            <p className="font-bold">
-              Age: {user?.profile.age ? user?.profile.age : "Not mentioned"}
-            </p>
+            <p className="font-bold">Email: {user?.email.toLowerCase()}</p>
+           
 
             <button
               onClick={() => setShoAlert(true)}

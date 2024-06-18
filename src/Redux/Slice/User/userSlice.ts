@@ -17,12 +17,18 @@ const userSlice = createSlice({
             state.user = null;
             localStorage.removeItem('users');
         },
-         updateUser: (state,action) => {
+         updateUserPlan: (state,action) => {
             state.user.isPremium = action.payload;
 
         },
+        updateUser:(state,action)=>{
+
+            console.log(action);
+            
+            state.user.profile = action.payload
+        }
     }
 });
 
-export const { userLogin, userLogout } = userSlice.actions;
+export const { userLogin, userLogout ,updateUser} = userSlice.actions;
 export default userSlice.reducer;
