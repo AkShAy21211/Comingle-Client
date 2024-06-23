@@ -149,12 +149,13 @@ const userApi = {
       }
     }
   },
- getOtherUserProfile: async (  username:string ) => {
+  getOtherUserProfile: async (username: string) => {
     try {
-      const userReponse = await axiosInstance.get(userEnpoints.OTHER_USER_PROFILE+`/${username}`);
+      const userReponse = await axiosInstance.get(
+        userEnpoints.OTHER_USER_PROFILE + `/${username}`
+      );
 
       return userReponse.data;
-      
     } catch (error) {
       console.log(error);
     }
@@ -167,7 +168,7 @@ const userApi = {
 
       console.log("userdata", data);
 
-      return data.user;
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -202,7 +203,6 @@ const userApi = {
             transition: Bounce,
           });
         }
-
 
         return response;
       } else {
@@ -404,9 +404,19 @@ const userApi = {
           transition: Bounce,
         });
       }
+      
 
       return followRequest.data;
-    } catch (error) {
+    } catch (error:any) {
+       toast.warn(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       console.log(error);
     }
   },
@@ -652,19 +662,9 @@ const userApi = {
     }
   },
 
-  accessChat: async (participantId:string) => {
+    getFriends: async (userId:string) => {
     try {
-      const chatsReponse = await axiosInstance.post(userEnpoints.ACCESS_CHAT,{participantId});
-
-      return chatsReponse.data;
-    } catch (error) {
-      console.log(error);
-    }
-  },
-
-    fetchAllMessages: async (chatId:string) => {
-    try {
-      const chatsReponse = await axiosInstance.get(userEnpoints.FETCH_ALL_MESSAGES+`/${chatId}`);
+      const chatsReponse = await axiosInstance.get(userEnpoints.GET_FRIENDS+`/${userId}`);
 
       return chatsReponse.data;
       
@@ -672,12 +672,126 @@ const userApi = {
       console.log(error);
     }
   },
-    sendNewMessage: async (formData:FormData ) => {
+
+  accessChat: async (participantId: string) => {
     try {
-      const chatsReponse = await axiosInstance.post(userEnpoints.SEND_NEW_MESSAGE,formData);
+      const chatsReponse = await axiosInstance.post(userEnpoints.ACCESS_CHAT, {
+        participantId,
+      });
 
       return chatsReponse.data;
-      
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  fetchAllMessages: async (chatId: string) => {
+    try {
+      const chatsReponse = await axiosInstance.get(
+        userEnpoints.FETCH_ALL_MESSAGES + `/${chatId}`
+      );
+
+      return chatsReponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  sendNewMessage: async (formData: FormData) => {
+    try {
+      const chatsReponse = await axiosInstance.post(
+        userEnpoints.SEND_NEW_MESSAGE,
+        formData
+      );
+
+      return chatsReponse.data;
+    } catch (error:any) {
+       toast.error(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+      console.log(error);
+    }
+  },
+
+  getPlans: async () => {
+    try {
+      const plansResponse = await axiosInstance.get(userEnpoints.GET_PLANS);
+
+      return plansResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  deletePost: async (postId: string) => {
+    try {
+      const deleteResponse = await axiosInstance.delete(
+        userEnpoints.DELETE_POSTS + `/${postId}`
+      );
+      toast.success(deleteResponse.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  deleteComment: async (postId: string, commentId: string) => {
+    try {
+      const deleteResponse = await axiosInstance.delete(
+        userEnpoints.DELETE_COMMENT + `/${postId}/${commentId}`
+      );
+      toast.success(deleteResponse.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  editComment: async (
+    postId: string,
+    commentId: string,
+    newComment: string
+  ) => {
+    try {
+      const editComment = await axiosInstance.patch(
+        userEnpoints.EDIT_COMMENT,
+        {
+          postId,
+          commentId,
+          newComment,
+        }
+      );
+      toast.success(editComment.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return editComment.data.comment;
     } catch (error) {
       console.log(error);
     }

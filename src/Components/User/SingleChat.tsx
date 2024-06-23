@@ -9,21 +9,23 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import {
   removeSlectedChat,
-  removeUnreadMessage,
   setUnreadMessage,
 } from "../../Redux/Slice/User/chatSlice";
 import { RootState } from "../../Redux/store";
 import userApi from "../../Apis/user";
-import { Message, Sender } from "../../Interface/interface";
+import { Message } from "../../Interface/interface";
 import ScrollableChat from "./ScrollableChat";
 import { PiSpinnerBold } from "react-icons/pi";
 import { IoSend } from "react-icons/io5";
 import Avatar from "react-avatar";
-import socket from "../../Apis/Endpoints/socket";
 import { CgAttachment } from "react-icons/cg";
-import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import classNames from "classnames";
+import { FaMicrophone } from "react-icons/fa";
+import { FaRegStopCircle } from "react-icons/fa";
+import audioStartBg from "/User/mixkit-atm-cash-machine-key-press-2841.wav";
+import audioEnd from "/User/mixkit-correct-answer-tone-2870.wav";
+import TypingIndicator from "../Common/TypingIndicator";
+import { useSocket } from '../../../context/SocketContext';
 
 type SingleChatProp = {
   fetchAgain: boolean;
@@ -46,29 +48,30 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const isDarMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
+  const mediaStream = useRef<MediaStream | null>(null);
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const chunks = useRef<Blob[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIstyping] = useState(false);
+  const socket = useSocket();
+
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
   const fetchMessages = async () => {
     try {
       if (selectedChat.chatId) {
         setLoading(true);
-
         const response = await userApi.fetchAllMessages(selectedChat.chatId);
+        if (socket) {
+          socket.emit("chat initilize", selectedChat.chatId);
+        }
         setAllMessages(response.messages);
-
-        const findReciver = response.messages.find(
-          (msg: Message) => msg.sender._id !== currentUser._id
-        );
-
-        console.log(response);
-
-       
-        socket.emit("Chat", selectedChat);
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-
       console.error(error);
     }
   };
@@ -77,22 +80,85 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
     fetchMessages();
   }, [selectedChat.chatId]);
 
+  useEffect(() => {
+    const handleNewMessage = (newMessageReceived: Message) => {
+      if (
+        !selectedChat.chatId ||
+        selectedChat.chatId !== newMessageReceived.chat._id
+      ) {
+        dispatch(setUnreadMessage(newMessageReceived.chat));
+        setFetchAgain(!fetchAgain);
+      } else {
+        setAllMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+      }
+    };
+
+    const handleNewMessageSent = (newMessageReceived: Message) => {
+      if (
+        !selectedChat.chatId ||
+        newMessageReceived.sender._id === currentUser._id
+      ) {
+        setAllMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+      }
+    };
+    
+    socket?.on("new message sent", handleNewMessageSent);
+    socket?.on("message received", handleNewMessage);
+
+    return () => {
+      if (socket) {
+        socket.off("message received", handleNewMessage);
+        socket.off("new message sent", handleNewMessageSent);
+      }
+    };
+  }, [selectedChat.chatId]);
+
+  useEffect(() => {
+    socket?.on("typing", () => {
+      setIstyping(true);
+    });
+
+    socket?.on("stopTyping", () => {
+      setIstyping(false);
+    });
+
+    return () => {
+      socket?.off("typing");
+      socket?.off("stopTyping");
+    };
+  }, [isTyping]);
+
   /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
 
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
+
+    if (!typing) {
+      setTyping(true);
+      socket?.emit("typing", selectedChat.chatId);
+    }
+
+    let lastTypingTime = new Date().getTime();
+    let timeLiength = 3000;
+    setTimeout(() => {
+      let timeNow = new Date().getDate();
+      let timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timeLiength && typing) {
+        socket?.emit("stopTyping", selectedChat.chatId);
+        setTyping(false);
+      }
+    }, timeLiength);
   };
 
   const handleSendMessage = async () => {
     if (!selectedChat) return;
 
     if (newMessage.trim() || selectedFiles) {
+      setTyping(false);
       try {
-        setLoading(true);
-        setFetchAgain(fetchAgain);
+        socket?.emit("stopTyping", selectedChat.chatId);
         setLoading(true);
         const formData = new FormData();
-
         if (selectedFiles) {
           selectedFiles.forEach((file) => {
             formData.append("files", file);
@@ -110,43 +176,23 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
         const response = await userApi.sendNewMessage(formData);
         if (response) {
           setNewMessage("");
-          setAllMessages([...allMessages, response.message]);
-          socket.emit("message", response.message);
+          if (socket) {
+            socket.emit("message", response.message);
+          }
           setSelectedFiles([]);
-          setFetchAgain(true);
           setLoading(false);
         }
       } catch (error) {
         setLoading(false);
-
         console.error(error);
       }
     }
   };
 
-  useEffect(() => {
-    socket.on("message received", (newMessageRecived) => {
-      if (!selectedChat || selectedChat.chatId !== newMessageRecived.chat._id) {
-        console.log(newMessageRecived);
-
-        dispatch(setUnreadMessage(newMessageRecived.chat));
-      } else {
-        setAllMessages([...allMessages, newMessageRecived]);
-        setFetchAgain(true);
-      }
-    });
-
-    return () => {
-      socket.off("message received");
-    };
-  });
-
   const previewFile = (file: File, i: number) => {
     const fileType = file.type.split("/")[0];
     const fileExtension = file.name.split(".");
     const extension = fileExtension.pop()?.toLowerCase();
-
-    console.log(extension);
 
     if (fileType === "image") {
       return (
@@ -165,19 +211,16 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
             src={URL.createObjectURL(file)}
             muted
             className="object-cover border-custom-blue/90 border-4 w-full h-full"
-            controls
           />
         </div>
       );
     } else if (fileType === "audio") {
       return (
-        <div key={i} className="w-20 h-20 flex-shrink-0">
-          <audio
-            src={URL.createObjectURL(file)}
-            className="object-cover border-custom-blue/90 border-4 w-full h-full"
-            controls
-          />
-        </div>
+        <audio
+          src={URL.createObjectURL(file)}
+          className="object-cover rounded-full border-custom-blue/90 border-4 w-52 h-10"
+          controls
+        />
       );
     } else if (extension === "pdf") {
       return (
@@ -223,6 +266,74 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
     setEmojiPickerVisible((prev) => !prev);
   };
 
+  const AudioRecorder = () => {
+    const startRecording = async () => {
+      try {
+        let song = new Audio(audioStartBg);
+        song.play();
+        setIsRecording(true);
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaStream.current = stream;
+        mediaRecorder.current = new MediaRecorder(stream);
+        mediaRecorder.current.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunks.current.push(e.data);
+          }
+        };
+        mediaRecorder.current.onstop = () => {
+          const recordedBlob = new Blob(chunks.current, { type: "audio/webm" });
+          const file = new File([recordedBlob], "recordedAudio.webm", {
+            type: recordedBlob.type,
+          });
+          setRecordedUrl(URL.createObjectURL(recordedBlob));
+          chunks.current = [];
+          // Pass file to previewFile
+          setSelectedFiles((prevFiles) => [...prevFiles, file]);
+        };
+        mediaRecorder.current.start();
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+        alert(
+          "Error accessing microphone. Please ensure microphone permissions are granted."
+        );
+        // Handle error gracefully, show a message to the user, etc.
+      }
+    };
+
+    const stopRecording = () => {
+      let song = new Audio(audioEnd);
+      song.play();
+      setIsRecording(false);
+      if (
+        mediaRecorder.current &&
+        mediaRecorder.current.state === "recording"
+      ) {
+        mediaRecorder.current.stop();
+      }
+      if (mediaStream.current) {
+        mediaStream.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
+
+    return (
+      <div className="flex gap-2 items-center">
+        {!isRecording ? (
+          <button onClick={startRecording}>
+            <FaMicrophone className="text-custom-blue/90" />
+          </button>
+        ) : (
+          <button onClick={stopRecording}>
+            <FaRegStopCircle className="text-custom-blue/90" />
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div
       className={`${
@@ -264,8 +375,10 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
             <ScrollableChat messages={allMessages} />
           </div>
 
+          {isTyping ? <TypingIndicator /> : <></>}
+
           {selectedFiles && (
-            <div className=" h-fit w-fit  flex bg-slate-400 gap-1 overflow-auto overflow-x-scroll">
+            <div className=" h-auto w-auto  flex gap-1 overflow-auto overflow-x-scroll">
               {selectedFiles.map((file, index) => previewFile(file, index))}
             </div>
           )}
@@ -277,8 +390,8 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
               onChange={handleMessageChange}
               placeholder="Type your message..."
               className={`flex-1  ${
-                isDarMode ? "bg-black" : "bg-gray-200"
-              } border rounded-lg py-2 px-4 mr-2 focus:outline-none focus:ring-2`}
+                isDarMode ? "bg-black text-white" : "bg-gray-200"
+              } border rounded-lg py-2 px-4 mr-2 focus:outline-none focus:ring-2 ml-1 `}
             />
             <button
               className="text-white px-4 py-2 border-none rounded-lg focus:outline-none"
@@ -286,6 +399,7 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
             >
               😊
             </button>
+            {AudioRecorder()}
             {emojiPickerVisible && (
               <div className="absolute bottom-14 right-30 z-10">
                 <Picker

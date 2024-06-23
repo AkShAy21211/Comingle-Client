@@ -13,8 +13,6 @@ function Explore() {
   const [isPosts, setIsPosts] = useState(true);
   const [isPeople, setIsPeople] = useState(false);
   const [allUsers, setAllUsers] = useState<User[] | []>([]);
-  const [allPosts, setAllPosts] = useState([]);
-  const [followers, setFollowers] = useState([]);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   //////////////////// HANDLE SHOW POSTS ///////////////////////////////
@@ -31,7 +29,6 @@ function Explore() {
 
         if (users) {
           setAllUsers(users.users);
-          setFollowers(users.followers);
 
         }
       } catch (error) {
@@ -46,7 +43,6 @@ function Explore() {
 
   async function handleFollow(id: string) {
     const follow = await userApi.followRequest(id);
-    setFollowers(follow.follow);
   }
 
 
@@ -63,7 +59,7 @@ function Explore() {
     <div className={` h-full ${
         isDarkMode ? "bg-black text-white" : ""
       }  col-span-full lg:col-span-3  `}>
-      <div className="   flex  md:flex   mt-20 px-5" id="top-search-bar">
+      <div className="   flex  md:flex   mt-20 px-5 mb-5" id="top-search-bar">
         {/* SEARCH BAR FOR EXPLORE */}
 
         <ExpandableSearchBar

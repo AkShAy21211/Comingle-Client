@@ -1,24 +1,41 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { Link } from "react-router-dom";
 import userApi from "../../Apis/user";
 import useRazorpay, { RazorpayOptions } from "react-razorpay";
-import { log } from "console";
+import { Plans } from "../../Interface/interface";
+import { updatePLan } from "../../Redux/Slice/User/userSlice";
+import { current } from "@reduxjs/toolkit";
+import { Bounce, toast } from "react-toastify";
 
 type PremiumProp = {
-  title: string;
-  plan: string;
-  benifits: string[];
-  isPremiumPage: boolean;
+  plan?: Plans | null;
+  isPremiumPage?: boolean;
 };
 
-function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
+function PremiumAd({ plan, isPremiumPage }: PremiumProp) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const currentUser = useSelector((state: RootState) => state.user.user);
+  const dispatch = useDispatch();
   const [Razorpay] = useRazorpay();
 
   const handlePremium = async (amount: number) => {
     try {
+      if (currentUser.isPremium) {
+        toast.warn('You are already a premium member', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+
+        return;
+      }
+
       const { key } = await userApi.getRazorpayKey();
 
       const { order } = await userApi.upgradeToPremium(amount);
@@ -33,7 +50,7 @@ function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
         order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
         handler: function (response: any) {
           console.log(response);
-          
+
           handlePaymentVerification(
             response.razorpay_payment_id,
             response.razorpay_order_id,
@@ -77,7 +94,7 @@ function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
     product: string
   ) => {
     try {
-      await userApi.verifyPremiumOrder(
+      const status = await userApi.verifyPremiumOrder(
         razorpay_payment_id,
         razorpay_order_id,
         razorpay_signature,
@@ -85,6 +102,9 @@ function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
         amount,
         product
       );
+      if (status) {
+        dispatch(updatePLan());
+      }
     } catch (error) {
       console.log(error);
     }
@@ -96,9 +116,9 @@ function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
         !isDarkMode ? "border-l border-gray-300" : ""
       }  h-auto  overflow-hidden rounded-lg ${
         isDarkMode ? "bg-blue-950/75" : "bg-white"
-      }  mt-14 p-10 flex flex-col shadow-xl border `}
+      }  mt-14 p-10 flex flex-col  border `}
     >
-      <h2 className={`text-center lg:text-f-10 xl:text-xl`}>{title}</h2>
+      <h2 className={`text-center lg:text-f-10 xl:text-xl`}>{plan?.title}</h2>
       <ul
         className={` w-auto ${
           isPremiumPage ? "block" : "hidden"
@@ -106,38 +126,41 @@ function PremiumAd({ benifits, plan, isPremiumPage, title }: PremiumProp) {
           isDarkMode ? "text-white" : "text-gray-500"
         } `}
       >
-        {benifits.map((benifit) => (
+        {plan?.benefits?.map((benifit) => (
           <li className=" w-auto text-wrap p-3">{benifit}</li>
         ))}
       </ul>
       {!isPremiumPage && (
+       <>
         <Link
           to={"/settings/subscription"}
           className={` 
             bg-custom-gold mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full  font-bold py-2 md:px-0 px-4 rounded-full xl:text-sm`}
         >
-          {plan == "Premium" && !isPremiumPage
-            ? "View Benifits"
-            : plan === "Default" && isPremiumPage
-            ? "Default"
-            : "Upgrade"}
+          {"UPGRADE"}
         </Link>
+        <p    className={` 
+            mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full   py-2 md:px-0 px-4 rounded-full xl:text-sm`}
+        >Enjoy premium benifits for jus Rs:499</p>
+       </>
       )}
       {isPremiumPage && (
         <button
-          onClick={plan === "Premium" ? () => handlePremium(499) : undefined}
-          disabled={plan === "Premium" ? false : true}
+          onClick={
+            plan?.title === "Premium" ? () => handlePremium(499) : undefined
+          }
+          disabled={plan?.title === "Premium" ? false : true}
           className={` ${
-            !isDarkMode && plan === "Premium"
+            !isDarkMode && plan?.title === "Premium"
               ? "bg-custom-gold text-white"
-              : isDarkMode && plan === "Premium"
+              : isDarkMode && plan?.title === "Premium"
               ? "bg-custom-gold text-black"
               : " bg-custom-blue"
           } mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full  font-bold py-2 md:px-0 px-4 rounded-full xl:text-sm text-white`}
         >
-          {plan == "Premium" && !isPremiumPage
+          {plan?.title == "Premium" && !isPremiumPage
             ? "View Benifits"
-            : plan === "Default" && isPremiumPage
+            : plan?.title === "Default" && isPremiumPage
             ? "Default"
             : "Upgrade"}
         </button>

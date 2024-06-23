@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, Dispatch, SetStateAction } from "react";
-import { PostsType } from "../../Interface/interface";
+import { PostsType } from '../../Interface/interface';
 import userApi from "../../Apis/user";
 import InfiniteScroll from "react-infinite-scroll-component";
 import People from "../Skleton/Posts";
@@ -18,10 +18,10 @@ function Posts() {
       setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
-        setPosts(getPosts.posts);
+        
+        setPosts(getPosts.posts.filter((post:PostsType)=>post?.image.length));
         setHasMore(getPosts.posts.length > 0);
       }
-      console.log(getPosts);
       const postedUsers = getPosts.posts.map((post: any) => post.postedUser);
 
      
@@ -32,6 +32,8 @@ function Posts() {
     }
   }, []);
 
+  console.log('postsssssssssssssssssssssssss',posts);
+  
   useEffect(() => {
     fetchAllPosts();
   }, [fetchAllPosts]);
@@ -86,8 +88,8 @@ function Posts() {
               <img
                 key={post._id} // Ensure each element has a unique key
                 src={
-                  post.image[0].url ||
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  post.image[0]?.url
+                
                 }
                 alt="Post"
                 className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"

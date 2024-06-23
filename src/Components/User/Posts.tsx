@@ -1,10 +1,8 @@
 import { IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
-import { CiSaveDown2 } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import CreatePost from "./CreatePost";
 import Contents from "./Contets";
-import { PiShareFatThin } from "react-icons/pi";
 import FormattedRelativeTime from "../../Utils/Time";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
@@ -16,6 +14,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import PostSkeleton from "../Skleton/PostSkleton";
 import { IoMdSend } from "react-icons/io";
 import ReportModal from "./ReportModal";
+import { MdDelete } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import { IoSend } from "react-icons/io5";
 
 function Posts() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -36,7 +37,9 @@ function Posts() {
     postId: string;
     error: string;
   }>({ postId: "", error: "" });
-
+  const [editCommentDisabled, setEditCommentDisabled] = useState<boolean>(true);
+  const [editCommentError, setEditCommentError] = useState("");
+  const [editedComment, setEditedComment] = useState("");
   //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
   const fetchAllPosts = useCallback(async () => {
@@ -58,13 +61,20 @@ function Posts() {
     }
   }, [posts]);
 
-
-
   useEffect(() => {
     fetchAllPosts();
   }, []);
 
-  
+  /////////////////////////////// DELETE POSTS ///////////////////////////
+
+  const deletePost = async (postId: string) => {
+    try {
+      await userApi.deletePost(postId);
+      fetchAllPosts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   /////////////////////////// HANDLE POST REPORT //////////////////////////
 
   useEffect(() => {
@@ -217,8 +227,8 @@ function Posts() {
       );
       if (commentResponse) {
         console.log(commentResponse);
-      console.log(posts);
-      
+        console.log(posts);
+
         setPosts((prevPosts) =>
           prevPosts.map((post) => {
             if (post._id === postId) {
@@ -251,13 +261,59 @@ function Posts() {
   const handleSubmitReport = async (reason: string) => {
     await userApi.reportPost(postId, reason);
 
-    console.log(postId,reason);
-    setModalOpen(false)
-    
+    console.log(postId, reason);
+    setModalOpen(false);
   };
 
-  
+  ///////////////////// HANDLE DELETE COMMETNT /////////////////////////////////
 
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    try {
+      await userApi.deleteComment(commentId, postId);
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: post.comments.filter(
+                (comment) => comment._id !== commentId
+              ),
+            };
+          }
+          return post;
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEditComment = async (postId: string, commentId: string) => {
+    if (!editedComment.trim()) {
+      setEditCommentError("Comment should be atleast one character");
+      return;
+    }
+    try {
+      setEditCommentError("");
+
+    const comment =   await userApi.editComment(commentId, postId, editedComment);
+
+      
+
+      setEditedComment("");
+      setEditCommentDisabled(true);
+    } catch (error) {
+      setEditedComment("");
+
+      setEditCommentError("");
+      console.log(error);
+    }
+  };
+
+
+
+  
   return (
     <div
       className={` mt-16 pt-1 lg:mt-0 ${
@@ -292,7 +348,7 @@ function Posts() {
                   <div className="flex items-center mb-3 p-2 w-full">
                     {post.postedUser.profile.image ? (
                       <img
-                        className="w-10 h-8 mr-4 rounded-full"
+                        className="w-10 h-10 mr-4 rounded-full"
                         src={post.postedUser.profile.image}
                       />
                     ) : (
@@ -322,7 +378,7 @@ function Posts() {
                             isDarkMode ? "bg-neutral-950" : "bg-gray-200"
                           }  rounded-lg w-32`}
                         >
-                          {post.postedUser._id !== currentUser._id && (
+                          {post.postedUser._id !== currentUser._id ? (
                             <ul className="py-2 space-y-3 text-sm">
                               <li className=""></li>
                               <li
@@ -336,19 +392,29 @@ function Posts() {
                                 <button>Report</button>
                               </li>
                             </ul>
+                          ) : (
+                            <ul className="py-2 space-y-3 text-sm">
+                              <li className=""></li>
+                              <li
+                                onClick={() => deletePost(post._id)}
+                                className="mx-4 cursor-pointer "
+                              >
+                                <button>Delete</button>
+                              </li>
+                            </ul>
                           )}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {post.image?.length > 0 && <Contents content={post.image} />}
+                  {post.image?.length > 0 && <Contents content={post} />}
                   <div
                     className={`w-full ${
                       isDarkMode ? "bg-black" : ""
                     } flex items-center mt-2 p-2 md:p-0 sm:text-sm font-light md:font-normal break-words`}
                   >
-                    <p className="text-wrap w-full">{post.description}</p>
+                    <p className="text-wrap mx-2 w-full">{post.description}</p>
                   </div>
 
                   <div
@@ -381,14 +447,17 @@ function Posts() {
                         size={20}
                         onClick={() => handleCommentShow(post._id)}
                       />
-                      <PiShareFatThin
+
+                      {/* SHARE POST */}
+                      {/* <PiShareFatThin
                         onClick={() => handleCopyLink(post._id)}
                         size={25}
                         className="font-bold"
-                      />
+                      /> */}
                     </div>
 
-                    <CiSaveDown2 size={27} className="font-bold" />
+                    {/* SAVE POST  */}
+                    {/* <CiSaveDown2 size={27} className="font-bold" /> */}
                   </div>
                   <div className="flex w-full px-4 gap-5">
                     <p className="text-xs">
@@ -408,7 +477,7 @@ function Posts() {
                     >
                       <div className="w-full px-4">
                         <div className="mt-4">
-                          {post.comments &&
+                          {post.comments.length > 0 &&
                             post.comments[0].comment &&
                             post.comments
                               .slice(0, visibleComments[post._id] || 2)
@@ -426,8 +495,56 @@ function Posts() {
                                     <p className="text-sm font-semibold  text-wrap">
                                       {comment.commenter}
                                     </p>
-                                    <p className="text-xs">{comment.comment}</p>
+                                    {/* <p className="text-xs">{comment.comment}</p> */}
+                                    <div className="flex flex-col">
+                                      <input
+                                        className={`${
+                                          !editCommentDisabled &&
+                                          "border border-gray-300 mx-1 p-1 rounded-full"
+                                        }`}
+                                        onChange={(e) =>
+                                          setEditedComment(e.target.value)
+                                        }
+                                        type="text"
+                                        defaultValue={comment.comment}
+                                        disabled={editCommentDisabled}
+                                      />
+                                      {editCommentError.trim() && (
+                                        <p className="text-red-600 text-xs">
+                                          {editCommentError}
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
+                                  {comment.commentedUserId ==
+                                    currentUser._id && (
+                                    <div className="flex gap-1 mt-4">
+                                      {editCommentDisabled ? (
+                                        <MdEdit
+                                          onClick={() =>
+                                            setEditCommentDisabled(false)
+                                          }
+                                        />
+                                      ) : (
+                                        <IoSend
+                                          onClick={() =>
+                                            handleEditComment(
+                                              post._id,
+                                              comment._id
+                                            )
+                                          }
+                                        />
+                                      )}
+                                      <MdDelete
+                                        onClick={() =>
+                                          handleDeleteComment(
+                                            post._id,
+                                            comment._id
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                         </div>

@@ -26,6 +26,8 @@ const chatSlice = createSlice({
 
         setUnreadMessage:(state,action)=>{
 
+            console.log(action.payload);
+            
             if(!state.unreadMessage){
 
                 state.unreadMessage = []
@@ -35,10 +37,6 @@ const chatSlice = createSlice({
         },
         removeUnreadMessage:(state,action)=>{
 
-            console.log('fdsfdsfsdfdsfdsfdsfdsfdsf');
-            console.log(state.unreadMessage);
-            
-            console.log(action);
             
             state.unreadMessage = state.unreadMessage.filter((chat:any)=>(chat._id !== action.payload))
         }

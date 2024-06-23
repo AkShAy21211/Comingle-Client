@@ -1,45 +1,38 @@
-import CountBox from "../../Components/User/CountBox";
-import PostGrid from "../../Components/User/PostGrid";
 import ProfileAndBg from "../../Components/User/ProfileAndBg";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { useParams } from "react-router-dom";
-import { log } from "console";
 import userApi from "../../Apis/user";
 import { useEffect, useState } from "react";
-import { User } from "../../Interface/interface";
+import { PostsType, User } from "../../Interface/interface";
 
 function OtherUserProfile() {
-  const notOwnPrfile = true;
   const { username } = useParams();
-  const [user, setUser] = useState<User|null>(null);
-
+  const [userData, setUserData] = useState<User | null>(null);
+  const [posts, setPosts] = useState<PostsType[]>([]);
+  const [fetchAgain, setFetchAgain] = useState(false);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
-  const fetchUser = async () => {
+  const fetchUserProfile = async () => {
     try {
       if (username) {
-        const user = await userApi.getOtherUserProfile(username);
+        const response = await userApi.getOtherUserProfile(username);
 
-        console.log('fwjwjfojwefjoiwefjni',user);
-        
-        if (user) {
-          setUser(user.user);
+        if (response) {
+          setUserData(response.user);
+          setPosts(response.posts);
+          setFetchAgain(false);
         }
-
-        console.log(user);
-        
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-useEffect(()=>{
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchAgain]);
 
-fetchUser()
-},[])
-  
   return (
     <div
       className={` ${
@@ -51,13 +44,17 @@ fetchUser()
       <div
         className={` h-full ${
           isDarkMode ? " lg:border-x" : ""
-        } shadow-xl overflow-auto overscroll-y-auto  lg:w-4/5 
+        } shadow-xl overflow-auto overscroll-y-auto  w-full
        bg-red flex flex-col 
         items-center mb-10`}
       >
-        <ProfileAndBg user={user} notOwnProfile={notOwnPrfile} />
-        <CountBox />
-        <PostGrid />
+        <ProfileAndBg
+          setPosts={setPosts}
+          fetchAgain={setFetchAgain}
+          posts={posts}
+          user={userData}
+          isMyProfile={false}
+        />
       </div>
     </div>
   );

@@ -11,7 +11,8 @@ const adminEndPoints = {
     HIDE_UNHIDE_POST:'/admin/post/hide-unhide',
     DISMISS_REPORT:"/admin/post/dismiss/reports",
     GET_POST_REACTIOINS:"/admin/post/reactions",
-    ANALYTICS:"/admin/dashboard/analytics"
+    ANALYTICS:"/admin/dashboard/analytics",
+    GET_SUBSCRIPTIONS:'/admin/subscriptions',
 
 
 

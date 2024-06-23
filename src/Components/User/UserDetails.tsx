@@ -18,12 +18,11 @@ const UserDetails: React.FC = () => {
 
   async function fetchUserProfile() {
     try {
-      const user = await userApi.profile();
+      const response = await userApi.profile();
       console.log("profile accessed", user);
 
-      if (user) {
-        setUser(user);
-      }
+        setUser(response.user);
+    
     } catch (error) {
       console.log(error);
     }

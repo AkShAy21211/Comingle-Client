@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ViewUserModal from "../Admin/ViewUserModal";
 import { User } from "../../Interface/interface";
+import userApi from "../../Apis/user";
 
 type PeopleProps = {
   users: User[];
@@ -26,12 +27,13 @@ function People({ users,isAdminView }: PeopleProps) {
       
     }
 
+ 
    
     
   return (
     <>
       <div className="container mx-auto p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="h-svh grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {users.map((user) => {
 
       
@@ -63,7 +65,9 @@ function People({ users,isAdminView }: PeopleProps) {
         </div>
       </div>
       {
-        (isAdminView && showUserModal && user) && <ViewUserModal  setShowModal={setShowUserModal} user={user} />
+        (isAdminView && showUserModal && user) && <ViewUserModal  setSelectedUser={setShowUserModal} user={user} fetchUsers={function (): Promise<void> {
+          throw new Error("Function not implemented.");
+        } } />
       }
     </>
   );

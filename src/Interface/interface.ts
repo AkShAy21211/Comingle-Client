@@ -58,13 +58,13 @@ export interface Comment {
   comment: string;
   commenter: string;
   commenterImage: string;
-
+  commentedUserId:string;
   createdAt: Date;
 }
 
 export interface Likes {
   _id: string;
-  userId: [string];
+  userId: string[];
   postId: string;
   createdAt: Date;
 }
@@ -167,6 +167,11 @@ export interface ChatType {
     _id: string;
     chat: string;
     message: string;
+    files:{
+      url:string;
+      type:string;
+      _id:string
+    }[];
     sender: {
       email: string;
       username: string;
@@ -210,4 +215,15 @@ export interface Message {
   createdAt: string;
   updatedAt: string;
   __v: number;
+}
+export interface Subscription{
+
+  _id:string;
+  userId:User;
+  amount:number;
+  orderId:string;
+  paymentId:string;
+  status:boolean;
+  product:string;
+
 }

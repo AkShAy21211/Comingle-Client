@@ -15,7 +15,6 @@ function Notifications() {
   const [followUser, setFollowUser] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user.user);
 
-  console.log(currentUser);
 
   ////////////////// GET NOTIFICATIONS /////////////////////////////
 
@@ -43,9 +42,9 @@ function Notifications() {
     }
   }
 
-  useEffect(() => {
-    getNotification();
-  }, [followUser]);
+  // useEffect(() => {
+  //   getNotification();
+  // }, [followUser]);
 
   async function handleAcceptFollow(followId: string, notificationId: string) {
     try {

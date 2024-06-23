@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import userApi from "../../Apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { update } from "lodash";
 import { updateUser } from "../../Redux/Slice/User/userSlice";
 
 
@@ -11,7 +10,7 @@ type ProfileModalProp = {
   showCoverModal: boolean;
   setShowCoverMdal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowDpMdal: React.Dispatch<React.SetStateAction<boolean>>;
-  onUpdate: () => void;
+  setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const ProfileModal: React.FC<ProfileModalProp> = ({
@@ -19,7 +18,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   showDpModal,
   setShowDpMdal,
   setShowCoverMdal,
-  onUpdate,
+  setFetchAgain,
 }) => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const dispatch = useDispatch();
@@ -76,7 +75,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
       );
 
       if (fileUploadResponse?.status) {
-        onUpdate();        
+        setFetchAgain(true);        
         type === "background" ? setShowCoverMdal(false) : setShowDpMdal(false);
         dispatch(updateUser(fileUploadResponse.data.user.profile.image))
       }

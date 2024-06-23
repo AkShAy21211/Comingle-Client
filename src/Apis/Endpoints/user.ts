@@ -32,6 +32,11 @@ const userEnpoints = {
     FETCH_ALL_MESSAGES:'/user/chat',
     SEND_NEW_MESSAGE:"/user/chat/new-message",
     OTHER_USER_PROFILE:'/user/profile',
+    GET_PLANS:'/user/application/plans',
+    DELETE_POSTS:"/user/post/delete",
+    DELETE_COMMENT:"/user/comment/delete",
+    EDIT_COMMENT:"/user/comment/edit/",
+    GET_FRIENDS:"/user/list-friends",
     LOGOUT:'/user/logout'
 
     

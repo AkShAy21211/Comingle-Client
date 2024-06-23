@@ -8,6 +8,7 @@ import { RootState } from "../../Redux/store";
 import { MdOutlineExplore } from "react-icons/md";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { AiFillPlusCircle } from "react-icons/ai";
 import CreatePostModal from "./CreatePostModal";
 function MobileBottomNav() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -51,25 +52,11 @@ function MobileBottomNav() {
                 onClick={() => setOpenModal(true)}
                 className={`inline-flex items-center justify-center ${
                   isDarkMode ? "bg-white" : ""
-                } w-10 h-10 font-medium bg-custom-blue rounded-full group `}
+                } w-10 h-10 font-mediumrounded-full group `}
               >
-                <svg
-                  className={` ${
-                    isDarkMode ? "text-black" : "text-white"
-                  } w-4 h-4 `}
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 18 18"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 1v16M1 9h16"
-                  />
-                </svg>
+              
+                 
+                <AiFillPlusCircle className="text-custom-blue" size={40}/>
               </button>
             </div>
 

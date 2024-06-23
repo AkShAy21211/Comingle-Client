@@ -35,7 +35,7 @@ function Settings() {
        Subscription
       </h1>
       <ul className="h-auto     text-nowrap space-y-5  pl-10 lg:pl-0 text-md">
-        <li className="lg:text-center text-custom-gold font-bold">
+        <li className="lg:text-center font-bold">
           <Link to={'/settings/subscription'}>Upgrade to premium</Link>
         </li>
       </ul>

@@ -210,6 +210,25 @@ const adminApi = {
       
     }
   },
+
+   getSubscriptions: async () => {
+    try {
+      
+      const response = await axiosInstance.get(
+        adminEndPoints.GET_SUBSCRIPTIONS
+      );
+
+      if (response.data) {
+       
+        return response.data
+      }
+    } catch (error: any) {
+    
+      console.log(error);
+      
+    }
+  },
 };
+
 
 export default adminApi;

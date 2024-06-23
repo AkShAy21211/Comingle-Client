@@ -11,8 +11,8 @@ function Chat() {
    <Fragment>
     <Header/>
      <div className="grid  grid-cols-4">
-      <RecentChats setFetchAgain={setFetchAgain} fetchAgain={fetchAgain} />
-      <SingleChat  setFetchAgain={setFetchAgain} fetchAgain/>
+      <RecentChats  fetchAgain={fetchAgain} />
+      <SingleChat  setFetchAgain={setFetchAgain} fetchAgain={fetchAgain}/>
     </div>
    </Fragment>
   );

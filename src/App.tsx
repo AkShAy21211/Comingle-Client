@@ -6,17 +6,13 @@ import AdminRoute from "./Routes/AdminRoute";
 function App() {
  
 
-  console.log(import.meta.env);
-  
   return (
-   
-      <Router>
-        <Routes>
-          <Route path="/*" element={<UserRoute />} />
-          <Route path="/admin/*" element={<AdminRoute />} />
-        </Routes>
-      </Router>
-  
+    <Router>
+      <Routes>
+        <Route path="/*" element={<UserRoute />} />
+        <Route path="/admin/*" element={<AdminRoute />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -23,12 +23,15 @@ const userSlice = createSlice({
         },
         updateUser:(state,action)=>{
 
-            console.log(action);
             
             state.user.profile = action.payload
+        },
+        updatePLan:(state)=>{
+
+            state.user.isPremium = true;
         }
     }
 });
 
-export const { userLogin, userLogout ,updateUser} = userSlice.actions;
+export const { userLogin, userLogout,updatePLan ,updateUser} = userSlice.actions;
 export default userSlice.reducer;
