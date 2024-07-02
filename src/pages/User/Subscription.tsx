@@ -2,21 +2,10 @@ import userApi from "../../Apis/user";
 import PremiumAd from "../../Components/User/PremiumAd";
 import { RootState } from "../../Redux/store";
 import { useSelector } from "react-redux";
-import { log } from "console";
 import { useEffect, useState } from "react";
 import { Plans } from "../../Interface/interface";
 
-const Default = [
-  "No Verified Badge",
-  "With Ads free experience",
-  "Up to 50 follows per day",
-];
 
-const Premium = [
-  "Verified Badge",
-  "Ads free experience",
-  "Up to 200 follows per day",
-];
 
 function Subscription() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);

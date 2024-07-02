@@ -1,4 +1,3 @@
-import React from 'react'
 import { Chart } from "react-google-charts";
 
 
@@ -67,7 +66,7 @@ function SectionTwo({ageRoup}:SectionTwoPro) {
 
   return (
      <div className="mt-10  z-0 h-80 m-5   p-6 rounded-lg">
-              <h2 className="text-2xl m-5 font-bold">User By Age</h2>
+              <p className="text-xl m-5 font-bold">User By Age</p>
 
       <Chart
         chartType="BarChart"

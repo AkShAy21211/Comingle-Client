@@ -1,5 +1,5 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PostsType, User } from "../../Interface/interface";
+import  { Dispatch, SetStateAction } from "react";
+import { PostsType } from "../../Interface/interface";
 import Slider from "react-slick";
 
 type ViewPostsModalProps = {

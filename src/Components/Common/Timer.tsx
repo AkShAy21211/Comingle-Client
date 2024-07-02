@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { OTPResend } from '../../Interface/interface';
 
 const Timer= ({ duration, onResend }:OTPResend) => {

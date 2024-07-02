@@ -23,8 +23,8 @@ const authFreeEndpoints = [
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Set Content-Type header conditionally
-    console.log('mp data',config);
+
+
     
     if (config.data && config.data instanceof FormData) {
 
@@ -42,7 +42,6 @@ axiosInstance.interceptors.request.use(
       url.startsWith(endpoint)
     );
 
-    console.log(requiresAuth);
     
     if (requiresAuth) {
       console.log(requiresAuth);
@@ -58,7 +57,6 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    // Handle request error
     return Promise.reject(error);
   }
 );

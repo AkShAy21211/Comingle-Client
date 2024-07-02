@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import ProfileModal from "../Common/ProfileModal";
 import userApi from "../../Apis/user";
@@ -13,9 +13,10 @@ import { FaImages } from "react-icons/fa";
 import ViewPostModal from "../Common/ViewPostModal";
 import Slider from "react-slick";
 import ViewTextPostModal from "../Common/ViewTextPostModal";
-import { IoMdHeartEmpty, IoMdSend } from "react-icons/io";
+import { IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import FormattedRelativeTime from "../../Utils/Time";
+import FriendsModal from "./FriendsModal";
 type ProfileProp = {
   isMyProfile: boolean;
   fetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,6 +56,12 @@ function ProfileAndBg({
   }>({ postId: "", error: "" });
   const [newComment, setNewComment] = useState<string>("");
   const [reload, setReload] = useState(false);
+  const [friends, setFriends] = useState<User[] | []>([]);
+  const [showFriends, setShowFriends] = useState(false);
+  const [followers, setFollowers] = useState<User[] | []>([]);
+  const [followeing, setFollowing] = useState<User[] | []>([]);
+  const [type, setType] = useState("");
+  const [currentUserData, setCurrentUserData] = useState<User | null>(null);
   //////// fetching user profile ///////////////
 
   const handleTabClick = (tab: string) => {
@@ -71,6 +78,53 @@ function ProfileAndBg({
     }
   };
 
+  async function fetchCurrentUserProfile() {
+    try {
+      const response = await userApi.profile();
+      if (response) {
+        setCurrentUserData(response.user);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCurrentUserProfile();
+  }, []);
+
+  useEffect(() => {
+    const getFriends = async (userId: string) => {
+      if (user) {
+        try {
+          const response: User = await userApi.getFriends(userId);
+          const followers: User[]|[] = response.profile.followers || [];
+          const following: User[]|[] = response.profile.following || [];
+          setFollowers(followers);
+          setFollowing(following);
+          return;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    getFriends(user?._id as string);
+  }, [user]);
+
+  const handleShowFriends = (type: string) => {
+    setShowFriends(true);
+    if (type === "following") {
+      setFriends(followeing);
+      setType("following");
+      return;
+    } else if (type === "follower") {
+      setFriends(followers);
+      setType("follower");
+      return;
+    }
+  };
+
   const handleFollow = async (id: string) => {
     await userApi.followRequest(id);
   };
@@ -79,6 +133,20 @@ function ProfileAndBg({
     try {
       await userApi.accessChat(participantId);
       await userApi.fetchAllChats();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editPost = async (postId: string, editPostCption: string) => {
+    try {
+      if (!editPostCption.trim()) {
+        return;
+      }
+      await userApi.editPost(postId, editPostCption);
+      setSelectedPost(null);
+      setSelectedTextPost(null)
+      fetchAgain(true)
     } catch (error) {
       console.log(error);
     }
@@ -171,7 +239,6 @@ function ProfileAndBg({
         userId
       );
       if (commentResponse) {
-        console.log('commmmmmmmmmmmmmmmmmmet',commentResponse);
         setSelectedPost((prevPost) => {
           if (!prevPost) return prevPost;
 
@@ -253,7 +320,7 @@ function ProfileAndBg({
           <FaRegEdit
             onClick={() => setShowCoverMdal(true)}
             size={18}
-            className={` float-end text-custom-blue right-4  text-lg relative top-20 lg:top-20`}
+            className={`  float-end text-custom-blue right-4 cursor-pointer  text-lg relative top-20 lg:top-20`}
           />
         )}
         <img
@@ -262,11 +329,12 @@ function ProfileAndBg({
           alt=""
         />
       </div>
+      
       {isMyProfile && (
         <FaRegEdit
           size={18}
           onClick={() => setShowDpMdal(true)}
-          className="float-end relative  top-24   right-0 lg:top-36 lg:mt-3  lg:right-0"
+          className={`float-end relative z-50  cursor-pointer top-24 md:top-20 `}
         />
       )}
       <div
@@ -284,26 +352,48 @@ function ProfileAndBg({
         ) : (
           <Avatar className=" rounded-full" size="140" name={user?.name} />
         )}
-        {user?.profile.isPremium && (
-          <MdVerified
-            className="absolute top-20 left-20 lg:top-32 lg:-mt-6 lg:left-32  text-blue-500"
-            size={45}
-          />
-        )}
       </div>
       <div className="relative w-auto   justify-start flex-col  lg:flex-row lg:justify-center mb-8 mt-10 lg:mt-1 ">
-        <h2 className=" -mt-14 font-bold  text-center  ">{user?.username}</h2>
+        <p className=" justify-center -mt-14 font-bold text-xl  text-center   flex gap-1">
+          {user?.username}{" "}
+          {user?.profile.isPremium && (
+            <MdVerified className="mt-1 text-blue-600" />
+          )}
+        </p>
         <p className="  font-light ">{user?.profile.bio}</p>
         {!isMyProfile && (
-          <div className="w-96 flex gap-1 justify-center mb-5 mt-3">
-            <button
-              className="bg-custom-blue px-5 py-3 rounded-lg text-white "
-              onClick={() => {
-                handleFollow(user?._id as string);
-              }}
-            >
-              Follow
-            </button>
+          <div className="w-auto flex gap-1 justify-center mb-5 mt-3">
+            {currentUserData?.profile?.following?.includes(user?._id as any) ? (
+              <button
+                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                // onClick={() => {
+                //   handleFollow(user?._id as string);
+                // }}
+              >
+                Following
+              </button>
+            ) : currentUserData?.profile?.followers?.includes(
+                user?._id as any
+              ) ? (
+              <button
+                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                onClick={() => {
+                  handleFollow(user?._id as string);
+                }}
+              >
+                Follow Back
+              </button>
+            ) : (
+              <button
+                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                onClick={() => {
+                  handleFollow(user?._id as string);
+                }}
+              >
+                Follow
+              </button>
+            )}
+
             <Link
               to="/chats"
               onClick={() => handleMessage(user?._id as string)}
@@ -315,15 +405,29 @@ function ProfileAndBg({
         )}
       </div>
       <div className=" -mt-5 lg:-mt-14 flex w-full justify-center p-5 gap-5 h-32">
-        <div className="border  border-black h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col">
+        <div
+          onClick={() => handleShowFriends("follower")}
+          className={`border  ${
+            isDarkMode ? "border-white" : "border-black"
+          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+        >
           {user?.profile.followers?.length}
           <p>Followers</p>
         </div>
-        <div className=" border    p-2 border-black h-16  w-full lg:w-1/6 rounded-lg flex items-center flex-col">
+        <div
+          onClick={() => handleShowFriends("following")}
+          className={`border  ${
+            isDarkMode ? "border-white" : "border-black"
+          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+        >
           {user?.profile.following?.length}
           <p>Following</p>
         </div>
-        <div className=" border p-2 border-black h-16 w-full lg:w-1/6 rounded-lg flex items-center flex-col">
+        <div
+          className={`border  ${
+            isDarkMode ? "border-white" : "border-black"
+          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+        >
           {posts?.length}
           <p>Posts</p>
         </div>
@@ -390,7 +494,7 @@ function ProfileAndBg({
                           </div>
                           <div className="flex flex-col items-center justify-center">
                             <FaRegComment />
-                            <p>{post.comments.length || 0}</p>
+                            <p>{post.comments[0].comment?post.comments.length: 0}</p>
                           </div>
                         </div>
                       </li>
@@ -444,6 +548,7 @@ function ProfileAndBg({
       {selectedPost && (
         <ViewPostModal
           reload={reload}
+          handlePostEdit={editPost}
           likePost={likePost}
           unlikePost={unLikePost}
           setReload={setReload}
@@ -465,6 +570,7 @@ function ProfileAndBg({
       {selectedTextPost && (
         <ViewTextPostModal
           reload={reload}
+          handlePostEdit={editPost}
           setReload={setReload}
           likePost={likePost}
           unlikePost={unLikePost}
@@ -481,6 +587,18 @@ function ProfileAndBg({
           selectedPost={selectedTextPost}
           setSelectedPost={setSelectedTextPost}
           currentUserId={currentUser._id}
+        />
+      )}
+      {showFriends && (
+        <FriendsModal
+          isMyProfile={isMyProfile}
+          fetchAgain={fetchAgain}
+          type={type}
+          currentUser={currentUser}
+          followUser={handleFollow}
+          user={user}
+          setShowFriends={setShowFriends}
+          friends={friends}
         />
       )}
     </>

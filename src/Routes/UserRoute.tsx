@@ -16,7 +16,8 @@ import OtherUserProfile from "../Pages/User/OtherUserProfile";
 import Notifications from "../Pages/User/Notifications";
 import Subscription from "../Pages/User/Subscription";
 import Chat from "../Pages/User/Chat";
-import { SocketProvider } from "../../context/SocketContext";
+import SinglePost from "../Pages/User/SinglePost";
+import NotFound404 from "../Pages/User/NotFound404";
 
 function UserRoute() {
   return (
@@ -51,6 +52,16 @@ function UserRoute() {
           <IslogedIn>
             <Layout>
               <Home />
+            </Layout>
+          </IslogedIn>
+        }
+      />
+        <Route
+        path="/post/:id"
+        element={
+          <IslogedIn>
+            <Layout>
+              <SinglePost />
             </Layout>
           </IslogedIn>
         }
@@ -138,9 +149,17 @@ function UserRoute() {
         path="/chats"
         element={
           <IslogedIn>
-            <SocketProvider>
-              <Chat />
-            </SocketProvider>
+            <Chat />
+          </IslogedIn>
+        }
+      />
+      
+
+       <Route
+        path="/*"
+        element={
+          <IslogedIn>
+            <NotFound404 />
           </IslogedIn>
         }
       />

@@ -1,6 +1,4 @@
-import React from 'react'
 import QuickViewBox from '../QuickViewBox';
-import { da } from 'date-fns/locale/da';
 
 
 

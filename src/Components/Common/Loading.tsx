@@ -15,7 +15,6 @@ const Loading: React.FC<LoadingProps> = ({ size }) => {
   const token = searchParams.get("token")||null;
   localStorage.setItem("token", JSON.stringify(token));
 
-  console.log('token',token);
   
   //////// fetching user profile ///////////////
 

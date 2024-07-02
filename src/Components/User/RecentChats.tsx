@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { ChatType, CurrentUser } from "../../Interface/interface";
+import { ChatType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
@@ -12,13 +12,14 @@ import { useNavigate } from "react-router-dom";
 import Avatar from "react-avatar";
 import { MdOutlinePermMedia } from "react-icons/md";
 import FormattedRelativeTime from "../../Utils/Time";
-import { CiClock1 } from "react-icons/ci";
 
 type RecentChatsProp = {
   fetchAgain: boolean;
+  setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
+
 };
 
-function RecentChats({ fetchAgain }: RecentChatsProp) {
+function RecentChats({ fetchAgain,setFetchAgain }: RecentChatsProp) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -37,6 +38,8 @@ function RecentChats({ fetchAgain }: RecentChatsProp) {
       const response = await userApi.fetchAllChats();
       if (response) {
         setChats(response.chats);
+        setFetchAgain(false)
+        
       }
     } catch (error) {
       console.error(error);
@@ -92,7 +95,7 @@ function RecentChats({ fetchAgain }: RecentChatsProp) {
                     : ""
                 }`}
               >
-                <div className="flex gap-5 justify-between">
+                <div className="flex gap-3 w-auto h-full justify-between">
                   {receiver?.profile.image ? (
                     <img
                       className="w-12 h-12 rounded-full"
@@ -127,10 +130,10 @@ function RecentChats({ fetchAgain }: RecentChatsProp) {
                   </div>
                 </div>
                 <p className="text-xs  text-end flex flex-col  justify-between">
-                 <span className="flex  flex-col text-nowrap  items-end lg:gap-0"> 
+                 <span className="flex wau  flex-col   items-end lg:gap-0"> 
                   { FormattedRelativeTime(chat.updatedAt)}
                   </span>
-                  <span>
+                  <span className="text-nowrap">
                     {unReadMessages.find(
                       (unreadChat) => unreadChat._id === chat._id
                     )

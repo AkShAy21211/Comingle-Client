@@ -1,10 +1,9 @@
 import ScrollableFeed from "react-scrollable-feed";
-import { Message, CurrentUser } from "../../Interface/interface";
-import { isLastMessage, isSameSender } from "../../Utils/chat";
+import { Message } from "../../Interface/interface";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import FormattedRelativeTime from "../../Utils/Time";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import Avatar from "react-avatar";
 import { IoMdDownload } from "react-icons/io";
 

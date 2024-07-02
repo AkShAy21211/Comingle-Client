@@ -16,7 +16,6 @@ function Login() {
     formState: { errors },
     handleSubmit,
     register,
-    reset,
   } = useForm({
     defaultValues: {
       email: "",

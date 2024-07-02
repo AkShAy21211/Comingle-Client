@@ -1,9 +1,7 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PostsType, User } from "../../Interface/interface";
-import Avatar from "react-avatar";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { PostsType } from "../../Interface/interface";
 import adminApi from "../../Apis/admin";
 import AlertModal from "../Common/AlertModal";
-import { FaEye } from "react-icons/fa";
 import Slider from "react-slick";
 import FormattedRelativeTime from "../../Utils/Time";
 
@@ -74,7 +72,7 @@ function ViewPostsModal({
       >
         <div className="relative p-4 w-full max-w-md  ">
           {/* Modal content */}
-          <div className="relative   rounded-lg  bg-gray-200 shadow-xl border mt-20 h-auto pb-8">
+          <div className="relative   rounded-lg  bg-gray-200  shadow-xl border mt-20 h-auto mb-20 pb-2">
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5  rounded-t dark:border-gray-600">
               <button
@@ -104,7 +102,7 @@ function ViewPostsModal({
 
             <div className="p-4 md:p-5">
               <div className="p-4 md:p-5">
-                {selectedPost?.image.length > 1 ? (
+                {selectedPost?.image?.length > 1 ? (
                   <div className="w-full h-full">
                     <Slider {...settings}>
                       {selectedPost?.image.map((content, index) => (
@@ -130,27 +128,27 @@ function ViewPostsModal({
                       ))}
                     </Slider>
                   </div>
-                ) : (
+                ) :selectedPost.image.length? (
                   <div className="w-full h-full">
-                    {selectedPost?.image[0].type === "image" ? (
+                    {selectedPost?.image[0]?.type === "image" ? (
                       <>
                         <img
                           src={selectedPost?.image[0].url}
                           alt="Image"
-                          className="object-cover w-full h-full"
+                          className="object-cover w-full h-72"
                         />
                       </>
                     ) : (
                       <>
                         <video
-                          src={selectedPost?.image[0].url}
+                          src={selectedPost?.image[0]?.url}
                           controls
                           autoPlay
                         ></video>
                       </>
                     )}
                   </div>
-                )}
+                ):<p>{selectedPost.description}</p>}
               </div>
               <div className="p-5 flex gap-5 flex-wrap w-full">
                 <p className="bg-gray-300 p-2  text-xs rounded-lg">

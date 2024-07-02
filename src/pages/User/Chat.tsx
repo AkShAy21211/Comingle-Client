@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import  { Fragment, useState } from "react";
 import RecentChats from "../../Components/User/RecentChats";
 import SingleChat from "../../Components/User/SingleChat";
 import Header from "../../Components/User/Header";
@@ -11,7 +11,7 @@ function Chat() {
    <Fragment>
     <Header/>
      <div className="grid  grid-cols-4">
-      <RecentChats  fetchAgain={fetchAgain} />
+      <RecentChats setFetchAgain={setFetchAgain} fetchAgain={fetchAgain} />
       <SingleChat  setFetchAgain={setFetchAgain} fetchAgain={fetchAgain}/>
     </div>
    </Fragment>

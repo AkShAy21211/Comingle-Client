@@ -36,7 +36,12 @@ const userEnpoints = {
     DELETE_POSTS:"/user/post/delete",
     DELETE_COMMENT:"/user/comment/delete",
     EDIT_COMMENT:"/user/comment/edit/",
+    EDIT_POST:"/user//post/edit",
     GET_FRIENDS:"/user/list-friends",
+    SEARCH_USERS:'/user/search',
+    GET_SIGNLE_POST:"/user/post",
+    UNFOLLOW:"/user/unfollow",
+    FRIENDS_SUGGESTIONS:"/user/friends/suggestions",
     LOGOUT:'/user/logout'
 
     

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { User } from "../../Interface/interface";
 import adminApi from "../../Apis/admin";
 import Avatar from "react-avatar";
@@ -9,13 +9,14 @@ function ListUsers() {
     
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [fetchAgain,setFetchAgain] = useState(false);
 
   const getUsers = async () => {
     try {
       const user = await adminApi.getUsers();
       if (user) {
         setUsers(user);
+        setFetchAgain(false);
       }
     } catch (error) {
       console.log(error);
@@ -24,13 +25,12 @@ function ListUsers() {
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [fetchAgain]);
 
   const handleSearchUsers = (name: string) => {
 
-    const fullUsers = users;
     if (!name.trim()) {
-      setUsers(fullUsers); // Reset to original list if search is empty
+      setFetchAgain(true)
       return;
     }
 

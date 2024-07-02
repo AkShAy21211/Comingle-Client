@@ -5,7 +5,6 @@ const initialState = {
  unreadMessage:[]
 };
 
-console.log(initialState);
 
 const chatSlice = createSlice({
     name: "chat",

@@ -1,8 +1,8 @@
 // ToastProvider.tsx
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 type ToastProviderProps = {
   children: ReactNode;

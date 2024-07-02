@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { DebouncedFunc } from "lodash";
 import { IoSearch } from "react-icons/io5";
 
 
@@ -6,10 +6,11 @@ type ExpandableSearchBarProps={
 
   isFocused:boolean;
   setIsFocused:React.Dispatch<React.SetStateAction<boolean>>;
+  searchUsers:DebouncedFunc<(name: any) => Promise<void>>;
 
 }
 
-function ExpandableSearchBar({isFocused,setIsFocused}:ExpandableSearchBarProps) {
+function ExpandableSearchBar({isFocused,setIsFocused,searchUsers}:ExpandableSearchBarProps) {
 
 
 
@@ -25,6 +26,7 @@ function ExpandableSearchBar({isFocused,setIsFocused}:ExpandableSearchBarProps) 
           <div className="relative border rounded-lg">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"></div>
             <input
+            onChange={(e)=>searchUsers(e.target.value)}
               type="search"
               id="default-search"
               className={`block ${isFocused?'w-full':'w-48'} transition-all duration-500 ease-in-out md:w-full p-4 h-10 ps-10 text-sm outline-none rounded-lg  placeholder:text-gray-600`}

@@ -1,3 +1,5 @@
+import { TableInstance, TableOptions } from "react-table";
+
 export interface SignUpType {
   name: string;
   username: string;
@@ -37,8 +39,8 @@ export interface Profile {
   country: string;
   gender: string;
   isPremium?: boolean;
-  followers?: string[];
-  following?: string[];
+  followers?: User[];
+  following?: User[];
   posts?: number;
 }
 export interface User {
@@ -58,6 +60,7 @@ export interface Comment {
   comment: string;
   commenter: string;
   commenterImage: string;
+  isPremium:boolean;
   commentedUserId:string;
   createdAt: Date;
 }
@@ -227,3 +230,38 @@ export interface Subscription{
   product:string;
 
 }
+
+
+export interface SignedInAdmin{
+
+  name:string,
+  email:string,
+  image:string,
+  token:string
+}
+
+export type TableInstanceWithGlobalFilter<T extends object> = TableInstance<T> & {
+  preGlobalFilteredRows: any[];
+  setGlobalFilter: (filterValue: string | undefined) => void;
+};
+// src/service-worker.d.ts
+
+
+
+export type TableOptionsWithGlobalFilter<T extends object> = TableOptions<T> & {
+  initialState?: Partial<{
+    globalFilter: string;
+  }>;
+};
+
+export interface Engagement{
+
+
+    likeConut:number;
+    commentCount:number;
+    followConut:number;
+    postCount:number;
+    createdAt:Date;
+    updatedAt:Date
+}
+

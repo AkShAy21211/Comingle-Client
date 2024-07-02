@@ -2,8 +2,7 @@ import { useDispatch } from "react-redux";
 import { userLogout } from "../../Redux/Slice/User/userSlice";
 import { useNavigate } from "react-router-dom";
 import { persistor } from "../../Redux/store";
-import Cookies from "js-cookie";
-import userApi from "../../Apis/user";
+
 
 type LogoutModalPro = {
   setLogoutModal: React.Dispatch<React.SetStateAction<boolean>>;

@@ -13,7 +13,6 @@ function ForgotPassword() {
 
   const [isEmailSubmit, setIsEmailSubmit] = useState(false);
   const [isOtpSubmit, setIsOtpSubmit] = useState(false);
-  const [isNewPassword, setIsNewPassword] = useState(false);
 
   /////////////// handling ot value ///////////////////////////
   const { handleSubmit, values, setFieldValue } = useFormik<Otp>({

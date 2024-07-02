@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ViewUserModal from "../Admin/ViewUserModal";
 import { User } from "../../Interface/interface";
-import userApi from "../../Apis/user";
 
 type PeopleProps = {
   users: User[];
@@ -32,8 +31,8 @@ function People({ users,isAdminView }: PeopleProps) {
     
   return (
     <>
-      <div className="container mx-auto p-4">
-        <div className="h-svh grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="container mx-auto p-4 h-screen">
+        <div className="h-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {users.map((user) => {
 
       
@@ -55,13 +54,12 @@ function People({ users,isAdminView }: PeopleProps) {
               
                 <h6 className="mt-3 text-center">{user.username.toLowerCase()}</h6>
                
-                
-               {/* <FollowButton recipientId={user._id} requesterId={currentUser}/> */}
 
               </div>
               
             );
           })}
+          <h2 className="px-3 mt-1 text-sm">{!users.length?'No mathes found':""}</h2>
         </div>
       </div>
       {

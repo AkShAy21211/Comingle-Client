@@ -1,6 +1,5 @@
 import { PiSquaresFour } from "react-icons/pi";
 import { BsChatLeftText } from "react-icons/bs";
-import { BsPersonAdd } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -51,12 +50,12 @@ function MobileBottomNav() {
                 type="button"
                 onClick={() => setOpenModal(true)}
                 className={`inline-flex items-center justify-center ${
-                  isDarkMode ? "bg-white" : ""
+                  isDarkMode ? "bg-custom-blue" : ""
                 } w-10 h-10 font-mediumrounded-full group `}
               >
               
                  
-                <AiFillPlusCircle className="text-custom-blue" size={40}/>
+                <AiFillPlusCircle className={`${isDarkMode?'text-white':'text-custom-blue'}`} size={40}/>
               </button>
             </div>
 

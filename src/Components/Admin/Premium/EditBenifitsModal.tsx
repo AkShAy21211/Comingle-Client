@@ -1,8 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import { Plans } from "../../../Interface/interface";
-import { pl } from "date-fns/locale";
-import adminApi from "../../../Apis/admin";
 
 type EditBenifitsModalProps = {
   setShowModal: Dispatch<SetStateAction<boolean>>;
@@ -11,10 +9,7 @@ type EditBenifitsModalProps = {
 
 function EditBenifitsModal({ setShowModal, plan }: EditBenifitsModalProps) {
   const [newBenefit, setNewBenefit] = useState<string>("");
-  const [title, setTitle] = useState<string>("");
-  const [amount, setAmount] = useState<number>(0);
-  const [benefits, setBenifits] = useState<string[]>([]);
-  const [newBenefits, setNewBenefits] = useState<string>("");
+
 
   
   const handleAddNewBenefit = () => {
@@ -45,19 +40,19 @@ function EditBenifitsModal({ setShowModal, plan }: EditBenifitsModalProps) {
     });
   };
 
-  const handleSubmit = async () => {
-    try {
-      const data: { _id: string; benefits: string[] } = {
-        _id: "",
-        benefits: [],
-      };
-      data.benefits = plan.benefits;
-      data._id = plan._id;
-      const updatePLan = adminApi.updatePlan(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleSubmit = async () => {
+  //   try {
+  //     const data: { _id: string; benefits: string[] } = {
+  //       _id: "",
+  //       benefits: [],
+  //     };
+  //     data.benefits = plan.benefits;
+  //     data._id = plan._id;
+  //     const updatePLan = adminApi.updatePlan(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <>

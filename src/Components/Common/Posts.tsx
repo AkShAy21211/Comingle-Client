@@ -1,39 +1,29 @@
-import React, { useEffect, useState, useCallback, Dispatch, SetStateAction } from "react";
-import { PostsType } from '../../Interface/interface';
+import { useEffect, useState, useCallback } from "react";
+import { PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import InfiniteScroll from "react-infinite-scroll-component";
 import People from "../Skleton/Posts";
 
-
-
 function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<PostsType[]>([]);
 
   // Handle fetching posts on first visit
   const fetchAllPosts = useCallback(async () => {
     try {
-      setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
-        
-        setPosts(getPosts.posts.filter((post:PostsType)=>post?.image.length));
+        setPosts(
+          getPosts.posts.filter((post: PostsType) => post?.image.length)
+        );
         setHasMore(getPosts.posts.length > 0);
       }
-      const postedUsers = getPosts.posts.map((post: any) => post.postedUser);
-
-     
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       console.log(error);
     }
   }, []);
 
-  console.log('postsssssssssssssssssssssssss',posts);
-  
   useEffect(() => {
     fetchAllPosts();
   }, [fetchAllPosts]);
@@ -41,16 +31,12 @@ function Posts() {
   // Handle fetching posts on scroll
   const fetchPosts = useCallback(async () => {
     try {
-      setLoading(true);
       const getPosts = await userApi.getAllPosts(index);
       if (getPosts) {
         setPosts((prevPosts) => [...prevPosts, ...getPosts.posts]);
         setHasMore(getPosts.posts.length > 0);
-
       }
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       console.log(error);
     }
   }, [index]);
@@ -87,15 +73,10 @@ function Posts() {
             <div>
               <img
                 key={post._id} // Ensure each element has a unique key
-                src={
-                  post.image[0]?.url
-                
-                }
+                src={post.image[0]?.url}
                 alt="Post"
                 className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
               />
-
-            
             </div>
           ))}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import classNames from "classnames";
 import Header from "./Header";
 import { RiDashboardHorizontalLine } from "react-icons/ri";
@@ -6,7 +6,7 @@ import { MdOutlinePeopleAlt } from "react-icons/md";
 import { GoFileMedia } from "react-icons/go";
 import { TbPremiumRights } from "react-icons/tb";
 import { RiLogoutBoxRLine } from "react-icons/ri";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { adminLogout } from "../../../Redux/Slice/Admin/adminSlice";
 import { persistor } from "../../../Redux/store";
@@ -14,7 +14,6 @@ import { persistor } from "../../../Redux/store";
 function SideBar() {
   const [showSidebar, setShowSidebar] = useState(false);
   const dispatch = useDispatch();
-  const navigate =useNavigate();
 
   return (
     <>

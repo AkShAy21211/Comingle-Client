@@ -1,5 +1,4 @@
 import LoginLeft from "../../Components/User/LoginLeft";
-import { ToastContainer } from "react-toastify";
 import RegisterForm from "../../Components/User/RegisterForm";
 
 function Register() {

@@ -3,7 +3,7 @@ import userApi from "../../Apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { updateUser } from "../../Redux/Slice/User/userSlice";
-
+import { CgSpinner } from "react-icons/cg";
 
 type ProfileModalProp = {
   showDpModal: boolean;
@@ -24,7 +24,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   const dispatch = useDispatch();
   const bgRef = useRef<HTMLInputElement | null>(null);
   const profileRef = useRef<HTMLInputElement | null>(null);
-
+  const [loading, setLoading] = useState(false);
   //////////////// OPEN FILE INPUT /////////////////////
 
   const changeCover = () => {
@@ -43,11 +43,8 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
 
-  
-
     if (files && files.length) {
       if (name === "background") {
-
         setCover(files[0]);
       } else {
         setDP(files[0]);
@@ -67,17 +64,18 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
       formData.append("image", DP);
       formData.append("type", "profile");
     }
+    setLoading(true);
     try {
-   
       const fileUploadResponse = await userApi.updateProfileImage(
         type,
         formData
       );
 
       if (fileUploadResponse?.status) {
-        setFetchAgain(true);        
+        setFetchAgain(true);
         type === "background" ? setShowCoverMdal(false) : setShowDpMdal(false);
-        dispatch(updateUser(fileUploadResponse.data.user.profile.image))
+        dispatch(updateUser(fileUploadResponse.data.user.profile.image));
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -94,7 +92,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
                 className={`border-0 rounded-lg shadow-lg ${
                   isDarkMode
                     ? "bg-custom-blue/40  backdrop-blur-xl text-white"
-                    : "  bg-white"
+                    : "bg-white"
                 } relative flex flex-col w-full outline-none focus:outline-none`}
               >
                 <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
@@ -160,7 +158,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
                     Close
                   </button> */}
                   <button
-                    className={`bg-custom-blue  w-full text-whitefont-bold  text-white uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
+                    className={`bg-custom-blue  w-full flex justify-center text-whitefont-bold  text-white uppercase text-sm text-center px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                     type="submit"
                     onClick={() =>
                       handleSubmit(
@@ -168,7 +166,11 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
                       )
                     }
                   >
-                    Update
+                    {loading ? (
+                      <CgSpinner className="animate-spin " size={20} />
+                    ) : (
+                      " Update"
+                    )}
                   </button>
                 </div>
               </div>

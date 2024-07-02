@@ -1,4 +1,3 @@
-import React from 'react'
 import SectionOne from '../../Components/Admin/Premium/SectionOne'
 
 function Premium() {

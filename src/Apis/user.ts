@@ -3,6 +3,7 @@ import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
+
 const userApi = {
   signup: async (formData: SignUpType) => {
     try {
@@ -160,10 +161,20 @@ const userApi = {
       console.log(error);
     }
   },
+
+  searchUsers: async (name: string) => {
+    try {
+      const userReponse = await axiosInstance.get(
+        userEnpoints.SEARCH_USERS + `?name=${name}`
+      );
+
+      return userReponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
   profile: async () => {
     try {
-      console.log("calling suer");
-
       const { data } = await axiosInstance.get(userEnpoints.PROFILE);
 
       console.log("userdata", data);
@@ -404,19 +415,52 @@ const userApi = {
           transition: Bounce,
         });
       }
-      
 
       return followRequest.data;
-    } catch (error:any) {
-       toast.warn(error.response.data.message, {
+    } catch (error: any) {
+      toast.warn(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      console.log(error);
+    }
+  },
+
+  unfollow: async (following: string) => {
+    try {
+
+      
+      const unfollowRequest = await axiosInstance.patch(userEnpoints.UNFOLLOW, {
+        following,
+      });
+
+      if (unfollowRequest.status) {
+        toast.success(unfollowRequest.data.message, {
           position: "bottom-center",
           autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
+      }
+      return unfollowRequest.data;
+    } catch (error: any) {
+      toast.warn(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       console.log(error);
     }
   },
@@ -442,7 +486,7 @@ const userApi = {
     }
   },
 
-  acceptFollow: async (followId: string, notificationId: string) => {
+  acceptFollow: async (followId: string, notificationId?: string) => {
     try {
       const followStatus = await axiosInstance.post(
         userEnpoints.ACCEPT_FOLLOW + `/${followId}/${notificationId}`
@@ -662,12 +706,24 @@ const userApi = {
     }
   },
 
-    getFriends: async (userId:string) => {
+  getFriends: async (userId: string) => {
     try {
-      const chatsReponse = await axiosInstance.get(userEnpoints.GET_FRIENDS+`/${userId}`);
+      const chatsReponse = await axiosInstance.get(
+        userEnpoints.GET_FRIENDS + `/${userId}`
+      );
 
       return chatsReponse.data;
-      
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  frindsSuggestions: async () => {
+    try {
+      const suggestionsResponse = await axiosInstance.get(
+        userEnpoints.FRIENDS_SUGGESTIONS
+      );
+
+      return suggestionsResponse.data;
     } catch (error) {
       console.log(error);
     }
@@ -704,16 +760,16 @@ const userApi = {
       );
 
       return chatsReponse.data;
-    } catch (error:any) {
-       toast.error(error.response.data.message, {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-        });
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
 
       console.log(error);
     }
@@ -748,6 +804,39 @@ const userApi = {
       console.log(error);
     }
   },
+  editPost: async (postId: string, text: string) => {
+    try {
+      const deleteResponse = await axiosInstance.patch(userEnpoints.EDIT_POST, {
+        postId,
+        text,
+      });
+      toast.success(deleteResponse.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getSinglePost: async (postId: string) => {
+    try {
+      console.log("lllllllllllllllllllllll", postId);
+
+      const postResponse = await axiosInstance.get(
+        userEnpoints.GET_SIGNLE_POST + `/${postId}`
+      );
+      return postResponse.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 
   deleteComment: async (postId: string, commentId: string) => {
     try {
@@ -774,14 +863,11 @@ const userApi = {
     newComment: string
   ) => {
     try {
-      const editComment = await axiosInstance.patch(
-        userEnpoints.EDIT_COMMENT,
-        {
-          postId,
-          commentId,
-          newComment,
-        }
-      );
+      const editComment = await axiosInstance.patch(userEnpoints.EDIT_COMMENT, {
+        postId,
+        commentId,
+        newComment,
+      });
       toast.success(editComment.data.message, {
         position: "bottom-center",
         autoClose: 3000,

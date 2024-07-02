@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ExpandableSearchBar from "../../Components/Common/ExpandableSearchBar";
 import People from "../../Components/Common/People";
 import Posts from "../../Components/Common/Posts";
@@ -6,7 +6,7 @@ import { User } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
-
+import _ from 'lodash';
 
 function Explore() {
   const [isFocused, setIsFocused] = useState(false);
@@ -29,7 +29,6 @@ function Explore() {
 
         if (users) {
           setAllUsers(users.users);
-
         }
       } catch (error) {
         console.log(error);
@@ -39,14 +38,24 @@ function Explore() {
     getUsers();
   }, []);
 
-  /////////////////// HANDLE FOLLOWING /////////////////////////////////////
+  ////////////////////////////// HANDLE SEARCHU USERS /////////////////////////
+ const searchUsers = useCallback(
+    _.debounce(async (name) => {
+      if (!name) {
+        const response = await userApi.getAllUsers();
+        if (response) {
+          setAllUsers(response.users);
+        }
+      } else {
 
-  async function handleFollow(id: string) {
-    const follow = await userApi.followRequest(id);
-  }
-
-
-
+        const response = await userApi.searchUsers(name);
+        if (response) {
+          setAllUsers(response.users);
+        }
+      }
+    }, 300),
+    [] 
+  );
 
   //////////////////// HANDLE SHOW PEOPLE //////////////////////////////////
 
@@ -56,13 +65,16 @@ function Explore() {
   }
 
   return (
-    <div className={` h-full ${
+    <div
+      className={` h-full ${
         isDarkMode ? "bg-black text-white" : ""
-      }  col-span-full lg:col-span-3  `}>
+      }  col-span-full lg:col-span-3  `}
+    >
       <div className="   flex  md:flex   mt-20 px-5 mb-5" id="top-search-bar">
         {/* SEARCH BAR FOR EXPLORE */}
 
         <ExpandableSearchBar
+          searchUsers={searchUsers}
           isFocused={isFocused}
           setIsFocused={setIsFocused}
         />
@@ -105,14 +117,8 @@ function Explore() {
         </div>
       </div>
 
-        {isPeople && (
-          <People
-            users={allUsers}
-          />
-        )}
-        {isPosts && <Posts />}
-
-  
+      {isPeople && <People users={allUsers} />}
+      {isPosts && <Posts />}
     </div>
   );
 }

@@ -1,4 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import { RootState } from '../../Redux/rootReducer';
+import { useSelector } from 'react-redux';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -8,6 +10,7 @@ interface ReportModalProps {
 
 const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [reason, setReason] = useState<string>('');
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const handleReasonChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setReason(event.target.value);
@@ -18,13 +21,14 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, onSubmit }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white  rounded-lg p-6 md:max-w-md w-96 ">
+    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+      <div className={`  ${isDarkMode?'backdrop-blur-lg border border-gray-300 text-white':"bg-gray-200 text-black"}rounded-lg p-6 md:max-w-md w-96 `}>
         <h2 className="text-2xl font-semibold mb-4">Report Post</h2>
           <label className="block mb-4">
-            <span className="text-gray-700">Select a reason:</span>
+            <span className="">Select a reason:</span>
             <select
-              className="block w-full mt-1 p-2 focus:outline-none rounded-md"
+              className={`block w-full mt-1 p-2 focus:outline-none rounded-md
+                ${isDarkMode?' bg-black':"bg-gary-200 text-black"}`}
               value={reason}
               onChange={handleReasonChange}
             >
@@ -46,7 +50,7 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, onSubmit }) 
           <div className="flex justify-end">
             <button
               type="button"
-              className="mr-2 px-4 py-2 bg-gray-400 text-gray-700 rounded-md"
+              className="mr-2 px-4 py-2  rounded-md"
               onClick={onClose}
             >
               Cancel
@@ -54,7 +58,7 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, onSubmit }) 
             <button
               type="submit"
               onClick={()=>onSubmit(reason)}
-              className="px-4 py-2 bg-custom-blue text-white rounded-md"
+              className="px-4 py-2 bg-custom-bluerounded-md bg-custom-blue text-white rounded-lg"
             >
               Submit
             </button>

@@ -16,6 +16,7 @@ function OtherUserProfile() {
   const fetchUserProfile = async () => {
     try {
       if (username) {
+        
         const response = await userApi.getOtherUserProfile(username);
 
         if (response) {

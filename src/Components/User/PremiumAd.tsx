@@ -1,12 +1,10 @@
-import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { Link } from "react-router-dom";
 import userApi from "../../Apis/user";
-import useRazorpay, { RazorpayOptions } from "react-razorpay";
+import useRazorpay from "react-razorpay";
 import { Plans } from "../../Interface/interface";
 import { updatePLan } from "../../Redux/Slice/User/userSlice";
-import { current } from "@reduxjs/toolkit";
 import { Bounce, toast } from "react-toastify";
 
 type PremiumProp = {
@@ -115,7 +113,7 @@ function PremiumAd({ plan, isPremiumPage }: PremiumProp) {
       className={`${
         !isDarkMode ? "border-l border-gray-300" : ""
       }  h-auto  overflow-hidden rounded-lg ${
-        isDarkMode ? "bg-blue-950/75" : "bg-white"
+        isDarkMode ? "" : "bg-white"
       }  mt-14 p-10 flex flex-col  border `}
     >
       <h2 className={`text-center lg:text-f-10 xl:text-xl`}>{plan?.title}</h2>

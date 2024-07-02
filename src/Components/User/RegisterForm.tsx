@@ -7,13 +7,17 @@ import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 import { GiConfirmed } from "react-icons/gi";
 
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { Bounce, toast } from "react-toastify";
+import { ImEye, ImEyeBlocked } from "react-icons/im";
 function RegisterForm() {
-  const [username, setUsername] = useState<string | null>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [validUsername, setValidUsername] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null); // Create a ref for the password input
+  const confirmpasswordRef = useRef<HTMLInputElement>(null); // Create a ref for the password input
+  const [togglePassword, setTogglePassword] = useState(false);
+  const [togglePasswordTwo, setTogglePasswordTwo] = useState(false);
 
   const navigate = useNavigate();
   const {
@@ -34,6 +38,24 @@ function RegisterForm() {
     validationSchema: signUpScheema,
     onSubmit: onSubmit,
   });
+
+  const togglePasswordVisibility = () => {
+    if (passwordRef && passwordRef.current) {
+      setTogglePassword(!togglePassword);
+      const inputType =
+        passwordRef.current?.type === "password" ? "text" : "password";
+      passwordRef.current.type = inputType;
+    }
+  };
+
+  const togglePasswordVisibilityTwo = () => {
+    if (confirmpasswordRef && confirmpasswordRef.current) {
+      setTogglePasswordTwo(!togglePasswordTwo);
+      const inputType =
+        confirmpasswordRef.current?.type === "password" ? "text" : "password";
+      confirmpasswordRef.current.type = inputType;
+    }
+  };
 
   /////////////// DEBOUNCING FOR USERNAME ///////////////////////////////////
 
@@ -66,9 +88,7 @@ function RegisterForm() {
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setUsername(value);
     checkUsername(value);
-
   };
 
   async function onSubmit(formData: SignUpType) {
@@ -81,7 +101,6 @@ function RegisterForm() {
         progress: undefined,
         theme: "colored",
         transition: Bounce,
-
       });
 
       return;
@@ -100,8 +119,6 @@ function RegisterForm() {
     }
   }
 
-
-  
   return (
     <div className="w-full  flex  flex-col justify-center items-center  ">
       <div className=" space-y-2 md:space-y-2 w-full flex flex-col  items-center">
@@ -112,7 +129,7 @@ function RegisterForm() {
           <strong className="text-black lg:text-blue-800"> UP</strong>
         </h1>
         <form
-          className="space-y-2 md:space-y-4  w-full p-5 sm:w-full md:w-96"
+          className="space-y-2 md:space-y-1  w-full p-5 sm:w-full md:w-96"
           onSubmit={handleSubmit}
           noValidate
         >
@@ -208,15 +225,30 @@ function RegisterForm() {
             >
               Password
             </label>
-            <input
-              onChange={handleChange}
-              type="password"
-              id="password"
-              onBlur={handleBlur}
-              value={values.password}
-              placeholder="••••••••"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            />
+            <div className="flex relative">
+              <input
+                onChange={handleChange}
+                type="password"
+                ref={passwordRef}
+                autoComplete="true"
+                id="password"
+                onBlur={handleBlur}
+                value={values.password}
+                placeholder="••••••••"
+                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+              {!togglePassword ? (
+                <ImEyeBlocked
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={togglePasswordVisibility}
+                />
+              ) : (
+                <ImEye
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={togglePasswordVisibility}
+                />
+              )}
+            </div>
             <p className="text-red-500 text-sm mt-2">{errors.password}</p>
           </div>
           <div>
@@ -226,15 +258,30 @@ function RegisterForm() {
             >
               Confirm password
             </label>
-            <input
-              type="confirmpassword"
-              id="confirmpassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.confirmpassword}
-              placeholder="••••••••"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            />
+            <div className="flex relative">
+              <input
+                ref={confirmpasswordRef}
+                autoComplete="true"
+                type="confirmpassword"
+                id="confirmpassword"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.confirmpassword}
+                placeholder="••••••••"
+                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              />
+              {!togglePasswordTwo ? (
+                <ImEyeBlocked
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={togglePasswordVisibilityTwo}
+                />
+              ) : (
+                <ImEye
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={togglePasswordVisibilityTwo}
+                />
+              )}
+            </div>
             <p className="text-red-500 text-sm mt-2">
               {errors.confirmpassword}
             </p>

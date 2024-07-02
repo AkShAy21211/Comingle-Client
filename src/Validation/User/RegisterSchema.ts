@@ -10,7 +10,8 @@ const signUpScheema = yup.object().shape({
     .required("Username is required")
     .min(3, "Username must be more than 3 characters long")
     .matches(/^\S*$/, "Username cannot contain spaces"), // No spaces allowed    email:yup.string().required("email is required").email("Invalid email format"),
-  password: yup
+    email:yup.string().required("email is required").email("Invalid email format"),
+    password: yup
     .string()
     .required("Password is required")
     .min(5, "Password must be greater 5 character long")

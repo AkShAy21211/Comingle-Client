@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Comment, PostsType } from "../../Interface/interface";
+import React, {  useState } from "react";
+import {  PostsType } from "../../Interface/interface";
 import { IoMdClose, IoMdHeartEmpty, IoMdSend } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit, MdVerified } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { IoSend } from "react-icons/io5";
 
 type ViewTextPostModalProp = {
   selectedPost: PostsType | null;
   currentUserId: string;
+  handlePostEdit: (postId: string, text: string) => Promise<void>;
   reload: boolean;
   setReload: React.Dispatch<React.SetStateAction<boolean>>;
   likePost: (postId: string, userId: string, authorId: string) => Promise<void>;
@@ -39,8 +40,8 @@ type ViewTextPostModalProp = {
 function ViewTextPostModal({
   selectedPost,
   editedComment,
-  setReload,
   likePost,
+  handlePostEdit,
   unlikePost,
   setEditedComment,
   editedCommentError,
@@ -48,7 +49,6 @@ function ViewTextPostModal({
   deletePost,
   currentUserId,
   deleteComment,
-  reload,
   editComment,
   handleNewComent,
   newComment,
@@ -57,6 +57,7 @@ function ViewTextPostModal({
 }: ViewTextPostModalProp) {
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const [caption,setCaption] = useState("")
   const [showEditCommentDropDown, setShowEditCommentDropDown] = useState<{
     _id: string;
     status: boolean;
@@ -65,6 +66,8 @@ function ViewTextPostModal({
     _id: string;
     status: boolean;
   }>({ _id: "", status: true });
+  const [showEdit, setShowEdit] = useState(false);
+  const [editPost, setEditPost] = useState(true);
 
   const handleEditComment = async (commentId: string, status: boolean) => {
     try {
@@ -106,20 +109,40 @@ function ViewTextPostModal({
     unlikePost(postId, userId);
   };
 
-
   return (
     <div id="modal" aria-hidden="true" className="fixed inset-0 z-50">
       <div className="grid grid-cols-12 m-5 md:m-0">
         {/* Modal content */}
-        <div className="relative col-span-full md:col-start-2 md:col-span-10 lg:col-start-5 lg:col-span-4 rounded-lg bg-gray-200 shadow-xl border mt-20 ">
+        <div
+          className={`relative col-span-full md:col-start-2 md:col-span-10 lg:col-start-5 lg:col-span-4 rounded-lg  ${
+            isDarkMode ? " backdrop-blur-lg bg-black/60" : "bg-gray-200"
+          } shadow-xl border mt-20 `}
+        >
           {/* Modal header */}
           <div className="flex justify-between p-4 rounded-t">
             {currentUser._id === selectedPost?.postedUser._id && (
-              <MdDelete
-                color="red"
-                onClick={() => deletePost(selectedPost?._id as string)}
-              />
+              <>
+                <HiOutlineDotsVertical onClick={() => setShowEdit(!showEdit)} />
+
+                {showEdit && (
+                  <ul className="absolute left-10 border p-1 rounded-lg">
+                    <li
+                      onClick={() => deletePost(selectedPost?._id as string)}
+                      className="flex gap-1  cursor-pointer"
+                    >
+                      <MdDelete className="mt-1" />
+                    </li>
+                    <li
+                      onClick={() => setEditPost(!editPost)}
+                      className="flex gap-1   cursor-pointer"
+                    >
+                      <MdEdit className="mt-3" />
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
+
             <button
               onClick={() => setSelectedPost(null)}
               type="button"
@@ -145,9 +168,17 @@ function ViewTextPostModal({
           </div>
 
           <div className="p-4 md:p-5 flex break-words w-full">
-            <p className="text-wrap break-words w-full">
-              {selectedPost?.description}
-            </p>
+            <input
+            onChange={(e)=>setCaption(e.target.value)}
+              defaultValue={selectedPost?.description}
+              disabled={editPost}
+              className={`text-wrap ${
+                !editPost ? "border border-gray-50" : ""
+              }  ${
+                isDarkMode ? "bg-transparent" : "bg-gray-200"
+              } rounded-lg px-1 mt-5 break-words w-full`}
+            />
+            {!editPost && <IoSend onClick={()=>handlePostEdit(selectedPost?._id as string,caption)} className="mt-6 mx-1" />}
           </div>
 
           <div className="flex flex-col w-full p-5 mt-4 overflow-y-auto h-64">
@@ -165,7 +196,14 @@ function ViewTextPostModal({
                       <Avatar name={comment?.commenter && comment?.commenter} />
                     )}
                     <div className="flex flex-col w-full overflow-y-auto break-words ">
-                      <p className="font-bold">{comment?.commenter}</p>
+                      <p className="font-bold flex gap-1">
+                        {comment?.commenter}
+                        {comment.isPremium ? (
+                          <MdVerified className="text-blue-600 mt-1" />
+                        ) : (
+                          ""
+                        )}
+                      </p>
                       <input
                         disabled={
                           editCommentDisabled._id === comment._id ? false : true
@@ -262,7 +300,7 @@ function ViewTextPostModal({
 
                   <div className="flex flex-col justify-center items-center">
                     <FaRegComment size={25} />
-                    <p>{selectedPost?.comments?.length || 0}</p>
+                  <p>{selectedPost?.comments[0].comment?selectedPost?.comments.length: 0}</p>
                   </div>
                 </div>
                 <div className="flex justify-start gap-3">

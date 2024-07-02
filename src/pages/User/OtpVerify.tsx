@@ -1,4 +1,3 @@
-import React from 'react'
 import OtpInput from '../../Components/User/OtpInput'
 import LoginLeft from '../../Components/User/LoginLeft'
 import userApi from '../../Apis/user';

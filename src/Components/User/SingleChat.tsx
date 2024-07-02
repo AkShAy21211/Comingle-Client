@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -25,8 +19,10 @@ import { FaRegStopCircle } from "react-icons/fa";
 import audioStartBg from "/User/mixkit-atm-cash-machine-key-press-2841.wav";
 import audioEnd from "/User/mixkit-correct-answer-tone-2870.wav";
 import TypingIndicator from "../Common/TypingIndicator";
-import { useSocket } from '../../../context/SocketContext';
-
+import { FaVideo } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import VedioChat from "./VideoChat";
+import socket from "../../Apis/socket";
 type SingleChatProp = {
   fetchAgain: boolean;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +30,7 @@ type SingleChatProp = {
 
 function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [emojiPickerVisible, setEmojiPickerVisible] = useState<boolean>(false);
@@ -48,14 +45,14 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const isDarMode = useSelector((state: RootState) => state.ui.isDarkMode);
-  const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const mediaStream = useRef<MediaStream | null>(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
-  const socket = useSocket();
+  const [isVedioChat, setIsVedioChat] = useState(false);
+  const [roomId, setRoomId] = useState<String>("");
 
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
@@ -81,9 +78,24 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   }, [selectedChat.chatId]);
 
   useEffect(() => {
+    socket.on("typeing", () => {
+      setIstyping(true);
+    });
+
+    socket.on("stopTypeing", () => {
+      setIstyping(false);
+    });
+
+    return () => {
+      socket.off("typeing");
+      socket.off("stopTypeing");
+    };
+  }, [typing]);
+
+  useEffect(() => {
     const handleNewMessage = (newMessageReceived: Message) => {
       if (
-        !selectedChat.chatId ||
+        (!selectedChat.chatId && !selectedChat.receiver) ||
         selectedChat.chatId !== newMessageReceived.chat._id
       ) {
         dispatch(setUnreadMessage(newMessageReceived.chat));
@@ -101,62 +113,44 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
         setAllMessages((prevMessages) => [...prevMessages, newMessageReceived]);
       }
     };
-    
-    socket?.on("new message sent", handleNewMessageSent);
-    socket?.on("message received", handleNewMessage);
+
+    socket.on("new message sent", handleNewMessageSent);
+    socket.on("message received", handleNewMessage);
 
     return () => {
-      if (socket) {
-        socket.off("message received", handleNewMessage);
-        socket.off("new message sent", handleNewMessageSent);
-      }
+      socket.off("message received", handleNewMessage);
+      socket.off("new message sent", handleNewMessageSent);
     };
-  }, [selectedChat.chatId]);
-
-  useEffect(() => {
-    socket?.on("typing", () => {
-      setIstyping(true);
-    });
-
-    socket?.on("stopTyping", () => {
-      setIstyping(false);
-    });
-
-    return () => {
-      socket?.off("typing");
-      socket?.off("stopTyping");
-    };
-  }, [isTyping]);
+  }, [newMessage, dispatch]);
 
   /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
-
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
 
     if (!typing) {
       setTyping(true);
-      socket?.emit("typing", selectedChat.chatId);
+      socket.emit("typeing", selectedChat.chatId);
     }
 
-    let lastTypingTime = new Date().getTime();
-    let timeLiength = 3000;
+    const lastTypingTime = new Date().getTime();
+    const typingTimeout = 3000;
+
     setTimeout(() => {
-      let timeNow = new Date().getDate();
-      let timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timeLiength && typing) {
-        socket?.emit("stopTyping", selectedChat.chatId);
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= typingTimeout && typing) {
+        socket.emit("stopTypeing", selectedChat.chatId);
         setTyping(false);
       }
-    }, timeLiength);
+    }, typingTimeout);
   };
 
   const handleSendMessage = async () => {
     if (!selectedChat) return;
 
     if (newMessage.trim() || selectedFiles) {
-      setTyping(false);
       try {
-        socket?.emit("stopTyping", selectedChat.chatId);
+        socket.emit("stopTypeing", selectedChat.chatId);
         setLoading(true);
         const formData = new FormData();
         if (selectedFiles) {
@@ -287,7 +281,6 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
           const file = new File([recordedBlob], "recordedAudio.webm", {
             type: recordedBlob.type,
           });
-          setRecordedUrl(URL.createObjectURL(recordedBlob));
           chunks.current = [];
           // Pass file to previewFile
           setSelectedFiles((prevFiles) => [...prevFiles, file]);
@@ -334,6 +327,11 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
     );
   };
 
+  const handleStartVedioCall = async () => {
+    setIsVedioChat(true);
+    socket.emit("initialize:video-chat", {roomId:selectedChat.chatId,userId:currentUser._id});
+  };
+
   return (
     <div
       className={`${
@@ -342,7 +340,7 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
         isDarMode ? "bg-black" : "bg-white"
       } border-white`}
     >
-      {selectedChat.chatId ? (
+      {!isVedioChat && selectedChat.chatId ? (
         <>
           <div className="mb-1 flex mt-16 justify-between gap-8 p-5 border-t-2 h-20 bg-custom-blue/90 backdrop:blur-xl">
             <div className="flex items-center gap-2">
@@ -361,12 +359,21 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
               )}
               <p className="p-2 text-white text-lg">{receiver?.username}</p>
             </div>
-            <IoIosCloseCircle
-              size={25}
-              className="mt-2 cursor-pointer"
-              onClick={() => dispatch(removeSlectedChat())}
-              color="white"
-            />
+            <div className="flex gap-5">
+              <FaVideo
+                size={25}
+                onClick={handleStartVedioCall}
+                className="mt-2 cursor-pointer"
+                color="white"
+              />
+
+              <IoIosCloseCircle
+                size={25}
+                className="mt-2 cursor-pointer"
+                onClick={() => dispatch(removeSlectedChat())}
+                color="white"
+              />
+            </div>
           </div>
           <div
             id="messages"
@@ -438,10 +445,12 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
             ref={fileInputRef}
           />
         </>
-      ) : (
+      ) : isVedioChat && !selectedChat.chatId ? (
         <div className="flex text-xl justify-center items-center h-[calc(100vh-192px)] mt-16">
           Select a chat to start messaging
         </div>
+      ) : (
+        <VedioChat setIsVedio={setIsVedioChat} />
       )}
     </div>
   );

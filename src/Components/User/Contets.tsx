@@ -2,8 +2,6 @@ import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { MdDelete } from 'react-icons/md';
-import userApi from '../../Apis/user';
 import { PostsType } from '../../Interface/interface';
 
 
@@ -20,9 +18,6 @@ type ContentsProps = {
 const Contents: React.FC<ContentsProps> = ({
   content,
   isProfile = false,
-  isOwnProfile = false,
-  post,
-  setRefetch,
 }) => {
   const settings = {
     infinite: true,
@@ -40,7 +35,7 @@ const Contents: React.FC<ContentsProps> = ({
         key={index}
         src={item.url}
         alt={`Image ${index}`}
-        className={`object-cover ${isProfile ? 'w-52 h-52' : 'w-full h-full'}`}
+        className={`object-cover ${isProfile ? 'w-52 h-52' : 'w-full max-h-[90vh] object-fill'}`}
       />
     ) : (
       <video
@@ -64,22 +59,12 @@ const Contents: React.FC<ContentsProps> = ({
           ) : (
             renderContentItem(content.image[0], 0)
           )}
-          {/* {isProfile && isOwnProfile && (
-            <MdDelete
-              onClick={() => deletePost(post?._id as string)}
-              className="mt-2 float-end"
-            />
-          )} */}
+         
         </div>
       ) : (
         <div className="w-full h-full flex justify-center  items-center border break-words overflow-scroll border-black bg-black text-white font-serif ">
           <p className='w-52 h-52 text-sm text-center  pt-4'>{content.description}</p>
-         {/* {isProfile && isOwnProfile && (
-            <MdDelete
-              onClick={() => deletePost(post?._id as string)}
-              className="mt-2 float-end"
-            />
-          )} */}
+        
         </div>
         
       )}

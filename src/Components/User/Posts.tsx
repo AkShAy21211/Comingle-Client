@@ -1,4 +1,4 @@
-import { IoMdHeartEmpty } from "react-icons/io";
+import { IoMdClose, IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import CreatePost from "./CreatePost";
@@ -11,70 +11,80 @@ import { Likes, PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import Avatar from "react-avatar";
 import InfiniteScroll from "react-infinite-scroll-component";
-import PostSkeleton from "../Skleton/PostSkleton";
 import { IoMdSend } from "react-icons/io";
 import ReportModal from "./ReportModal";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdVerified } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { PiShareFatThin } from "react-icons/pi";
+import { Bounce, toast } from "react-toastify";
+import socket from "../../Apis/socket";
 
 function Posts() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
   const [posts, setPosts] = useState<PostsType[]>([]);
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [showComment, setShowComment] = useState<string | null>(null);
   const [visibleComments, setVisibleComments] = useState<{
     [key: string]: number;
   }>({});
-
+  const [showEditCommentDropDown, setShowEditCommentDropDown] = useState<{
+    _id: string;
+    status: boolean;
+  }>({ _id: "", status: true });
   const [newComment, setNewComment] = useState<string>("");
   const [commetError, setCommentError] = useState<{
     postId: string;
     error: string;
   }>({ postId: "", error: "" });
-  const [editCommentDisabled, setEditCommentDisabled] = useState<boolean>(true);
+  const [editCommentDisabled, setEditCommentDisabled] = useState<{
+    _id: string;
+    status: boolean;
+  }>({ _id: "", status: true });
   const [editCommentError, setEditCommentError] = useState("");
   const [editedComment, setEditedComment] = useState("");
+  const [fetchAgain, setFetchAgain] = useState(false);
+
   //////////////////////    HANDLE FETCTCH POST ON FIRST VISIT ////////////////////////
 
-  const fetchAllPosts = useCallback(async () => {
+  const fetchAllPosts = async () => {
     try {
-      setLoading(true);
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
-        setLoading(false);
-        console.log(getPosts);
-
+        setFetchAgain(false);
         setPosts(getPosts.posts);
+        localStorage.setItem("posts", JSON.stringify(getPosts.posts));
+        posts.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         setHasMore(getPosts.posts.length > 0);
-        console.log(posts);
       }
-    } catch (error) {
-      setLoading(false);
-
-      console.log(error);
+    } catch (error: any) {
+      const collections = localStorage.getItem("posts");
+      const posts = collections ? JSON.parse(collections) : null;
+      setPosts(posts);
     }
-  }, [posts]);
+  };
+
+  useEffect(() => {
+    socket.emit("login", { userId: currentUser._id });
+
+    return () => {
+      socket.off("login");
+    };
+  }, [currentUser._id]);
 
   useEffect(() => {
     fetchAllPosts();
-  }, []);
+  }, [fetchAgain]);
 
-  /////////////////////////////// DELETE POSTS ///////////////////////////
-
-  const deletePost = async (postId: string) => {
-    try {
-      await userApi.deletePost(postId);
-      fetchAllPosts();
-    } catch (error) {
-      console.log(error);
-    }
-  };
   /////////////////////////// HANDLE POST REPORT //////////////////////////
 
   useEffect(() => {
@@ -102,19 +112,15 @@ function Posts() {
 
   const fetchPosts = useCallback(async () => {
     try {
-      setLoading(true);
       const getPosts = await userApi.getAllPosts(index);
       if (getPosts) {
-        setLoading(false);
         setPosts((prevPosts) => [...prevPosts, ...getPosts.posts]);
         setHasMore(getPosts.posts.length > 0);
-        console.log(posts);
       }
     } catch (error) {
-      setLoading(false);
       console.log(error);
     }
-  }, [index, posts]);
+  }, [index]);
 
   //////////// FETCH NEXT SET OF POST ON SCROLL ///////////////////////////
 
@@ -186,16 +192,34 @@ function Posts() {
     [posts]
   );
 
-  const handleCopyLink = (postId: string) => {
-    const postUrl = `${window.location.origin}/${postId}`;
-    navigator.clipboard
-      .writeText(postUrl)
-      .then(() => {
-        alert("Post link copied to clipboard!");
-      })
-      .catch((error) => {
-        console.error("Failed to copy the link:", error);
-      });
+  const handleCopyLink = async (postId: string) => {
+    const postUrl = `${window.location.origin}/post/${postId}`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(postUrl);
+        toast.success("Link copied", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      } catch (error) {
+        console.error("Failed to copy: ", error);
+        toast.error("Failed to copy link", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
+    }
   };
 
   const handleCommentShow = async (postId: string) => {
@@ -226,9 +250,6 @@ function Posts() {
         userId
       );
       if (commentResponse) {
-        console.log(commentResponse);
-        console.log(posts);
-
         setPosts((prevPosts) =>
           prevPosts.map((post) => {
             if (post._id === postId) {
@@ -240,6 +261,7 @@ function Posts() {
             return post;
           })
         );
+        setFetchAgain(true);
         setNewComment("");
       }
     } catch (error) {
@@ -269,7 +291,7 @@ function Posts() {
 
   const handleDeleteComment = async (postId: string, commentId: string) => {
     try {
-      await userApi.deleteComment(commentId, postId);
+      await userApi.deleteComment(postId, commentId);
 
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
@@ -289,6 +311,17 @@ function Posts() {
     }
   };
 
+  //////////////////// HANDLE EDIT COMMENT /////////////////////////////////
+
+  const handleShowDropDown = async (commentId: string, status: boolean) => {
+    try {
+      setShowEditCommentDropDown({ _id: commentId, status: status });
+      setEditCommentDisabled({ _id: commentId, status: status });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleEditComment = async (postId: string, commentId: string) => {
     if (!editedComment.trim()) {
       setEditCommentError("Comment should be atleast one character");
@@ -296,13 +329,10 @@ function Posts() {
     }
     try {
       setEditCommentError("");
-
-    const comment =   await userApi.editComment(commentId, postId, editedComment);
-
-      
+      await userApi.editComment(postId, commentId, editedComment);
 
       setEditedComment("");
-      setEditCommentDisabled(true);
+      setEditCommentDisabled({ _id: "", status: true });
     } catch (error) {
       setEditedComment("");
 
@@ -311,9 +341,6 @@ function Posts() {
     }
   };
 
-
-
-  
   return (
     <div
       className={` mt-16 pt-1 lg:mt-0 ${
@@ -321,12 +348,12 @@ function Posts() {
       } col-span-full   overflow-auto h-svh lg:col-start-2 lg:col-end-5`}
       id="scrollableDiv"
     >
-      <CreatePost fetchPost={fetchAllPosts} />
+      <CreatePost fetchPost={fetchAllPosts} fetchAgain={setFetchAgain} />
       <InfiniteScroll
         dataLength={posts.length}
         next={fetchPostOnScroll}
         hasMore={hasMore}
-        loader={loading && <PostSkeleton />}
+        loader={<></>}
         endMessage={
           <div className="text-center py-4 text-xs text-gray-500 w-full  h-40">
             {/* <p> You have seen it all! </p>
@@ -346,25 +373,42 @@ function Posts() {
                   } flex flex-col justify-between items-center mb-10 relative`}
                 >
                   <div className="flex items-center mb-3 p-2 w-full">
-                    {post.postedUser.profile.image ? (
+                    {post.postedUser?.profile?.image ? (
                       <img
-                        className="w-10 h-10 mr-4 rounded-full"
+                        onClick={() =>
+                          currentUser._id === post.postedUser._id
+                            ? navigate("/profile")
+                            : navigate(`/profile/${post.postedUser.username}`)
+                        }
+                        className="w-10 h-10 mr-4 cursor-pointer rounded-full"
                         src={post.postedUser.profile.image}
                       />
                     ) : (
                       <Avatar
+                        onClick={() =>
+                          currentUser._id === post.postedUser._id
+                            ? navigate("/profile")
+                            : navigate(`/profile/${post.postedUser.username}`)
+                        }
                         name={post.postedUser.username.slice(1)}
-                        className="rounded-full me-4"
+                        className="rounded-full me-4 cursor-pointer"
                         size="35"
                       />
                     )}
                     <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
-                      <h3 className="text-base md:text-lg font-semibold">
-                        {post.postedUser.username}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1 md:mt-0">
+                      <div
+                        onClick={() =>
+                          currentUser._id === post.postedUser._id
+                            ? navigate("/profile")
+                            : navigate(`/profile/${post.postedUser.username}`)
+                        }
+                        className="text-base cursor-pointer md:text-lg font-semibold flex gap-3"
+                      >
+                        <p>{post.postedUser.username}</p>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1 md:mt-0 flex gap-2">
                         {FormattedRelativeTime(post.createdAt)}
-                      </p>
+                      </div>
                     </div>
                     <div ref={dropdownRef}>
                       <HiOutlineDotsVertical
@@ -378,7 +422,7 @@ function Posts() {
                             isDarkMode ? "bg-neutral-950" : "bg-gray-200"
                           }  rounded-lg w-32`}
                         >
-                          {post.postedUser._id !== currentUser._id ? (
+                          {post.postedUser._id !== currentUser._id && (
                             <ul className="py-2 space-y-3 text-sm">
                               <li className=""></li>
                               <li
@@ -390,16 +434,6 @@ function Posts() {
                                 className="mx-4 cursor-pointer "
                               >
                                 <button>Report</button>
-                              </li>
-                            </ul>
-                          ) : (
-                            <ul className="py-2 space-y-3 text-sm">
-                              <li className=""></li>
-                              <li
-                                onClick={() => deletePost(post._id)}
-                                className="mx-4 cursor-pointer "
-                              >
-                                <button>Delete</button>
                               </li>
                             </ul>
                           )}
@@ -428,7 +462,9 @@ function Posts() {
                           post.likes.userId &&
                           post.likes.userId.includes(currentUser._id)
                             ? `text-red-500`
-                            : `${isDarkMode ? "text-white" : "text-black"}`
+                            : `${
+                                isDarkMode ? "text-white" : "text-black"
+                              } cursor-pointer`
                         }
                         onClick={() => {
                           post.likes.userId &&
@@ -445,26 +481,28 @@ function Posts() {
                       />
                       <FaRegComment
                         size={20}
+                        className="font-bold cursor-pointer"
                         onClick={() => handleCommentShow(post._id)}
                       />
 
                       {/* SHARE POST */}
-                      {/* <PiShareFatThin
+                      <PiShareFatThin
                         onClick={() => handleCopyLink(post._id)}
                         size={25}
-                        className="font-bold"
-                      /> */}
+                        className="font-bold cursor-pointer"
+                      />
                     </div>
 
                     {/* SAVE POST  */}
                     {/* <CiSaveDown2 size={27} className="font-bold" /> */}
                   </div>
                   <div className="flex w-full px-4 gap-5">
-                    <p className="text-xs">
+                    <p className="text-xs flex">
                       {post.likes.userId ? post.likes.userId.length : 0} likes
                     </p>
-                    <p className="text-xs">
-                      {post.comments[0] ? post.comments.length : 0} comments
+                    <p className="text-xs flex">
+                      {post.comments[0].comment ? post.comments.length : 0}{" "}
+                      comments
                     </p>
                   </div>
                   {showComment === post._id && (
@@ -484,66 +522,120 @@ function Posts() {
                               .map((comment, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-center mb-2"
+                                  className="flex items-center  mb-2 "
                                 >
-                                  <Avatar
-                                    name={comment.commenter.slice(0)}
-                                    className="rounded-full me-4"
-                                    size="30"
-                                  />
+                                  {comment.commenterImage ? (
+                                    <img
+                                      className="w-7 h-7 rounded-full me-4"
+                                      src={comment.commenterImage}
+                                      alt=""
+                                    />
+                                  ) : (
+                                    <Avatar
+                                      name={comment.commenter.slice(1)}
+                                      className="rounded-full me-4"
+                                      size="28"
+                                    />
+                                  )}
                                   <div className="flex flex-col break-words w-80 md:w-96">
-                                    <p className="text-sm font-semibold  text-wrap">
+                                    <p className="text-sm font-semibold  text-wrap flex gap-1">
                                       {comment.commenter}
+                                      {comment.isPremium ? (
+                                        <MdVerified className="text-blue-600 mt-1" />
+                                      ) : (
+                                        ""
+                                      )}
                                     </p>
                                     {/* <p className="text-xs">{comment.comment}</p> */}
                                     <div className="flex flex-col">
                                       <input
                                         className={`${
-                                          !editCommentDisabled &&
-                                          "border border-gray-300 mx-1 p-1 rounded-full"
+                                          editCommentDisabled._id ===
+                                            comment._id &&
+                                          "border  border-gray-300 mx-1 p-1 rounded-full"
                                         }`}
                                         onChange={(e) =>
                                           setEditedComment(e.target.value)
                                         }
                                         type="text"
                                         defaultValue={comment.comment}
-                                        disabled={editCommentDisabled}
+                                        disabled={
+                                          editCommentDisabled._id ===
+                                          comment._id
+                                            ? false
+                                            : true
+                                        }
                                       />
-                                      {editCommentError.trim() && (
-                                        <p className="text-red-600 text-xs">
-                                          {editCommentError}
-                                        </p>
-                                      )}
+                                      {editCommentError.trim() &&
+                                        editCommentDisabled._id ===
+                                          comment._id && (
+                                          <p className="text-red-600 text-xs">
+                                            {editCommentError}
+                                          </p>
+                                        )}
                                     </div>
                                   </div>
                                   {comment.commentedUserId ==
                                     currentUser._id && (
                                     <div className="flex gap-1 mt-4">
-                                      {editCommentDisabled ? (
-                                        <MdEdit
+                                      <HiOutlineDotsVertical
+                                        onClick={() => {
+                                          handleShowDropDown(
+                                            comment._id,
+                                            false
+                                          );
+                                          setEditCommentDisabled({
+                                            _id: "",
+                                            status: true,
+                                          });
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  {showEditCommentDropDown._id ===
+                                    comment._id && (
+                                    <ul className="flex flex-col gap-2 bg-gray-300 rounded-xl p-2 relative right-0 top-8 z-10">
+                                      <li>
+                                        <IoMdClose
                                           onClick={() =>
-                                            setEditCommentDisabled(false)
+                                            handleShowDropDown("", true)
                                           }
+                                          className="float-right cursor-pointer"
                                         />
-                                      ) : (
-                                        <IoSend
+                                      </li>
+                                      <li>
+                                        {editCommentDisabled.status ? (
+                                          <MdEdit
+                                            onClick={() =>
+                                              setEditCommentDisabled({
+                                                _id: comment._id,
+                                                status: false,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          <IoSend
+                                            size={15}
+                                            onClick={() =>
+                                              handleEditComment(
+                                                post._id,
+                                                comment._id
+                                              )
+                                            }
+                                          />
+                                        )}
+                                      </li>
+                                      <li>
+                                        <MdDelete
                                           onClick={() =>
-                                            handleEditComment(
+                                            handleDeleteComment(
                                               post._id,
                                               comment._id
                                             )
                                           }
-                                        />
-                                      )}
-                                      <MdDelete
-                                        onClick={() =>
-                                          handleDeleteComment(
-                                            post._id,
-                                            comment._id
-                                          )
-                                        }
-                                      />
-                                    </div>
+                                        />{" "}
+                                      </li>
+                                    </ul>
                                   )}
                                 </div>
                               ))}

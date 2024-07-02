@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { PostsType } from "../../Interface/interface";
 import Slider from "react-slick";
 import Avatar from "react-avatar";
@@ -6,7 +6,7 @@ import { IoMdHeartEmpty, IoMdSend } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/rootReducer";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdVerified } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdEdit } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
@@ -15,6 +15,7 @@ import { IoSend } from "react-icons/io5";
 type ViewPostModalProp = {
   selectedPost: PostsType | null;
   currentUserId: string;
+  handlePostEdit: (postId: string, text: string) => Promise<void>;
   setNewComent: React.Dispatch<React.SetStateAction<string>>;
   handleNewComent: (postId: string, userId: string) => Promise<void>;
   newComment: string;
@@ -48,7 +49,6 @@ const settings = {
 
 function ViewPostModal({
   selectedPost,
-  setReload,
   setSelectedPost,
   unlikePost,
   likePost,
@@ -56,7 +56,7 @@ function ViewPostModal({
   newComment,
   setNewComent,
   newCommentError,
-  reload,
+  handlePostEdit,
   editComment,
   handleNewComent,
   setEditedComment,
@@ -76,6 +76,9 @@ function ViewPostModal({
     status: boolean;
   }>({ _id: "", status: true });
   const [showComments, setShowComments] = useState<boolean>(false); // State for toggling comments visibility
+  const [showEdit, setShowEdit] = useState(false);
+  const [editPost, setEditPost] = useState(true);
+  const [caption, setCaption] = useState("");
 
   const handleShowDropDown = async (commentId: string, status: boolean) => {
     try {
@@ -121,18 +124,38 @@ function ViewPostModal({
     <div
       id="modal"
       aria-hidden="true"
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center max-h-auto justify-center"
     >
-      <div className="relative w-full max-w-4xl mx-5 bg-gray-200 shadow-xl border rounded-lg overflow-auto-">
+      <div
+        className={`relative w-full max-w-4xl mx-5 shadow-xl h-auto ${
+          isDarkMode ? " backdrop-blur-lg bg-black/60" : "bg-gray-200"
+        }   rounded-lg overflow-auto-`}
+      >
         {/* Modal content */}
         <div className="relative shadow-xl border">
           {/* Modal header */}
           <div className="flex justify-between p-4 rounded-t">
             {currentUser._id === selectedPost?.postedUser._id && (
-              <MdDelete
-                color="red"
-                onClick={() => deletePost(selectedPost?._id as string)}
-              />
+              <>
+                <HiOutlineDotsVertical onClick={() => setShowEdit(!showEdit)} />
+
+                {showEdit && (
+                  <ul className="absolute left-10 border p-1 rounded-lg">
+                    <li
+                      onClick={() => deletePost(selectedPost?._id as string)}
+                      className="flex gap-1  cursor-pointer"
+                    >
+                      <MdDelete className="mt-1" />
+                    </li>
+                    <li
+                      onClick={() => setEditPost(!editPost)}
+                      className="flex gap-1   cursor-pointer"
+                    >
+                      <MdEdit className="mt-3" />
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
             <button
               onClick={() => setSelectedPost(null)}
@@ -173,13 +196,13 @@ function ViewPostModal({
                             <img
                               src={content.url}
                               alt={`Image ${index}`}
-                              className="object-cover w-full h-96"
+                              className=" w-full max-h-[75vh]"
                             />
                           ) : (
                             <video
                               controls
                               autoPlay
-                              className="object-cover w-full h-96"
+                              className=" w-full max-h-[75vh]"
                               src={content.url}
                             ></video>
                           )}
@@ -193,19 +216,38 @@ function ViewPostModal({
                       <img
                         src={selectedPost?.image[0].url}
                         alt="Image"
-                        className="object-cover w-full h-96"
+                        className=" w-full max-h-[70vh]"
                       />
                     ) : (
                       <video
                         src={selectedPost?.image[0].url}
                         controls
-                        className="object-cover w-full h-96"
+                        className=" w-full max-h-[75vh]"
                         autoPlay
                       ></video>
                     )}
                   </div>
                 )}
-                <p className="mt-2">{selectedPost?.description}</p>
+                <div className="flex break-words w-full">
+                  <input
+                    onChange={(e) => setCaption(e.target.value)}
+                    defaultValue={selectedPost?.description || ""}
+                    disabled={editPost}
+                    className={`text-wrap ${
+                      !editPost ? "border border-gray-200" : ""
+                    }  ${
+                      isDarkMode ? "bg-transparent text-white" : "border-gray-500 text-black"
+                    } rounded-lg px-1 mt-5 break-words w-full`}
+                  />
+                  {!editPost && (
+                    <IoSend
+                      onClick={() =>
+                        handlePostEdit(selectedPost?._id as string, caption)
+                      }
+                      className="mt-6 mx-1"
+                    />
+                  )}
+                </div>
               </>
               <div className="flex mt-5 gap-5">
                 <div className="flex flex-col justify-center items-center">
@@ -234,7 +276,7 @@ function ViewPostModal({
                   onClick={() => setShowComments(!showComments)} // Toggle comments visibility
                 >
                   <FaRegComment size={25} />
-                  <p>{selectedPost?.comments?.length || 0}</p>
+                  <p>{selectedPost?.comments[0].comment?selectedPost?.comments.length: 0}</p>
                 </div>
               </div>
             </div>
@@ -288,11 +330,20 @@ function ViewPostModal({
                           />
                         ) : (
                           <Avatar
-                            name={comment?.commenter && comment?.commenter}
+                            size="23"
+                            className="rounded-full"
+                            name={comment?.commenter.slice(1)}
                           />
                         )}
                         <div className="flex flex-col w-full overflow-y-auto break-words ">
-                          <p className="font-bold">{comment?.commenter}</p>
+                          <p className="font-bold flex gap-1">
+                            {comment?.commenter}
+                            {comment.isPremium ? (
+                              <MdVerified className="text-blue-600 mt-1" />
+                            ) : (
+                              ""
+                            )}
+                          </p>
                           <input
                             disabled={
                               editCommentDisabled._id === comment._id

@@ -1,33 +1,31 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@react-hook/media-query";
 import { FaRegBell } from "react-icons/fa6";
 import LogoutModal from "../Common/LogoutModal";
-import { FollowNotification,LikeNotfication } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
-import { RootState } from "../../Redux/store";
+import { persistor, RootState } from "../../Redux/store";
 import Avatar from "react-avatar";
+import socket from "../../Apis/socket";
+import { Bounce, toast } from "react-toastify";
 function Header() {
+  const navigate = useNavigate();
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
   const [notifications, setNotifications] = useState<number | null>(0);
-  const currentUser = useSelector((state:RootState)=>state.user.user)
- 
-  
+  const currentUser = useSelector((state: RootState) => state.user.user);
+
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
     try {
-      
       const notifications = await userApi.notifications();
 
-      
       if (notifications) {
         setNotifications(notifications.length);
-
       }
     } catch (error) {
       console.log(error);
@@ -35,8 +33,33 @@ function Header() {
   }
   useEffect(() => {
     getNotification();
-    
-  },[]);
+  }, []);
+  useEffect(() => {
+    const handleUserBlocked = (data: { reason: string }) => {
+      toast.warning(data.reason, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      localStorage.removeItem("user");
+      persistor.purge();
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 5000);
+    };
+
+    if (!currentUser.isBlocked) {
+      socket.on("user_blocked", handleUserBlocked);
+    }
+
+    return () => {
+      socket.off("user_blocked", handleUserBlocked);
+    };
+  }, []);
 
   return (
     <>
@@ -59,12 +82,17 @@ function Header() {
             </div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <Link
-              to="/notifications"
+                to="/notifications"
                 className="relative rounded-fullp-1  text-gray-400 hover:text-white focus:outline-none  focus:ring-offset-2 focus:ring-offset-gray-800"
               >
-                {notifications && notifications>0?<span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">{notifications?notifications:null}</span>:''}
-               <FaRegBell size={23} />
-          
+                {notifications && notifications > 0 ? (
+                  <span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">
+                    {notifications ? notifications : null}
+                  </span>
+                ) : (
+                  ""
+                )}
+                <FaRegBell size={23} />
               </Link>
 
               <div className="relative  ml-3">
@@ -79,14 +107,19 @@ function Header() {
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">Open user menu</span>
-                    {
-                      currentUser.profile?<img
-                      className="h-8 w-8 rounded-full"
-                      src={currentUser.profile}
-                      alt=""
-                    />:<Avatar size="35" className="rounded-full" name={currentUser.name}/>
-
-                    }
+                    {currentUser.profile ? (
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src={currentUser.profile}
+                        alt=""
+                      />
+                    ) : (
+                      <Avatar
+                        size="35"
+                        className="rounded-full"
+                        name={currentUser.name}
+                      />
+                    )}
                     {isSmallScreen ? (
                       <Link to="/profile" className="absolute inset-0 z-50" />
                     ) : null}

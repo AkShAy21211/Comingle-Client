@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Avatar from "react-avatar";
-import FormattedRelativeTime from "../../Utils/Time";
+import { useEffect, useState } from "react";
 import adminApi from "../../Apis/admin";
 import { PostsType, ReportType } from "../../Interface/interface";
 import { FaEye } from "react-icons/fa";
@@ -14,6 +12,8 @@ function Posts() {
   const [showModal, setShowModal] = useState(false);
   const [report, setReport] = useState<ReportType[]>([]);
   const [selectedPost, setSelectedPost] = useState<PostsType | null>(null);
+  const [selectedReportId, setSelectedReportId] = useState("");
+  const [fetchAgain, setFetchAgain] = useState(false);
 
   const settings = {
     infinite: true,
@@ -27,6 +27,7 @@ function Posts() {
     try {
       const response = await adminApi.getAllPosts(0);
       if (response) {
+        setFetchAgain(false);
         setPosts(response.posts);
         setTotalPosts((prev) => prev + response.posts.length);
         setTotalReport(response.retports);
@@ -37,12 +38,22 @@ function Posts() {
     }
   };
 
+  const dismissReport = async () => {
+    try {
+      await adminApi.dismissReports(selectedReportId);
+      setFetchAgain(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getPosts();
-  }, []);
+  }, [fetchAgain]);
 
-  const handleViewReport = (report: ReportType[]) => {
+  const handleViewReport = (report: ReportType[], postId: string) => {
     setReport(report);
+    setSelectedReportId(postId);
     setShowModal(true);
   };
 
@@ -63,13 +74,13 @@ function Posts() {
       <div className="flex flex-col lg:px-20 pt-20">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="flex justify-between w-full px-2 ">
-              <input
+            <div className="flex justify-end w-full px-2 ">
+              {/* <input
                 type="text"
                 placeholder="Search......"
                 className="placeholder:text-sm p-2 h-8 border border-custom-blue w-72 rounded-lg mb-5"
-              />
-              <p className="bg-custom-teal shadow-xl flex justify-center items-center text-sm p-2 text-white rounded-lg mb-5">
+              /> */}
+              <p className="bg-custom-teal  shadow-xl flex justify-end items-center text-sm p-2 text-white rounded-lg mb-5">
                 Total {posts.length}
               </p>
             </div>
@@ -155,7 +166,7 @@ function Posts() {
                                   </div>
                                 ) : (
                                   <div className="w-full h-full">
-                                    {post.image[0].type === "image" ? (
+                                    {post?.image[0]?.type === "image" ? (
                                       <>
                                         <img
                                           src={post.image[0].url}
@@ -169,12 +180,12 @@ function Posts() {
                                     ) : (
                                       <>
                                         <video
-                                          src={post.image[0].url}
+                                          src={post?.image[0]?.url}
                                           controls
                                           autoPlay
                                         ></video>
                                         <span className="text-xs">
-                                          {post.image[0].type}
+                                          {post?.image[0]?.type}
                                         </span>
                                       </>
                                     )}
@@ -192,7 +203,9 @@ function Posts() {
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                               <FaEye
                                 size={20}
-                                onClick={() => handleViewReport(postReport)}
+                                onClick={() =>
+                                  handleViewReport(postReport, post._id)
+                                }
                                 className="text-custom-blue cursor-pointer"
                               />
                               <small
@@ -208,18 +221,14 @@ function Posts() {
                           </td>
                           <td
                             className={`py-4 ${
-                              post.isHidden
-                                ? "text-red-600"
-                                : "text-green-600"
+                              post.isHidden ? "text-red-600" : "text-green-600"
                             } whitespace-nowrap text-sm flex justify-center text-center font-medium`}
                           >
                             {post.isHidden ? "Hidden" : "Active"}
                           </td>
                           <td
                             className={`py-4 ${
-                              post.isHidden
-                                ? "text-red-600"
-                                : "text-green-600"
+                              post.isHidden ? "text-red-600" : "text-green-600"
                             } whitespace-nowrap text-sm text-end font-medium`}
                           >
                             <FaEye
@@ -245,7 +254,7 @@ function Posts() {
           className="fixed inset-0 z-50 flex items-center justify-center w-full h-full"
         >
           <div className="relative p-4 w-full max-w-md max-h-full">
-            <div className="relative pb-5 rounded-lg shadow bg-gray-200 h-auto">
+            <div className="relative pb-5 rounded-lg shadow bg-gray-200 pb-10 h-auto">
               <div className="flex items-center justify-between p-4 md:p-5 rounded-t">
                 <h2 className="pt-5 text-xl">Post Reports</h2>
                 <button
@@ -273,7 +282,7 @@ function Posts() {
               </div>
               <div className="p-4 md:p-5">
                 {report.length ? (
-                  report.map((report,i) => (
+                  report.map((report, i) => (
                     <ul className="list-disc p-3" key={i}>
                       <li className="border p-3">{report.reason}</li>
                     </ul>
@@ -281,6 +290,14 @@ function Posts() {
                 ) : (
                   <p>No reports yet</p>
                 )}
+                {report.length ? (
+                  <button
+                    className="float-end bg-yellow-400 text-white rounded-lg p-2"
+                    onClick={dismissReport}
+                  >
+                    Dismiss
+                  </button>
+                ):null}
               </div>
             </div>
           </div>

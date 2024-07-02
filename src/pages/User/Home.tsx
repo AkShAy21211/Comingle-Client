@@ -1,5 +1,12 @@
-import Posts from "../../Components/User/Posts";
+import { lazy, Suspense } from "react";
+import PostSkeleton from "../../Components/Skleton/PostSkleton";
+const Posts = lazy(() => import("../../Components/User/Posts"));
+
 function Home() {
-  return <Posts />;
+  return (
+    <Suspense fallback={<PostSkeleton/>}>
+      <Posts />
+    </Suspense>
+  );
 }
 export default Home;
