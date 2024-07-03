@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -52,7 +58,8 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
   const [isVedioChat, setIsVedioChat] = useState(false);
-  const [roomId, setRoomId] = useState<String>("");
+
+  console.log("selectedchat", selectedChat);
 
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
@@ -91,37 +98,63 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
       socket.off("stopTypeing");
     };
   }, [typing]);
-
-  useEffect(() => {
-    const handleNewMessage = (newMessageReceived: Message) => {
-      if (
-        (!selectedChat.chatId && !selectedChat.receiver) ||
-        selectedChat.chatId !== newMessageReceived.chat._id
-      ) {
-        dispatch(setUnreadMessage(newMessageReceived.chat));
+const handleNewMessage = ({
+      message,
+      room,
+    }: {
+      message: Message;
+      room: string;
+    }) => {
+      if (!selectedChat.chatId || selectedChat.chatId !== room) {
+        console.log("New unread message", message);
+        dispatch(setUnreadMessage({chat:message.chat}));
         setFetchAgain(!fetchAgain);
       } else {
-        setAllMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+        console.log("New message", message);
+        setAllMessages((prevMessages) => {
+          setFetchAgain(!fetchAgain);
+          if (!prevMessages.some((msg) => msg._id === message._id)) {
+            return [...prevMessages, message];
+          }
+          return prevMessages;
+        });
       }
     };
 
-    const handleNewMessageSent = (newMessageReceived: Message) => {
+    const handleNewMessageSent = ({
+      message,
+      room,
+    }: {
+      message: Message;
+      room: string;
+    }) => {
       if (
-        !selectedChat.chatId ||
-        newMessageReceived.sender._id === currentUser._id
+        selectedChat.chatId === room &&
+        message.sender._id === currentUser._id
       ) {
-        setAllMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+        console.log("New message sent", message);
+        setFetchAgain(!fetchAgain);
+
+        setAllMessages((prevMessages) => {
+          // Check if message already exists to avoid duplicates
+          if (!prevMessages.some((msg) => msg._id === message._id)) {
+            return [...prevMessages, message];
+          }
+          return prevMessages;
+        });
       }
     };
+  useEffect(() => {
+    
 
-    socket.on("new message sent", handleNewMessageSent);
     socket.on("message received", handleNewMessage);
+    socket.on("new message sent", handleNewMessageSent);
 
     return () => {
       socket.off("message received", handleNewMessage);
       socket.off("new message sent", handleNewMessageSent);
     };
-  }, [newMessage, dispatch]);
+  }, [selectedChat.chatId,allMessages, handleNewMessage,handleNewMessageSent]);
 
   /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -170,9 +203,13 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
         const response = await userApi.sendNewMessage(formData);
         if (response) {
           setNewMessage("");
-          if (socket) {
-            socket.emit("message", response.message);
-          }
+          setFetchAgain(!fetchAgain);
+
+          socket.emit("message", {
+            message: response.message,
+            room: selectedChat.chatId,
+          });
+
           setSelectedFiles([]);
           setLoading(false);
         }
@@ -329,8 +366,14 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
 
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
-    socket.emit("initialize:video-chat", {roomId:selectedChat.chatId,userId:currentUser._id});
+    socket.emit("initialize:video-chat", {
+      roomId: selectedChat.chatId,
+      userId: currentUser._id,
+    });
   };
+
+
+  
 
   return (
     <div
@@ -445,7 +488,7 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
             ref={fileInputRef}
           />
         </>
-      ) : isVedioChat && !selectedChat.chatId ? (
+      ) :  !selectedChat.chatId ? (
         <div className="flex text-xl justify-center items-center h-[calc(100vh-192px)] mt-16">
           Select a chat to start messaging
         </div>

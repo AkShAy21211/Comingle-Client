@@ -102,16 +102,9 @@ function FriendsModal({
 
                     {isMyProfile &&
                       type === "follower" &&
-                      user?.profile.following?.includes(friend._id as any) ? (
+                      user?.profile.following?.includes(friend._id as any) && (
                         <button className="bg-custom-blue rounded-lg px-2 text-white text-sm font-light">
                           Following
-                        </button>
-                      ):
-                      (
-                        <button 
-                         onClick={() => followUser(friend?._id as string)}
-                        className="bg-custom-blue rounded-lg px-2 text-white text-sm font-light">
-                          Follow back
                         </button>
                       )}
 
@@ -120,7 +113,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "following" &&
                       currentUser?._id === friend._id &&
-                      currentUser.profile.following?.includes(
+                      currentUser?.profile?.following?.includes(
                         user?._id as any
                       ) && (
                         <button className="bg-custom-blue rounded-lg px-2 text-white text-sm font-light">
@@ -130,7 +123,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "following" &&
                       currentUser?._id === friend._id &&
-                      !currentUser.profile.following?.includes(
+                      !currentUser?.profile?.following?.includes(
                         user?._id as any
                       ) && (
                         <button
@@ -144,7 +137,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "following" &&
                       currentUser?._id !== friend._id &&
-                      !currentUser?.profile.following?.includes(
+                      !currentUser?.profile?.following?.includes(
                         user?._id as any
                       ) &&
                       !friend.profile.following?.includes(
@@ -163,7 +156,7 @@ function FriendsModal({
                       !currentUser?.profile.following?.includes(
                         user?._id as any
                       ) &&
-                      friend.profile.following?.includes(
+                      friend?.profile?.following?.includes(
                         currentUser?._id as any
                       ) && (
                         <button
@@ -176,7 +169,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "following" &&
                       currentUser?._id !== friend._id &&
-                      currentUser?.profile.following?.includes(
+                      currentUser?.profile?.following?.includes(
                         user?._id as any
                       ) &&
                       !friend.profile.following?.includes(

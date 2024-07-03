@@ -4,15 +4,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/rootReducer";
 import socket from "../../Apis/socket";
 import peer from "../../Utils/peer";
-import { FaPhoneSlash } from "react-icons/fa6";
+import { FaPhoneSlash, FaPhone } from "react-icons/fa6";
+import Avatar from "react-avatar";
 
+type VideoChat = {
+  setIsVedio: React.Dispatch<SetStateAction<boolean>>;
+};
 
-
-type VideoChat={
-  setIsVedio:React.Dispatch<SetStateAction<boolean>>;
-}
-
-function VideoChat({setIsVedio}:VideoChat) {
+function VideoChat({ setIsVedio }: VideoChat) {
   const [remoteSocket, setRemoteSocket] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
@@ -76,7 +75,7 @@ function VideoChat({setIsVedio}:VideoChat) {
     setCallInitiated(false);
     setCallAccepted(false);
     setIncomingCall(false);
-    setIsVedio(false)
+    setIsVedio(false);
     // Additional logic to inform peer about call termination if needed
   }, []);
 
@@ -133,15 +132,15 @@ function VideoChat({setIsVedio}:VideoChat) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 p-5 mt-16 border-t-2 h-screen">
+    <div className="flex flex-col items-center justify-center gap-8 p-5 mt-16 border-t-2 h-screen bg-custom-blue/75">
       <div className="flex items-center gap-4">
         {!callAccepted && !callInitiated && !incomingCall && (
           <div className="flex flex-col items-center">
-            <img
-              src={reciver?.profile?.image}
-              className="w-20 h-20 rounded-full mb-2"
-              alt="Receiver Profile"
-            />
+            {reciver?.profile?.image ? (
+              <img src={reciver?.profile?.image} className="w-20 h-20 rounded-full mb-2" alt="Receiver Profile" />
+            ) : (
+              <Avatar name={reciver?.name} className="rounded-full mb-2" />
+            )}
             {remoteSocket && (
               <button
                 onClick={handleCallUser}
@@ -153,35 +152,27 @@ function VideoChat({setIsVedio}:VideoChat) {
           </div>
         )}
         {incomingCall && (
-          <button onClick={handleCallAccepted} className="bg-green-500 px-4 py-2 text-white rounded-md">
-            Answer
-          </button>
-        )}
-       
-      </div>
-      <div className="flex gap-8 mt-4">
-        {remoteStream && (
-          <div className="relative w-full">
-         
-            <ReactPlayer  height="500px" width="100%" playing={true} url={remoteStream} />
-            {stream && (
-              <div className="absolute bottom-0 right-0 z-10 bg-black opacity-50 text-white p-2">
-             
-              </div>
-            )}
-            {stream && (
-              <ReactPlayer  style={{float:"right"}} height="100px" width="150px" playing={true} url={stream} />
-            )}
-
-             {callAccepted && (
-          <button onClick={handleEndCall} className="bg-red-500 rounded-full p-5  text-whit mt-10">
-            <FaPhoneSlash color="white"/>
-          </button>
-        )}
+          <div className="flex w-full justify-center items-center">
+            <button onClick={handleCallAccepted} className="bg-green-500 rounded-full p-5 text-white">
+              <FaPhone color="white" className="rounded-full" />
+            </button>
           </div>
-          
         )}
-        
+      </div>
+      <div className="flex flex-col lg:flex-row gap-8 mt-4 w-full">
+        {remoteStream && (
+          <div className="relative w-full lg:w-2/3">
+            <ReactPlayer height="500px" width="100%" playing={true} url={remoteStream} />
+            {stream && (
+              <ReactPlayer style={{ position: "absolute", bottom: "10px", right: "30px" }} height="100px" width="150px" playing={true} url={stream} />
+            )}
+            {callAccepted && (
+              <button onClick={handleEndCall} className="absolute bottom-4 left-10 bg-red-500 rounded-full p-4 text-white">
+                <FaPhoneSlash color="white" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

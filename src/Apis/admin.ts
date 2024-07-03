@@ -77,9 +77,11 @@ const adminApi = {
     }
   },
 
-  getUsers: async () => {
+  getUsers: async (page:number,limit:number) => {
     try {
-      const userResponse = await axiosInstance.get(adminEndPoints.GET_USERS);
+      const userResponse = await axiosInstance.get(adminEndPoints.GET_USERS,{
+        params:{page,limit}
+      });
 
       return userResponse.data;
     } catch (error) {
@@ -109,6 +111,7 @@ const adminApi = {
       console.log(error);
     }
   },
+  
   hideUnhidePost: async (postId: string) => {
     try {
       const postResponse = await axiosInstance.patch(

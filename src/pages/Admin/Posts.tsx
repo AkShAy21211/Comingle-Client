@@ -67,7 +67,7 @@ function Posts() {
 
         <div className="w-full sm:w-60 h-40 text-2xl bg-custom-blue py-10 text-white rounded-lg flex flex-col justify-center items-center">
           <p>Total Reports</p>
-          <small>{totalReports.length}</small>
+          <small>{totalReports?.length}</small>
         </div>
       </div>
 
@@ -122,8 +122,8 @@ function Posts() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {posts.map((post) => {
-                      const postReport = report.filter(
+                    {posts?.map((post) => {
+                      const postReport = report?.filter(
                         (r) => r.postId === post._id
                       );
 
@@ -210,12 +210,12 @@ function Posts() {
                               />
                               <small
                                 className={`mx-2 ${
-                                  postReport.length
+                                  postReport?.length
                                     ? "text-red-600"
                                     : "text-green-600"
                                 }`}
                               >
-                                {postReport.length}
+                                {postReport?.length}
                               </small>
                             </span>
                           </td>
