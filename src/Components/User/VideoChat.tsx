@@ -1,181 +1,208 @@
-import React, { SetStateAction, useCallback, useEffect, useState } from "react";
-import ReactPlayer from "react-player";
-import { useSelector } from "react-redux";
-import { RootState } from "../../Redux/rootReducer";
+import Peer from "peerjs";
+import React, { useEffect, useRef, useState } from "react";
+import { BsMicFill } from "react-icons/bs";
+import { FaMicrophoneSlash } from "react-icons/fa";
+import { MdOutlineCallEnd } from "react-icons/md";
+import { HiMiniVideoCameraSlash } from "react-icons/hi2";
+import { BsFillCameraVideoFill } from "react-icons/bs";
 import socket from "../../Apis/socket";
-import peer from "../../Utils/peer";
-import { FaPhoneSlash, FaPhone } from "react-icons/fa6";
+import { RootState } from "../../Redux/rootReducer";
+import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
+interface VideoChatProps {
+  stream: MediaStream | null;
+  peerStream: MediaStream | null;
+  peer: Peer | null;
+  endCall: () => void;
+}
 
-type VideoChat = {
-  setIsVedio: React.Dispatch<SetStateAction<boolean>>;
-};
+const VideoChat: React.FC<VideoChatProps> = ({
+  stream,
+  peer,
+  peerStream,
+  endCall,
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const remoteRef = useRef<HTMLVideoElement>(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(false);
+  const [remoteAudioMuted, setRemoteAudioMuted] = useState(false);
+  const [remoteVideoMuted, setRemoteVideoMuted] = useState(false);
+  const selectedChat = useSelector(
+    (state: RootState) => state.chat.selectedChat
+  );
+  const receiver: any = useSelector(
+    (state: RootState) => state.chat.selectedChat.receiver
+  );
+    const [isSpeaking, setIsSpeaking] = useState(false); // State to track speaking activity
 
-function VideoChat({ setIsVedio }: VideoChat) {
-  const [remoteSocket, setRemoteSocket] = useState<string | null>(null);
-  const [stream, setStream] = useState<MediaStream>();
-  const [remoteStream, setRemoteStream] = useState<MediaStream>();
-  const [callInitiated, setCallInitiated] = useState(false);
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [incomingCall, setIncomingCall] = useState(false);
-  const reciver = useSelector((state: RootState) => state.chat.selectedChat.receiver);
-
-  const handleJoinRoom = useCallback((data: { roomId: string; userId: string }) => {
-    const { userId, roomId } = data;
-    console.log(userId, roomId);
-  }, []);
-
-  const handleUserJoin = useCallback((data: { userId: string; id: string }) => {
-    const { userId, id } = data;
-    console.log(userId, id);
-    setRemoteSocket(id);
-  }, []);
-
-  const handleCallUser = useCallback(async () => {
-    if (!callInitiated) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      const offer = await peer.getOffer();
-      socket.emit("user:call", { to: remoteSocket, offer });
-      setStream(stream);
-      setCallInitiated(true);
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
     }
-  }, [remoteSocket, callInitiated]);
 
-  const handleIncomingCall = useCallback(async (data: any) => {
-    const { from, offer } = data;
-    setRemoteSocket(from);
-    console.log("incoming call", from, offer);
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    setStream(stream);
-    const ans = await peer.getAnswer(offer);
-    socket.emit("call:accepted", { to: from, ans });
-    setIncomingCall(true);
-  }, []);
+    if (peerStream && remoteRef.current) {
+      remoteRef.current.srcObject = peerStream;
+    }
 
-  const sendStreams = useCallback(() => {
+       // Track audio activity in the peerStream
+       if(!peerStream) return;
+      const audioContext = new AudioContext();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(peerStream);
+
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateAudioActivity = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+
+        // Adjust threshold as needed based on your audio levels
+        const threshold = 100;
+
+        if (average > threshold) {
+          setIsSpeaking(true);
+        } else {
+          setIsSpeaking(false);
+        }
+      };
+
+      // Start monitoring audio activity
+      const interval = setInterval(updateAudioActivity, 200); // Adjust interval as needed
+
+      return () => {
+        clearInterval(interval);
+        audioContext.close();
+      };
+  }, [stream, peerStream, peer, remoteVideoMuted]);
+
+  const toggleAudio = () => {
     if (stream) {
-      for (const track of stream?.getTracks()) {
-        peer.peer?.addTrack(track, stream);
-      }
+      socket.emit("audio:status", { room: selectedChat.chatId });
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setAudioMuted(!audioMuted);
     }
-  }, [stream]);
+  };
 
-  const handleCallAccepted = useCallback((data: any) => {
-    const { ans } = data;
-    setCallAccepted(true);
-    setIncomingCall(false);
-    sendStreams();
-    peer.setLocalDescription(ans);
-    console.log("call accepted", ans);
-  }, [sendStreams]);
+  const toggleVideo = () => {
+    if (stream) {
+      socket.emit("vedio:status", { room: selectedChat.chatId });
+      stream.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setVideoMuted(!videoMuted);
+    }
+  };
 
-  const handleEndCall = useCallback(() => {
-    setStream(undefined);
-    setRemoteStream(undefined);
-    setCallInitiated(false);
-    setCallAccepted(false);
-    setIncomingCall(false);
-    setIsVedio(false);
-    // Additional logic to inform peer about call termination if needed
-  }, []);
-
-  const handleNegotiation = useCallback(async () => {
-    const offer = await peer.getOffer();
-    socket.emit("peer:nego:needed", { offer, to: remoteSocket });
-  }, [remoteSocket]);
-
-  const handleNegotiationIncoming = useCallback(async (data: any) => {
-    const { from, offer } = data;
-    const ans = await peer.getAnswer(offer);
-    socket.emit("peer:nego:done", { to: from, ans });
-  }, []);
-
-  const handleNegotiationFinal = useCallback(async (data: any) => {
-    const { ans } = data;
-    await peer.setLocalDescription(ans);
-  }, []);
+  const handleRemoteVideoStatus = () => {
+    setRemoteVideoMuted(!remoteVideoMuted);
+  };
+  const handleRemoteAudioStatus = () => {
+    setRemoteAudioMuted(!remoteAudioMuted);
+  };
 
   useEffect(() => {
-    socket.on("join:room", handleJoinRoom);
+    socket.on("audio:status", handleRemoteAudioStatus);
+    socket.on("vedio:status", handleRemoteVideoStatus);
+
     return () => {
-      socket.off("join:room", handleJoinRoom);
+      socket.off("audio:status", handleRemoteAudioStatus);
+      socket.off("vedio:status", handleRemoteVideoStatus);
     };
-  }, [handleJoinRoom]);
-
-  useEffect(() => {
-    socket.on("user:joined", handleUserJoin);
-    socket.on("incomming:call", handleIncomingCall);
-    socket.on("call:accepted", handleCallAccepted);
-    socket.on("peer:nego:needed", handleNegotiationIncoming);
-    socket.on("peer:nego:final", handleNegotiationFinal);
-    return () => {
-      socket.off("user:joined", handleUserJoin);
-      socket.off("incomming:call", handleIncomingCall);
-      socket.off("call:accepted", handleCallAccepted);
-      socket.off("peer:nego:needed", handleNegotiationIncoming);
-      socket.off("peer:nego:final", handleNegotiationFinal);
-    };
-  }, [handleUserJoin, handleIncomingCall, handleCallAccepted, handleNegotiationIncoming, handleNegotiationFinal]);
-
-  useEffect(() => {
-    peer.peer?.addEventListener("negotiationneeded", handleNegotiation);
-    return () => {
-      peer.peer?.removeEventListener("negotiationneeded", handleNegotiation);
-    };
-  }, [handleNegotiation]);
-
-  useEffect(() => {
-    peer.peer?.addEventListener("track", (ev) => {
-      const remoteStream = ev.streams;
-      setRemoteStream(remoteStream[0] as any);
-    });
-  }, []);
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 p-5 mt-16 border-t-2 h-screen bg-custom-blue/75">
-      <div className="flex items-center gap-4">
-        {!callAccepted && !callInitiated && !incomingCall && (
-          <div className="flex flex-col items-center">
-            {reciver?.profile?.image ? (
-              <img src={reciver?.profile?.image} className="w-20 h-20 rounded-full mb-2" alt="Receiver Profile" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+      <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="relative mt-16 md:mt-1 lg:mt-1 w-full h-full md:w-1/2  bg-gray-800 rounded-lg overflow-hidden">
+          <p className="absolute top-2 left-2 text-sm font-semibold p-1 rounded-md">
+            {remoteAudioMuted ? (
+              <FaMicrophoneSlash className="text-custom-blue/80" size={20} />
             ) : (
-              <Avatar name={reciver?.name} className="rounded-full mb-2" />
+              <BsMicFill className={` ${isSpeaking?'text-blue-600 scale-125    ':'text-custom-blue/80'}`} size={20} />
             )}
-            {remoteSocket && (
-              <button
-                onClick={handleCallUser}
-                className="bg-blue-500 px-4 py-2 text-white rounded-md"
-              >
-                Call
-              </button>
+          </p>
+          <p className="absolute top-2 left-10 text-sm font-semibold p-1 rounded-md">
+            {remoteVideoMuted ? (
+              <HiMiniVideoCameraSlash
+                className="text-custom-blue/80"
+                size={20}
+              />
+            ) : (
+              <BsFillCameraVideoFill
+                className="text-custom-blue/80"
+                size={20}
+              />
             )}
-          </div>
-        )}
-        {incomingCall && (
-          <div className="flex w-full justify-center items-center">
-            <button onClick={handleCallAccepted} className="bg-green-500 rounded-full p-5 text-white">
-              <FaPhone color="white" className="rounded-full" />
-            </button>
-          </div>
-        )}
+          </p>
+          {!remoteVideoMuted ? (
+            <video
+              ref={remoteRef}
+              autoPlay
+              playsInline
+              className="w-full h-full object-cover"
+            ></video>
+          ) : (
+            <div className="w-auto  h-96 flex justify-center items-center ">
+              {receiver.profile.image ? (
+                <img
+                  className="w-32 h-32 rounded-full"
+                  src={receiver?.profile?.image}
+                  alt=""
+                />
+              ) : (
+                <Avatar
+                  className="w-32 h-32 rounded-full"
+                  name={receiver.name}
+                />
+              )}
+            </div>
+          )}
+          {/* Local video positioned bottom-right */}
+          {stream && (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="absolute bottom-2 right-2 w-20 md:w-32 h-28 md:h-48 object-cover rounded-md border-2 border-white"
+            ></video>
+          )}
+        </div>
+        {/* <div className="relative w-full mt-1 h-64 md:w-1/2 md:h-96 bg-gray-800 rounded-lg overflow-hidden">
+          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover"></video>
+        </div> */}
       </div>
-      <div className="flex flex-col lg:flex-row gap-8 mt-4 w-full">
-        {remoteStream && (
-          <div className="relative w-full lg:w-2/3">
-            <ReactPlayer height="500px" width="100%" playing={true} url={remoteStream} />
-            {stream && (
-              <ReactPlayer style={{ position: "absolute", bottom: "10px", right: "30px" }} height="100px" width="150px" playing={true} url={stream} />
-            )}
-            {callAccepted && (
-              <button onClick={handleEndCall} className="absolute bottom-4 left-10 bg-red-500 rounded-full p-4 text-white">
-                <FaPhoneSlash color="white" />
-              </button>
-            )}
-          </div>
-        )}
+      <div className="mt-4 flex gap-4">
+        <button
+          onClick={toggleAudio}
+          className={`p-4 rounded-full text-sm font-semibold ${
+            audioMuted ? "bg-red-600" : "bg-custom-teal"
+          }`}
+        >
+          {audioMuted ? <FaMicrophoneSlash /> : <BsMicFill />}
+        </button>
+        <button
+          onClick={toggleVideo}
+          className={`p-4 rounded-full text-sm font-semibold ${
+            videoMuted ? "bg-red-600" : "bg-custom-teal"
+          }`}
+        >
+          {videoMuted ? <HiMiniVideoCameraSlash /> : <BsFillCameraVideoFill />}
+        </button>
+        <button
+          onClick={endCall}
+          className="p-4 bg-red-600 rounded-full text-sm font-semibold"
+        >
+          <MdOutlineCallEnd />
+        </button>
       </div>
     </div>
   );
-}
+};
 
 export default VideoChat;

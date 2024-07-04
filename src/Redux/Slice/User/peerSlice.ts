@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type PeerState = Record<string, { stream: MediaStream }>;
 
@@ -8,13 +8,13 @@ const peerSlice = createSlice({
   name: 'peer',
   initialState,
   reducers: {
-    addPeer: (state, action) => {
-      const { peerId, stream } = action.payload;
-      state[peerId] = { stream };
+    addPeer: (state, action: PayloadAction<{ userId: string, stream: MediaStream }>) => {
+      const { userId, stream } = action.payload;
+      state[userId] = { stream };
     },
-    removePeer: (state, action) => {
-      const { [action.payload.peerId]: deleted, ...rest } = state;
-      return rest;
+    removePeer: (state, action: PayloadAction<{ peerId: string }>) => {
+      const { peerId } = action.payload;
+      delete state[peerId];
     },
   },
 });

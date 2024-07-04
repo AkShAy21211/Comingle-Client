@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,17 +20,22 @@ import audioStartBg from "/User/mixkit-atm-cash-machine-key-press-2841.wav";
 import audioEnd from "/User/mixkit-correct-answer-tone-2870.wav";
 import TypingIndicator from "../Common/TypingIndicator";
 import { FaVideo } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
 import VedioChat from "./VideoChat";
 import socket from "../../Apis/socket";
+import VideoCallNotificationModal from "./VideoCallNotificationModal";
+import Peer, { MediaConnection } from "peerjs";
+import { addPeer } from "../../Redux/Slice/User/peerSlice";
+import { FaCircle } from "react-icons/fa";
+import { Bounce, toast } from "react-toastify";
+import { playTune,endTune } from "../../Utils/tune";
 type SingleChatProp = {
   fetchAgain: boolean;
+  peer: Peer | null;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
+function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [emojiPickerVisible, setEmojiPickerVisible] = useState<boolean>(false);
@@ -59,21 +58,22 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
   const [isTyping, setIstyping] = useState(false);
   const [isVedioChat, setIsVedioChat] = useState(false);
 
-  console.log("selectedchat", selectedChat);
-
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
   const fetchMessages = async () => {
     try {
-      if (selectedChat.chatId) {
-        setLoading(true);
-        const response = await userApi.fetchAllMessages(selectedChat.chatId);
-        if (socket) {
-          socket.emit("chat initilize", selectedChat.chatId);
-        }
-        setAllMessages(response.messages);
-        setLoading(false);
-      }
+      if (!selectedChat.chatId) return;
+
+      setLoading(true);
+      const response = await userApi.fetchAllMessages(selectedChat?.chatId);
+
+      setAllMessages(response.messages);
+      setLoading(false);
+
+      socket.emit("chat:start", {
+        room: selectedChat?.chatId,
+        peerId: currentUser._id,
+      });
     } catch (error) {
       setLoading(false);
       console.error(error);
@@ -82,7 +82,7 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
 
   useEffect(() => {
     fetchMessages();
-  }, [selectedChat.chatId]);
+  }, [selectedChat?.chatId]);
 
   useEffect(() => {
     socket.on("typeing", () => {
@@ -98,55 +98,56 @@ function SingleChat({ fetchAgain, setFetchAgain }: SingleChatProp) {
       socket.off("stopTypeing");
     };
   }, [typing]);
-const handleNewMessage = ({
-      message,
-      room,
-    }: {
-      message: Message;
-      room: string;
-    }) => {
-      if (!selectedChat.chatId || selectedChat.chatId !== room) {
-        console.log("New unread message", message);
-        dispatch(setUnreadMessage({chat:message.chat}));
-        setFetchAgain(!fetchAgain);
-      } else {
-        console.log("New message", message);
-        setAllMessages((prevMessages) => {
-          setFetchAgain(!fetchAgain);
-          if (!prevMessages.some((msg) => msg._id === message._id)) {
-            return [...prevMessages, message];
-          }
-          return prevMessages;
-        });
-      }
-    };
 
-    const handleNewMessageSent = ({
-      message,
-      room,
-    }: {
-      message: Message;
-      room: string;
-    }) => {
-      if (
-        selectedChat.chatId === room &&
-        message.sender._id === currentUser._id
-      ) {
-        console.log("New message sent", message);
-        setFetchAgain(!fetchAgain);
 
-        setAllMessages((prevMessages) => {
-          // Check if message already exists to avoid duplicates
-          if (!prevMessages.some((msg) => msg._id === message._id)) {
-            return [...prevMessages, message];
-          }
-          return prevMessages;
-        });
-      }
-    };
+
+  const handleNewMessage = ({
+    message,
+    room,
+  }: {
+    message: Message;
+    room: string;
+  }) => {
+    if (!selectedChat.chatId || selectedChat.chatId !== room) {
+      console.log("New unread message", message);
+      dispatch(setUnreadMessage({ chat: message.chat }));
+      setFetchAgain(!fetchAgain);
+    } else {
+      console.log("New message", message);
+      setAllMessages((prevMessages) => {
+        setFetchAgain(!fetchAgain);
+        if (!prevMessages.some((msg) => msg._id === message._id)) {
+          return [...prevMessages, message];
+        }
+        return prevMessages;
+      });
+    }
+  };
+
+  const handleNewMessageSent = ({
+    message,
+    room,
+  }: {
+    message: Message;
+    room: string;
+  }) => {
+    if (
+      selectedChat.chatId === room &&
+      message.sender._id === currentUser._id
+    ) {
+      console.log("New message sent", message);
+      setFetchAgain(!fetchAgain);
+
+      setAllMessages((prevMessages) => {
+        // Check if message already exists to avoid duplicates
+        if (!prevMessages.some((msg) => msg._id === message._id)) {
+          return [...prevMessages, message];
+        }
+        return prevMessages;
+      });
+    }
+  };
   useEffect(() => {
-    
-
     socket.on("message received", handleNewMessage);
     socket.on("new message sent", handleNewMessageSent);
 
@@ -154,7 +155,12 @@ const handleNewMessage = ({
       socket.off("message received", handleNewMessage);
       socket.off("new message sent", handleNewMessageSent);
     };
-  }, [selectedChat.chatId,allMessages, handleNewMessage,handleNewMessageSent]);
+  }, [
+    selectedChat.chatId,
+    allMessages,
+    handleNewMessage,
+    handleNewMessageSent,
+  ]);
 
   /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -364,16 +370,175 @@ const handleNewMessage = ({
     );
   };
 
+  const [inCommingCall, setIncommingCall] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [callingUser, setCallingUser] = useState<{
+    userId: string;
+    name: string;
+  }>();
+  const [participants, setParticipant] = useState<string[]>([]);
+  const [remoteId, setRemoteId] = useState("");
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
+  const peerState = useSelector((state: RootState) => state.peer);
+
+  const handleGetUsers = ({
+    room,
+    members,
+  }: {
+    room: string;
+    members: string[];
+  }) => {
+    if (room !== selectedChat.chatId) return;
+
+    setParticipant(members.toString().split(","));
+    const remoteUser = members.find((id) => id !== currentUser._id);
+
+    if (remoteUser) {
+      setRemoteId(remoteUser);
+    }
+    console.log("ssssssssss", members);
+  };
+
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
-    socket.emit("initialize:video-chat", {
-      roomId: selectedChat.chatId,
-      userId: currentUser._id,
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      setLocalStream(stream);
+
+      if (!peer) return;
+
+      socket.emit("calluser", {
+        room: selectedChat.chatId,
+        peerId: currentUser._id,
+        name: currentUser.name,
+      });
+      const call = peer.call(remoteId, stream);
+
+      call.on("stream", (peerStream) => {
+        console.log("stream of the remote user", peerStream);
+
+        dispatch(addPeer({ userId: call.peer, stream: peerStream }));
+        setRemoteStream(peerStream);
+      });
+    } catch (error) {
+      console.log("error accessing user media");
+      alert(error)
+    }
+  };
+
+  const handleIncommingCall = async ({
+    from,
+    room,
+    name,
+  }: {
+    from: string;
+    to: string;
+    name: string;
+    room: string;
+  }) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      setLocalStream(stream);
+      setCallingUser({ userId: from, name: name });
+      setIsModalOpen(true);
+      setIncommingCall(true);
+      playTune()
+      if (peer) {
+        console.log("me is ok");
+
+        peer.on("call", (call) => {
+          setCurrentCall(call);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+            alert(error)
+
+    }
+  };
+
+  const acceptCall = () => {
+    if (currentCall && localStream) {
+      currentCall.answer(localStream);
+      currentCall.on("stream", (remoteStream) => {
+        console.log("insde remote stream event", currentCall);
+        dispatch(addPeer({ userId: currentCall.peer, stream: remoteStream }));
+        setRemoteStream(remoteStream);
+      });
+      setIsVedioChat(true);
+      setIsModalOpen(false);
+      setIncommingCall(false);
+      endTune()
+    }
+  };
+
+  const rejectCall = () => {
+    if (currentCall) {
+      currentCall.close();
+      setCurrentCall(null);
+      socket.emit("call:rejcted", { room: selectedChat.chatId });
+    }
+    endTune()
+    setIsModalOpen(false);
+    setIncommingCall(false);
+  };
+
+  const handleUserLeft = (data: { room: string; members: string[] }) => {
+    const { room, members } = data;
+
+    if (room !== selectedChat.chatId) return;
+    console.log("user left chat room", members, room);
+
+    setParticipant(members.toString().split(","));
+  };
+
+  const handleCallRejection = (data: { message: string }) => {
+    setIsVedioChat(false);
+    endTune()
+    toast.info(data.message, {
+      position: "bottom-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
     });
   };
 
+  useEffect(() => {
+    socket.on("call:rejcted", handleCallRejection);
+    socket.on("get:users", handleGetUsers);
+    socket.on("incommingCall", handleIncommingCall);
+    socket.on("user:left", handleUserLeft);
 
-  
+    return () => {
+      socket.off("get:users", handleGetUsers);
+      socket.off("incommingCall", handleIncommingCall);
+      socket.off("user:left", handleUserLeft);
+      socket.off("call:rejcted", handleCallRejection);
+    };
+  }, [handleGetUsers, handleIncommingCall, handleUserLeft]);
+
+  const handleExistChat = () => {
+    socket.emit("exit:chat", {
+      room: selectedChat.chatId,
+      peerId: currentUser._id,
+    });
+
+    dispatch(removeSlectedChat());
+  };
+
+  console.log("peers.............", { peerState });
 
   return (
     <div
@@ -403,6 +568,14 @@ const handleNewMessage = ({
               <p className="p-2 text-white text-lg">{receiver?.username}</p>
             </div>
             <div className="flex gap-5">
+              <FaCircle
+                size={10}
+                className={`mt-4 ${
+                  participants.some((id) => id !== currentUser._id)
+                    ? "text-green-600"
+                    : "text-gray-400"
+                }`}
+              />
               <FaVideo
                 size={25}
                 onClick={handleStartVedioCall}
@@ -413,7 +586,7 @@ const handleNewMessage = ({
               <IoIosCloseCircle
                 size={25}
                 className="mt-2 cursor-pointer"
-                onClick={() => dispatch(removeSlectedChat())}
+                onClick={handleExistChat}
                 color="white"
               />
             </div>
@@ -488,12 +661,22 @@ const handleNewMessage = ({
             ref={fileInputRef}
           />
         </>
-      ) :  !selectedChat.chatId ? (
+      ) : !selectedChat.chatId ? (
         <div className="flex text-xl justify-center items-center h-[calc(100vh-192px)] mt-16">
           Select a chat to start messaging
         </div>
       ) : (
-        <VedioChat setIsVedio={setIsVedioChat} />
+        <VedioChat endCall={()=>{}} stream={localStream} peerStream={remoteStream} peer={peer} />
+      )}
+
+      {inCommingCall && (
+        <VideoCallNotificationModal
+          setIsOpen={setIsModalOpen}
+          onAccept={acceptCall}
+          onReject={rejectCall}
+          isOpen={isModalOpen}
+          callerName={callingUser?.name}
+        />
       )}
     </div>
   );

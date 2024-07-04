@@ -143,7 +143,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                   {message.message &&
                     message.message.trim() !== "" && (
                       <p
-                        className={`text-sm break-words w-auto ${
+                        className={`text-sm min-w-20 max-w-max break-words w-auto ${
                           isDarMode
                             ? "bg-custom-blue/30 text-white"
                             : "bg-gray-200"
