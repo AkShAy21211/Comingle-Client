@@ -193,7 +193,7 @@ function ViewTextPostModal({
                         alt=""
                       />
                     ) : (
-                      <Avatar name={comment?.commenter && comment?.commenter} />
+                      <Avatar name={comment?.commenter && comment?.commenter} size="20" className="rounded-full" />
                     )}
                     <div className="flex flex-col w-full overflow-y-auto break-words ">
                       <p className="font-bold flex gap-1">

@@ -67,6 +67,10 @@ function Posts() {
         setHasMore(getPosts.posts.length > 0);
       }
     } catch (error: any) {
+      console.log('err fetchin  gposts');
+      
+      console.log(error);
+      
       const collections = localStorage.getItem("posts");
       const posts = collections ? JSON.parse(collections) : null;
       setPosts(posts);
@@ -140,7 +144,8 @@ function Posts() {
     async (postId: string, userId: string, authorId: string) => {
       try {
         const likeResponse = await userApi.likePost(postId, userId, authorId);
-        console.log("like", likeResponse);
+        
+
 
         if (likeResponse) {
           setPosts((prevPosts) =>
@@ -155,7 +160,7 @@ function Posts() {
               return post;
             })
           );
-          console.log(posts);
+          socket.emit("notification",authorId)
         }
       } catch (error) {
         console.log(error);
@@ -390,7 +395,7 @@ function Posts() {
                             ? navigate("/profile")
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
-                        name={post.postedUser.username.slice(1)}
+                        name={post.postedUser.username.slice(0)}
                         className="rounded-full me-4 cursor-pointer"
                         size="35"
                       />
@@ -532,7 +537,7 @@ function Posts() {
                                     />
                                   ) : (
                                     <Avatar
-                                      name={comment.commenter.slice(1)}
+                                      name={comment.commenter.slice(0)}
                                       className="rounded-full me-4"
                                       size="28"
                                     />
@@ -553,7 +558,7 @@ function Posts() {
                                           editCommentDisabled._id ===
                                             comment._id &&
                                           "border  border-gray-300 mx-1 p-1 rounded-full"
-                                        }`}
+                                        } ${isDarkMode?"bg-black":"bg-gray-200"}`}
                                         onChange={(e) =>
                                           setEditedComment(e.target.value)
                                         }
@@ -594,7 +599,7 @@ function Posts() {
                                   )}
                                   {showEditCommentDropDown._id ===
                                     comment._id && (
-                                    <ul className="flex flex-col gap-2 bg-gray-300 rounded-xl p-2 relative right-0 top-8 z-10">
+                                    <ul className={`flex flex-col gap-2 ${isDarkMode?"bg-gray-900":' bg-gray-300'} rounded-xl p-2 relative right-0 top-8 z-10`}>
                                       <li>
                                         <IoMdClose
                                           onClick={() =>

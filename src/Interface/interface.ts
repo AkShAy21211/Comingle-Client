@@ -104,9 +104,16 @@ export interface Follow {
 
 export interface FollowNotification {
   _id: string;
-  userId: string;
+  userId:string
   content: string;
   sourceId: {
+    userId: {
+    _id:string;
+    profile:{
+      image:string
+    },
+    name:string
+  }[];
     recipient: {
       name: string;
       _id: string;
@@ -161,6 +168,7 @@ export interface Plans {
 }
 
 export interface ChatType {
+  id: any;
   _id: string;
   chatName: string;
   isGroupChat: boolean;

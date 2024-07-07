@@ -40,7 +40,7 @@ function FriendsModal({
 
   return (
     <>
-      {friends.length && (
+      {friends.length ? (
         <div id="modal" aria-hidden="true" className="fixed inset-0 z-50">
           <div className="grid grid-cols-12 m-5 md:m-0">
             {/* Modal content */}
@@ -73,7 +73,10 @@ function FriendsModal({
 
               <div className="p-4 md:p-5 gap-3 flex flex-col w-full">
                 {friends?.map((friend: User) => (
-                  <div className="flex gap-3 justify-around w-full">
+                  <div
+                    key={friend._id}
+                    className="flex gap-3 justify-around w-full"
+                  >
                     {friend.profile.image ? (
                       <img
                         className="w-10 h-10 rounded-full"
@@ -87,7 +90,20 @@ function FriendsModal({
                         name={friend.name}
                       />
                     )}
-                    <p className="p-2">{friend.username}</p>
+
+                    {(!isMyProfile && (type == "following"|| "follower") )? (
+                      <p className="p-2 inline-flex items-center rounded-md  px-2 py-1 text-xs font-medium text-blue-900 ring-1 ring-inset ring-blue-700/10">
+                        {friend.profile.following?.includes(
+                          currentUser?._id as any
+                        ) ||
+                        friend.profile.followers?.includes(
+                          currentUser?._id as any
+                        )
+                          ? "mutual friend"
+                          : ""}
+                      </p>
+                    ) : null}
+                    <p className="p-2 ">{friend.username}</p>
 
                     {/* CASE WHEN VIEWING FOLLOWER AND FOLLOWING OF OWN PROFILE */}
 
@@ -102,7 +118,7 @@ function FriendsModal({
 
                     {isMyProfile &&
                       type === "follower" &&
-                      user?.profile.following?.includes(friend._id as any) && (
+                      user?.profile?.following?.includes(friend._id as any) && (
                         <button className="bg-custom-blue rounded-lg px-2 text-white text-sm font-light">
                           Following
                         </button>
@@ -197,7 +213,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "follower" &&
                       currentUser?._id !== friend._id &&
-                      currentUser?.profile.followers?.includes(
+                      currentUser?.profile?.followers?.includes(
                         friend._id as any
                       ) && (
                         <button
@@ -210,7 +226,7 @@ function FriendsModal({
                     {!isMyProfile &&
                       type === "follower" &&
                       currentUser?._id !== friend._id &&
-                      !currentUser?.profile.followers?.includes(
+                      !currentUser?.profile?.followers?.includes(
                         friend._id as any
                       ) && (
                         <button
@@ -226,7 +242,7 @@ function FriendsModal({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

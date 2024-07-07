@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useMediaQuery } from "@react-hook/media-query";
 import { FaRegBell } from "react-icons/fa6";
 import LogoutModal from "../Common/LogoutModal";
@@ -9,15 +9,18 @@ import { persistor, RootState } from "../../Redux/store";
 import Avatar from "react-avatar";
 import socket from "../../Apis/socket";
 import { Bounce, toast } from "react-toastify";
+import { CgProfile } from "react-icons/cg";
+import { IoSettingsOutline } from "react-icons/io5";
+import { IoLogOutOutline } from "react-icons/io5";
+
 function Header() {
-  const navigate = useNavigate();
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
   const [notifications, setNotifications] = useState<number | null>(0);
   const currentUser = useSelector((state: RootState) => state.user.user);
-
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
@@ -34,6 +37,11 @@ function Header() {
   useEffect(() => {
     getNotification();
   }, []);
+
+  const handleNotification = () => {
+    getNotification();
+  };
+
   useEffect(() => {
     const handleUserBlocked = (data: { reason: string }) => {
       toast.warning(data.reason, {
@@ -55,9 +63,11 @@ function Header() {
     if (!currentUser.isBlocked) {
       socket.on("user_blocked", handleUserBlocked);
     }
+    socket.on("notification", handleNotification);
 
     return () => {
       socket.off("user_blocked", handleUserBlocked);
+      socket.off("notification", handleNotification);
     };
   }, []);
 
@@ -128,7 +138,9 @@ function Header() {
 
                 {profileMenue && (
                   <div
-                    className="absolute hidden lg:block  right-0 z-10 mt-2 border w-48  rounded-md bg-white py-1 shadow-lg   ring-black ring-opacity-5 focus:outline-none"
+                    className={`absolute hidden lg:block  right-0 z-10 mt-2 border w-48  rounded-md ${
+                      isDarkMode ? " backdrop-blur-lg text-white" : "bg-white"
+                    } py-1 shadow-lg   ring-black ring-opacity-5 focus:outline-none`}
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
@@ -136,20 +148,20 @@ function Header() {
                     <Link
                       to="/profile"
                       onClick={() => setProfileMenu(false)}
-                      className="block  focus:bg-custom-blue focus:text-white  active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700"
+                      className=" flex gap-2  focus:bg-custom-blue focus:text-white  active:bg-custom-blue active:text-white px-4 py-2 text-sm "
                       role="menuitem"
                       id="user-menu-item-0"
                     >
-                      Your Profile
+                      <CgProfile size={20} /> Your Profile
                     </Link>
                     <Link
-                      to="#"
+                      to="/settings"
                       onClick={() => setProfileMenu(false)}
-                      className="block  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700"
+                      className="flex gap-2  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm "
                       role="menuitem"
                       id="user-menu-item-1"
                     >
-                      Settings
+                      <IoSettingsOutline size={20} /> Settings
                     </Link>
                     <Link
                       to="#"
@@ -157,11 +169,11 @@ function Header() {
                         setLogoutModal(true);
                         setProfileMenu(false);
                       }}
-                      className="block  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm text-gray-700"
+                      className="flex gap-2  focus:bg-custom-blue focus:text-white   active:bg-custom-blue active:text-white px-4 py-2 text-sm "
                       role="menuitem"
                       id="user-menu-item-2"
                     >
-                      Sign out
+                      <IoLogOutOutline size={20} /> Sign out
                     </Link>
                   </div>
                 )}

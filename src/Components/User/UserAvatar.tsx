@@ -2,7 +2,6 @@ import Avatar from "react-avatar";
 import { User } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 
-
 type UserAvatarProp = {
   suggestions: string;
   isRight: boolean;
@@ -16,17 +15,16 @@ function UserAvatar({
   friends,
   onlineUsers,
 }: UserAvatarProp) {
-
-    const handleFollow = async (id: string) => {
+  const handleFollow = async (id: string) => {
     await userApi.followRequest(id);
-
   };
   return (
     <>
       <h2 className="px-10 font-bold ">{suggestions}</h2>
       {friends &&
-        friends.map((user: User) => (
+        friends.slice(0,5).map((user: User) => (
           <div
+            key={user._id}
             className={`${
               isRight
                 ? "flex justify-between space-x-4 mt-7 px-10"
@@ -53,7 +51,10 @@ function UserAvatar({
               ></div>
             )}
             {!isRight && (
-              <button onClick={()=>handleFollow(user._id)} className="bg-custom-blue px-2 text-xs text-white rounded-lg">
+              <button
+                onClick={() => handleFollow(user._id)}
+                className="bg-custom-blue px-2 text-xs text-white rounded-lg"
+              >
                 Follow
               </button>
             )}

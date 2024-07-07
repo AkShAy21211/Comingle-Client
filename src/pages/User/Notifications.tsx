@@ -5,19 +5,21 @@ import { formatDistance } from "date-fns";
 import Avatar from "react-avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
+import socket from "../../Apis/socket";
 function Notifications() {
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
 
   const [followUser, setFollowUser] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const [fetchAgain, setFetchAgain] = useState(false);
 
   ////////////////// GET NOTIFICATIONS /////////////////////////////
 
   async function getNotification() {
     try {
       const notifications = await userApi.notifications();
-
+      setFetchAgain(false);
       setNotificatioins(notifications);
     } catch (error) {
       console.log(error);
@@ -26,29 +28,39 @@ function Notifications() {
 
   useEffect(() => {
     getNotification();
-  }, [followUser]);
+  }, [fetchAgain]);
+
+  const handleNotification = () => {
+    setFetchAgain(!fetchAgain);
+  };
+  useEffect(() => {
+    socket.on("notification", handleNotification);
+
+    return () => {
+      socket.off("notification", handleNotification);
+    };
+  }, [handleNotification]);
 
   async function handleAcceptFollow(followId: string, notificationId: string) {
     try {
-      console.log("called");
-
       await userApi.acceptFollow(followId, notificationId);
       setFollowUser(true);
     } catch (err) {
       console.error(err);
     }
   }
+  console.log("calling notonsffdfsff", notifications);
 
   return (
     <div
       className={` ${
         isDarkMode ? "bg-black" : ""
-      } h-screen   col-span-full lg:col-span-3   px-5`}
+      } h-screen   col-span-full lg:col-span-3   mt-20 px-5`}
     >
       {notifications.length > 0 &&
         notifications.map((noti) => (
           <div
-            className="  p-5 overflow-y-scroll mt-20 flex justify-between"
+            className="  p-5 overflow-y-scroll mt-auto flex justify-between"
             key={noti?._id}
           >
             {/* if the current user is the requester  */}
@@ -125,7 +137,6 @@ function Notifications() {
                     </span>
                   </div>
                   <button
-                  
                     className={`border border-custom-blue text-custom-blue border-custom-blue'} px-4 rounded-xl mt-2  h-10`}
                   >
                     Following
@@ -138,7 +149,7 @@ function Notifications() {
                 </>
               )}
 
-              {noti?.type === "Follow" &&
+            {noti?.type === "Follow" &&
               noti.sourceId.recipient._id === currentUser._id &&
               noti.sourceId.status === "Pending" && (
                 <>
@@ -181,6 +192,40 @@ function Notifications() {
                   </p>
                 </>
               )}
+            {noti?.type === "Like" && noti?.userId === currentUser._id && (
+              <>
+                {noti.sourceId?.userId[0]?.profile?.image ? (
+                  <img
+                    src={noti?.sourceId?.userId[0]?.profile?.image}
+                    className="rounded-full w-14 h-14"
+                    alt=""
+                  />
+                ) : (
+                  <Avatar
+                    className="rounded-full"
+                    size="55"
+                    name={noti?.sourceId?.userId[0]?.name}
+                  />
+                )}
+
+                <div className="p-3  ">
+                  {"@" + noti?.sourceId?.userId[0]?.name?.toLowerCase()}{" "}
+                  <span className="font-light">{noti.content}</span>{" "}
+                  <span className="font-bold md:hidden">
+                    {" "}
+                    {formatDistance(noti.createdAt, new Date(), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                </div>
+
+                <p className="p-5 text-sm hidden md:block">
+                  {formatDistance(noti.createdAt, new Date(), {
+                    addSuffix: true,
+                  })}
+                </p>
+              </>
+            )}
           </div>
         ))}
     </div>

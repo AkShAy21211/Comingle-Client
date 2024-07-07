@@ -5,7 +5,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./Redux/store.ts";
 import ToastProvider from "./Components/Common/ToastProvider.tsx";
-// import { registerServiceWorker } from './serviceWorkerRegistration';
+import { registerServiceWorker } from './serviceWorkerRegistration';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -18,4 +18,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
    </React.StrictMode>
 );
 
-// registerServiceWorker()
+registerServiceWorker()

@@ -27,14 +27,33 @@ import Peer, { MediaConnection } from "peerjs";
 import { addPeer } from "../../Redux/Slice/User/peerSlice";
 import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
-import { playTune,endTune } from "../../Utils/tune";
+import { playTune, endTune } from "../../Utils/tune";
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;
+  participants: string[];
+  setIncommingCall:React.Dispatch<React.SetStateAction<boolean>>;
+  inCommingCall:boolean;
+  setIsVedioChat:React.Dispatch<React.SetStateAction<boolean>>;
+  isVedioChat:boolean;
+  remoteId: string;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
+  setCallIndication: React.Dispatch<
+    React.SetStateAction<{ message: string; room: string }>
+  >;
 };
 
-function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
+function SingleChat({
+  fetchAgain,
+  setFetchAgain,
+  setCallIndication,
+  peer,
+  participants,
+  setIsVedioChat,
+  isVedioChat,
+  remoteId,
+  setIncommingCall,inCommingCall
+}: SingleChatProp) {
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
@@ -56,7 +75,6 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
   const [isRecording, setIsRecording] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
-  const [isVedioChat, setIsVedioChat] = useState(false);
 
   /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
@@ -99,8 +117,6 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
     };
   }, [typing]);
 
-
-
   const handleNewMessage = ({
     message,
     room,
@@ -110,7 +126,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
   }) => {
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
       console.log("New unread message", message);
-      dispatch(setUnreadMessage({ chat: message.chat }));
+      dispatch(setUnreadMessage(  message.chat ));
       setFetchAgain(!fetchAgain);
     } else {
       console.log("New message", message);
@@ -132,6 +148,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
     room: string;
   }) => {
     if (
+      !selectedChat.chatId||
       selectedChat.chatId === room &&
       message.sender._id === currentUser._id
     ) {
@@ -214,6 +231,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
           socket.emit("message", {
             message: response.message,
             room: selectedChat.chatId,
+            to:receiver._id
           });
 
           setSelectedFiles([]);
@@ -370,36 +388,17 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
     );
   };
 
-  const [inCommingCall, setIncommingCall] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [callingUser, setCallingUser] = useState<{
     userId: string;
-    name: string;
+    message: string;
   }>();
-  const [participants, setParticipant] = useState<string[]>([]);
-  const [remoteId, setRemoteId] = useState("");
+
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
-  const peerState = useSelector((state: RootState) => state.peer);
 
-  const handleGetUsers = ({
-    room,
-    members,
-  }: {
-    room: string;
-    members: string[];
-  }) => {
-    if (room !== selectedChat.chatId) return;
 
-    setParticipant(members.toString().split(","));
-    const remoteUser = members.find((id) => id !== currentUser._id);
-
-    if (remoteUser) {
-      setRemoteId(remoteUser);
-    }
-    console.log("ssssssssss", members);
-  };
 
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
@@ -416,6 +415,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
       socket.emit("calluser", {
         room: selectedChat.chatId,
         peerId: currentUser._id,
+        to:receiver._id,
         name: currentUser.name,
       });
       const call = peer.call(remoteId, stream);
@@ -428,30 +428,31 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
       });
     } catch (error) {
       console.log("error accessing user media");
-      alert(error)
+      alert(error);
     }
   };
 
   const handleIncommingCall = async ({
     from,
-    room,
-    name,
+    message,
   }: {
     from: string;
-    to: string;
-    name: string;
-    room: string;
+    message: string;
   }) => {
     try {
+  
+      console.log('call recived');
+      
+      setIsVedioChat(true)
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
       setLocalStream(stream);
-      setCallingUser({ userId: from, name: name });
+      setCallingUser({ userId: from, message: message });
       setIsModalOpen(true);
       setIncommingCall(true);
-      playTune()
+      playTune();
       if (peer) {
         console.log("me is ok");
 
@@ -461,8 +462,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
       }
     } catch (error) {
       console.log(error);
-            alert(error)
-
+      alert(error);
     }
   };
 
@@ -474,36 +474,43 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
         dispatch(addPeer({ userId: currentCall.peer, stream: remoteStream }));
         setRemoteStream(remoteStream);
       });
-      setIsVedioChat(true);
+      setCallIndication({ message: "", room: "" });
+      setIsVedioChat(true)
       setIsModalOpen(false);
       setIncommingCall(false);
-      endTune()
+      endTune();
     }
   };
 
   const rejectCall = () => {
     if (currentCall) {
       currentCall.close();
-      setCurrentCall(null);
       socket.emit("call:rejcted", { room: selectedChat.chatId });
     }
-    endTune()
+    endTune();
+    setCallIndication({ message: "", room: "" });
+    setIsModalOpen(false);
+    setIncommingCall(false);
+    setIsVedioChat(false)
+  };
+
+  const endCall = () => {
+    if (remoteStream) {
+      setIsVedioChat(false);
+      setLocalStream(null);
+      setRemoteStream(null);
+      currentCall?.close();
+      socket.emit("call:ended", { room: selectedChat.chatId });
+    }
     setIsModalOpen(false);
     setIncommingCall(false);
   };
 
-  const handleUserLeft = (data: { room: string; members: string[] }) => {
-    const { room, members } = data;
-
-    if (room !== selectedChat.chatId) return;
-    console.log("user left chat room", members, room);
-
-    setParticipant(members.toString().split(","));
-  };
-
   const handleCallRejection = (data: { message: string }) => {
     setIsVedioChat(false);
-    endTune()
+    endTune();
+    setLocalStream(null);
+    setRemoteStream(null);
     toast.info(data.message, {
       position: "bottom-center",
       autoClose: 3000,
@@ -515,19 +522,51 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
     });
   };
 
+  const handleCallEnd = (data: { message: string }) => {
+    setIsVedioChat(false);
+    setLocalStream(null);
+    setRemoteStream(null);
+    setIsModalOpen(false);
+    setIncommingCall(false);
+    currentCall?.close();
+    toast.info(data.message, {
+      position: "bottom-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+  };
+
+  const handleMultipleCall = (data: { message: string }) => {
+    if (inCommingCall && currentCall) {
+      toast.info(data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
+  };
+
   useEffect(() => {
     socket.on("call:rejcted", handleCallRejection);
-    socket.on("get:users", handleGetUsers);
+    socket.on("call:ended", handleCallEnd);
     socket.on("incommingCall", handleIncommingCall);
-    socket.on("user:left", handleUserLeft);
+    socket.on("another:call", handleMultipleCall);
 
     return () => {
-      socket.off("get:users", handleGetUsers);
       socket.off("incommingCall", handleIncommingCall);
-      socket.off("user:left", handleUserLeft);
       socket.off("call:rejcted", handleCallRejection);
+      socket.off("call:ended", handleCallEnd);
+      socket.off("another:call", handleMultipleCall);
     };
-  }, [handleGetUsers, handleIncommingCall, handleUserLeft]);
+  }, [handleIncommingCall, handleCallEnd]);
 
   const handleExistChat = () => {
     socket.emit("exit:chat", {
@@ -538,8 +577,6 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
     dispatch(removeSlectedChat());
   };
 
-  console.log("peers.............", { peerState });
-
   return (
     <div
       className={`${
@@ -548,7 +585,7 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
         isDarMode ? "bg-black" : "bg-white"
       } border-white`}
     >
-      {!isVedioChat && selectedChat.chatId ? (
+      {  !isVedioChat&&selectedChat.chatId ? (
         <>
           <div className="mb-1 flex mt-16 justify-between gap-8 p-5 border-t-2 h-20 bg-custom-blue/90 backdrop:blur-xl">
             <div className="flex items-center gap-2">
@@ -662,20 +699,29 @@ function SingleChat({ fetchAgain, setFetchAgain, peer }: SingleChatProp) {
           />
         </>
       ) : !selectedChat.chatId ? (
-        <div className="flex text-xl justify-center items-center h-[calc(100vh-192px)] mt-16">
+        <div
+          className={`flex text-xl justify-center ${
+            isDarMode ? "text-white" : "text-black"
+          } items-center h-[calc(100vh-192px)] mt-16`}
+        >
           Select a chat to start messaging
         </div>
       ) : (
-        <VedioChat endCall={()=>{}} stream={localStream} peerStream={remoteStream} peer={peer} />
+        <VedioChat
+          endCall={endCall}
+          stream={localStream}
+          peerStream={remoteStream}
+          peer={peer}
+        />
       )}
 
-      {inCommingCall && (
+      {inCommingCall &&  (
         <VideoCallNotificationModal
           setIsOpen={setIsModalOpen}
           onAccept={acceptCall}
           onReject={rejectCall}
           isOpen={isModalOpen}
-          callerName={callingUser?.name}
+          message={callingUser?.message}
         />
       )}
     </div>

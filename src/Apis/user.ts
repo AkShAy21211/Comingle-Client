@@ -2,7 +2,7 @@ import axiosInstance from "./userAxios";
 import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
-
+import socket from "./socket";
 
 const userApi = {
   signup: async (formData: SignUpType) => {
@@ -403,6 +403,7 @@ const userApi = {
         userEnpoints.FOLLOW_REQUEST,
         { recipient: id }
       );
+      socket.emit("notification", id);
 
       if (followRequest.status) {
         toast.success("Follow request sent", {
@@ -433,8 +434,6 @@ const userApi = {
 
   unfollow: async (following: string) => {
     try {
-
-      
       const unfollowRequest = await axiosInstance.patch(userEnpoints.UNFOLLOW, {
         following,
       });

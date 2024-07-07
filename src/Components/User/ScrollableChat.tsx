@@ -34,7 +34,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
   return (
     <ScrollableFeed>
       {messages &&
-        messages.map((message: Message, index) => (
+        messages.map((message: Message) => (
           <div
             key={message._id} // Ensure each mapped element has a unique key
             className={`${
@@ -152,7 +152,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                         {message.message}
                       </p>
                     )}
-                  <small className="text-xs">
+                <small className={`text-xs ${isDarMode?"text-white":"text-black"} mt-1`}>
                     {FormattedRelativeTime(message.createdAt)}
                   </small>
                 </div>
@@ -226,7 +226,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                       {message.message}
                     </p>
                   )}
-                <small className="text-xs mt-1">
+                <small className={`text-xs ${isDarMode?"text-white":"text-black"} mt-1`}>
                   {FormattedRelativeTime(message.createdAt)}
                 </small>
               </div>

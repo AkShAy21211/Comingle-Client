@@ -7,7 +7,7 @@ interface VideoCallNotificationModalProps {
   setIsOpen: React.Dispatch<SetStateAction<boolean>>;
   onAccept: ()=>void;
   onReject: () => void;
-  callerName: string | undefined;
+  message: string | undefined;
 }
 
 const VideoCallNotificationModal: React.FC<VideoCallNotificationModalProps> = ({
@@ -15,19 +15,19 @@ const VideoCallNotificationModal: React.FC<VideoCallNotificationModalProps> = ({
   onAccept,
   onReject,
   setIsOpen,
-  callerName,
+  message,
 }) => {
   const handleAccept = () => {
     onAccept()
     setIsOpen(false);
   };
-  if (!isOpen) return null;
 
+  if(!isOpen) return null
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-auto">
       <div className="bg-custom-blue text-white p-6 rounded-lg shadow-lg text-center">
-        <h2 className="text-xl font-semibold mb-4"> Video Call</h2>
-        <p className="mb-6">{callerName} is calling you</p>
+        {/* <h2 className="text-xl font-semibold mb-4"> Video Call</h2> */}
+        <p className="mb-6">{message} </p>
         <div className="flex justify-center gap-4">
           <button
             className="bg-green-500 animate-pulse text-white p-4  rounded-full hover:bg-green-600"

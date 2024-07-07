@@ -117,10 +117,10 @@ const VideoChat: React.FC<VideoChatProps> = ({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-4">
-        <div className="relative mt-16 md:mt-1 lg:mt-1 w-full h-full md:w-1/2  bg-gray-800 rounded-lg overflow-hidden">
-          <p className="absolute top-2 left-2 text-sm font-semibold p-1 rounded-md">
+    <div className="flex flex-col items-center justify-center  h-screen  bg-gray-900 text-white p-4">
+      <div className="w-full flex flex-col md:flex-row items-center   justify-center gap-4">
+        <div className="relative  h-[70vh] mt-16  w-10/12   rounded-lg overflow-hidden">
+          <p className="absolute top-2 left-2   text-sm font-semibold p-1 rounded-md">
             {remoteAudioMuted ? (
               <FaMicrophoneSlash className="text-custom-blue/80" size={20} />
             ) : (
@@ -169,7 +169,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
               ref={videoRef}
               autoPlay
               playsInline
-              className="absolute bottom-2 right-2 w-20 md:w-32 h-28 md:h-48 object-cover rounded-md border-2 border-white"
+              className="absolute bottom-2 right-2 w-20 md:w-32 h-28 md:h-36 object-cover rounded-md border-2 border-white"
             ></video>
           )}
         </div>
@@ -195,7 +195,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
           {videoMuted ? <HiMiniVideoCameraSlash /> : <BsFillCameraVideoFill />}
         </button>
         <button
-          onClick={endCall}
+          onClick={()=>endCall()}
           className="p-4 bg-red-600 rounded-full text-sm font-semibold"
         >
           <MdOutlineCallEnd />

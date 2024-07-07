@@ -332,7 +332,7 @@ function ViewPostModal({
                           <Avatar
                             size="23"
                             className="rounded-full"
-                            name={comment?.commenter.slice(1)}
+                            name={comment?.commenter.slice(0)}
                           />
                         )}
                         <div className="flex flex-col w-full overflow-y-auto break-words ">
@@ -354,7 +354,7 @@ function ViewPostModal({
                             onChange={(e) =>
                               setEditedComment(e.target.value.trim())
                             }
-                            className="text-sm p-1 rounded-xl focus:border focus:border-gray-500  mt-2 w-full border-b-2"
+                            className={`text-sm p-1 rounded-xl border  ${isDarkMode?"bg-black":"bg-gray-200"}  mt-2 w-full border-b-2`}
                           />
                           <p className="text-sm text-red-600">
                             {editCommentDisabled._id === comment._id &&
@@ -370,7 +370,7 @@ function ViewPostModal({
                           />
                         )}
                         {showEditCommentDropDown._id === comment._id && (
-                          <ul className="flex flex-col gap-2 bg-gray-300 rounded-xl p-2 absolute right-0 top-8 z-10">
+                            <ul className={`flex flex-col gap-2 ${isDarkMode?"bg-gray-900":' bg-gray-300'} rounded-xl p-2 relative right-0 top-8 z-10`}>
                             <li>
                               <IoMdClose
                                 onClick={() => handleShowDropDown("", true)}

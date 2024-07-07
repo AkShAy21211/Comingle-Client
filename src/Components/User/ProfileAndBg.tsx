@@ -431,6 +431,7 @@ function ProfileAndBg({
           {posts?.length}
           <p>Posts</p>
         </div>
+        
       </div>
       <div className="tab-buttons flex justify-around w-full">
         <button
@@ -516,7 +517,7 @@ function ProfileAndBg({
             {posts &&
               posts.map((post: PostsType) =>
                 post && post.image.length && post.image.length > 1 ? (
-                  <Slider {...settings}>
+                  <Slider key={post._id} {...settings}>
                     {post.image.map(
                       (item: { url: string; type: string }, index) =>
                         renderContentItem(item, index, post)

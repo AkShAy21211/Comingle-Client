@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User } from '../../Interface/interface';
 import adminApi from '../../Apis/admin';
 import Avatar from 'react-avatar';

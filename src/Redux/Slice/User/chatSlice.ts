@@ -6,6 +6,7 @@ const initialState = {
   unreadMessage: [],
 };
 
+
 const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -20,22 +21,21 @@ const chatSlice = createSlice({
     },
 
     setUnreadMessage: (state, action) => {
-      console.log(action.payload);
+      console.log('set',action.payload);
 
       
       state.unreadMessage = state.unreadMessage||[]
 
       state.unreadMessage.push(action.payload as never);
 
-      const existingChat = state.unreadMessage.find((c:ChatType)=>c._id === action.payload.chat._id)
 
-      if(existingChat) return;
-
-      state.unreadMessage.push(action.payload.chat as never)
     },
     removeUnreadMessage: (state, action) => {
+      console.log('remove',action.payload);
+      
       state.unreadMessage = state.unreadMessage.filter(
-        (chat: any) => chat._id !== action.payload
+
+        (chat: ChatType) => chat._id !== action.payload
       );
     },
   },
