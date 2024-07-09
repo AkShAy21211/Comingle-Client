@@ -6,6 +6,12 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true
+    
   },
-  "include": ["vite.config.ts"]
+   "include": [
+    "src/**/*","vite.config.ts"  // Adjust this to match your project structure
+  ],
+  "exclude": [
+    "node_modules", "dist"  // Ensure these directories are excluded if needed
+  ]
 }
