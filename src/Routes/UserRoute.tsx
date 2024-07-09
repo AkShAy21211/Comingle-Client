@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { lazy } from "react";
 import Register from "../Pages/User/Register";
 import OtpVerify from "../Pages/User/OtpVerify";
 import Login from "../Pages/User/Login";
@@ -7,18 +8,17 @@ import Profile from "../Pages/User/Profile";
 import Layout from "../Components/User/Layout";
 import IsLoggedOut from "../Middleware/User/IsLoggedOut";
 import IslogedIn from "../Middleware/User/IsLoggedIn";
-import SettingsPage from "../Pages/User/Settings";
 import PersonalDetails from "../Pages/User/PersonalDetails";
 import Loading from "../Components/Common/Loading";
 import ForgotPassword from "../Pages/User/ForgotPassword";
-import Explore from "../Pages/User/Explore";
 import OtherUserProfile from "../Pages/User/OtherUserProfile";
 import Notifications from "../Pages/User/Notifications";
 import Subscription from "../Pages/User/Subscription";
-import Chat from "../Pages/User/Chat";
-import SinglePost from "../Pages/User/SinglePost";
 import NotFound404 from "../Pages/User/NotFound404";
-
+const Chat = lazy(()=>import("../Pages/User/Chat"));
+const Explore = lazy(()=>import("../Pages/User/Explore"));
+const SinglePost  = lazy(()=>import("../Pages/User/SinglePost"));
+const SettingsPage = lazy(()=>import("../Pages/User/Settings"))
 function UserRoute() {
   return (
     <Routes>
