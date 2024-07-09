@@ -15,6 +15,7 @@ function LoginForm() {
   const dispatch = useDispatch();
   const [togglePassword, setTogglePassword] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null); // Create a ref for the password input
+  
 
   const formik = useFormik({
     initialValues: {

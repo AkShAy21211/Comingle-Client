@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.3:5000",
+  baseURL: "http://13.201.34.214:5000",
   withCredentials: true,
 });
 const currentUser = localStorage.getItem("user");

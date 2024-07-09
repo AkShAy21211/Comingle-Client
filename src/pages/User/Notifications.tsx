@@ -9,7 +9,6 @@ import socket from "../../Apis/socket";
 function Notifications() {
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
 
-  const [followUser, setFollowUser] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [fetchAgain, setFetchAgain] = useState(false);
@@ -44,7 +43,7 @@ function Notifications() {
   async function handleAcceptFollow(followId: string, notificationId: string) {
     try {
       await userApi.acceptFollow(followId, notificationId);
-      setFollowUser(true);
+
     } catch (err) {
       console.error(err);
     }
