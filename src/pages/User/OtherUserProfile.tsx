@@ -51,7 +51,8 @@ function OtherUserProfile() {
       >
         <ProfileAndBg
           setPosts={setPosts}
-          fetchAgain={setFetchAgain}
+          fetchAgain={fetchAgain}
+          setfetchAgain={setFetchAgain}
           posts={posts}
           user={userData}
           isMyProfile={false}

@@ -46,11 +46,11 @@ function Profile() {
       >
         <ProfileAndBg
           setPosts={setPosts}
-          fetchAgain={setFetchAgain}
+          setfetchAgain={setFetchAgain}
           posts={posts}
           isMyProfile
           user={userData}
-        />
+          fetchAgain={fetchAgain}        />
       </div>
     </div>
   );
