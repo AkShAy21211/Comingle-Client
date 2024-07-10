@@ -1,5 +1,4 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-import { SignedInAdmin } from "../Interface/interface";
 
 const axiosInstance = axios.create({
   baseURL:

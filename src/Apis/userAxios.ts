@@ -1,5 +1,4 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-import { json } from "stream/consumers";
 
 const backenndurl = import.meta.env.VITE_NODE_ENV == "DEVELOPMENT"
   ? import.meta.env.VITE_BACKEND_URI_DEV

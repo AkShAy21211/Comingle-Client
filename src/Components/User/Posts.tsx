@@ -67,7 +67,6 @@ function Posts() {
         setHasMore(getPosts.posts.length > 0);
       }
     } catch (error: any) {
-      console.log('err fetchin  gposts');
       
       console.log(error);
       

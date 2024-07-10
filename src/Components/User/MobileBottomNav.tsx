@@ -15,6 +15,8 @@ function MobileBottomNav() {
   const shoPostButton = ["/"];
   const showNav = ["/chats"];
   const location = useLocation();
+
+
   return (
     <>
       {!showNav.includes(location.pathname) && (
@@ -83,7 +85,7 @@ function MobileBottomNav() {
           </div>
         </div>
       )}
-      {openModal && <CreatePostModal setOpenModal={setOpenModal} />}
+      {openModal && <CreatePostModal setfetchAgain={()=>{}} fetchAgain setOpenModal={setOpenModal} />}
     </>
   );
 }
