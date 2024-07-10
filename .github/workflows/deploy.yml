@@ -13,18 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Render CLI
-        run: |
-          curl -sSL https://render.com/install.sh | sh
-
-      - name: Login to Render
-        run: render login --email ${{ secrets.RENDER_EMAIL }} --password ${{ secrets.RENDER_PASSWORD }}
-
-      - name: Build and push Docker image to Render
+      - name: Build and push Docker image to Render registry
         run: |
           docker build -t achu2002/comingle-client .
           docker tag achu2002/comingle-client:latest registry.render.com/my-account/comingle-client:latest
           docker push registry.render.com/my-account/comingle-client:latest
 
-      - name: Deployed to Render successfully
-        run: echo Deployed to Render successfully
+      - name: Deployed to Render registry successfully
+        run: echo Built and pushed Docker image to Render registry successfully
