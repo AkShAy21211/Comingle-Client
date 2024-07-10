@@ -148,8 +148,7 @@ function SinglePost() {
       const commentResponse = await userApi.commentPost(
         newComment,
         postId,
-        userId,
-        post?.postedUser._id as string
+        userId
       );
       if (commentResponse) {
         setPosts((prevPost: PostsType | null) => {

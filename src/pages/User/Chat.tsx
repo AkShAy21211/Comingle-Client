@@ -31,18 +31,25 @@ function Chat() {
       secure: true,
     });
 
-    peer.on("open", () => {
+    peer.on("open", (id) => {
+      console.log("My peer ID is:", id, currentUser._id);
       setMe(peer);
 
       socket.emit("user:joined", { userId: currentUser._id });
     });
   }, [currentUser._id]);
 
-  const handleGetUsers = ({ members }: { members: string[] }) => {
+  const handleGetUsers = ({
+
+    members,
+  }: {
+    members: string[];
+  }) => {
     setParticipant(members.toString().split(","));
     const remoteUser = members.find((id) => id !== currentUser._id);
 
-
+    console.log('remote user  id',remoteId);
+    
     if (remoteUser) {
       setRemoteId(remoteUser);
     }
@@ -51,6 +58,7 @@ function Chat() {
     const { room, members } = data;
 
     if (room !== selectedChat.chatId) return;
+    console.log("user left chat room", members, room);
 
     setParticipant(members.toString().split(","));
   };
