@@ -1,6 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
-const backenndurl = import.meta.env.VITE_NODE_ENV == "DEVELOPMENT"
+const backenndurl = import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
   ? import.meta.env.VITE_BACKEND_URI_DEV
   : import.meta.env.VITE_BACKEND_URI
 

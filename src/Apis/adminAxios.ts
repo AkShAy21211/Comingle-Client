@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
   baseURL:
-    import.meta.env.VITE_NODE_ENV == "DEVELOPMENT"
+    import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
       ? import.meta.env.VITE_BACKEND_URI_DEV
       : import.meta.env.VITE_BACKEND_URI,
         withCredentials: true,
