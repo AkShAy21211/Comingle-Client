@@ -1,10 +1,12 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URI;
 
 const axiosInstance = axios.create({
   baseURL: backendUrl,
   withCredentials: true,
 });
+
+
 const currentUser = localStorage.getItem("user");
 
 const user = currentUser ? JSON.parse(currentUser) : null;
