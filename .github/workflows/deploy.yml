@@ -21,7 +21,6 @@ jobs:
           docker build -t achu2002/comingle-client .
           docker tag achu2002/comingle-client:latest registry.render.com/my-account/comingle-client:latest
           docker push registry.render.com/my-account/comingle-client:latest
-          render service update --name comingle-client --env-vars-file .env
 
       - name: Deployed to Render successfully
         run: echo Deployed to Render successfully
