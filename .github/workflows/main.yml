@@ -1,0 +1,27 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - main  # Adjust as needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Render
+        run: render login --email ${{ secrets.RENDER_EMAIL }} --password ${{ secrets.RENDER_PASSWORD }}
+
+      - name: Build and push Docker image to Render
+        run: |
+          docker build -t achu2002/comingle-client .
+          docker tag achu2002/comingle-client:latest registry.render.com/my-account/comingle-client:latest
+          docker push registry.render.com/my-account/comingle-client:latest
+          render service update --name comingle-client --env-vars-file .env
+
+      - name: Deployed to Render successfully
+        run: echo Deployed to Render successfully
