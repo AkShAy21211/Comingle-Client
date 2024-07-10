@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 export default defineConfig({
-
   plugins: [
     react(), // Enable React support
 
@@ -61,6 +60,11 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    host: true,
+    strictPort: true,
+    port: 3000,
+  },
   define: {
     global: "window", // Define global object as window
   },
