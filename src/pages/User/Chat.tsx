@@ -6,6 +6,9 @@ import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Peer from "peerjs";
 import socket from "../../Apis/socket";
+const peerServer = import.meta.env.VITE_PEER_SERVER;
+
+
 
 function Chat() {
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -25,14 +28,13 @@ function Chat() {
   });
   useEffect(() => {
     const peer = new Peer(currentUser._id, {
-      host: "peer-server-6c7b.onrender.com",
+      host: peerServer,
       port: 443,
       path: "/peerjs/myapp",
       secure: true,
     });
 
     peer.on("open", (id) => {
-      console.log("My peer ID is:", id, currentUser._id);
       setMe(peer);
 
       socket.emit("user:joined", { userId: currentUser._id });

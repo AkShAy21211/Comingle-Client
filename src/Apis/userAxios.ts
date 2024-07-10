@@ -1,7 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const axiosInstance = axios.create({
-  baseURL: "http://13.201.34.214:5000",
+  baseURL: backendUrl,
   withCredentials: true,
 });
 const currentUser = localStorage.getItem("user");
@@ -28,7 +29,6 @@ axiosInstance.interceptors.request.use(
     
     if (config.data && config.data instanceof FormData) {
 
-      console.log('confgigggg form datra',config.data );
       
       config.headers["Content-Type"] = "multipart/form-data";
     

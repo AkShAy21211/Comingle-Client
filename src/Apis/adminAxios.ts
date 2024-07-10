@@ -1,11 +1,12 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { SignedInAdmin } from "../Interface/interface";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const axiosInstance = axios.create({
-  baseURL: "http://13.201.34.214:5000",
+  baseURL: backendUrl,
   withCredentials: true,
 });
 let data = localStorage.getItem("admin");
-console.log(import.meta.env);
 
 const admin: SignedInAdmin = data ? JSON.parse(data) : null;
 

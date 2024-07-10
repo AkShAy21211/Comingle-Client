@@ -1,6 +1,7 @@
 import socketIOClient from "socket.io-client";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const ws = "http://192.168.1.3:5000";
+const ws = backendUrl;
  const socket = socketIOClient(ws);
 
 
