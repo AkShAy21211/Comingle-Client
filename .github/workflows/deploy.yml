@@ -6,18 +6,21 @@ on:
       - main  # Adjust as needed
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and push Docker image to Render registry
-        run: |
-          docker build -t achu2002/comingle-client .
-          docker tag achu2002/comingle-client:latest registry.render.com/my-account/comingle-client:latest
-          docker push registry.render.com/my-account/comingle-client:latest
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deployed to Render registry successfully
-        run: echo Built and pushed Docker image to Render registry successfully
+      - name: Build Docker image
+        run: docker build -t achu2002/comingle-client:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: docker push achu2002/comingle-client:latest
