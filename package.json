@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "clean-install": "rm -rf node_modules package-lock.json && npm install",
     "dev": "vite",
     "start": "vite preview",
     "build": "tsc -b && vite build",
