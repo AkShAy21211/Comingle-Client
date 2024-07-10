@@ -13,6 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install Render CLI
+        run: |
+          curl -sSL https://render.com/install.sh | sh
+
       - name: Login to Render
         run: render login --email ${{ secrets.RENDER_EMAIL }} --password ${{ secrets.RENDER_PASSWORD }}
 
