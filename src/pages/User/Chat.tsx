@@ -34,7 +34,7 @@ function Chat() {
       secure: true,
     });
 
-    peer.on("open", (id) => {
+    peer.on("open", () => {
       setMe(peer);
 
       socket.emit("user:joined", { userId: currentUser._id });
