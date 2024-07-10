@@ -63,7 +63,7 @@ export default defineConfig({
   server: {
     host: true,
     strictPort: true,
-    port: 3000,
+    port: 3001,
   },
   define: {
     global: "window", // Define global object as window
