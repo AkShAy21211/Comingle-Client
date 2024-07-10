@@ -36,29 +36,29 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// this.addEventListener("fetch", (event) => {
-//   if (navigator.onLine) {
-//     let fetchRequest = event.request.clone();
-//     return fetch(fetchRequest).then((response) => {
-//       if (!response || response.status !== 200 || response.type !== "basic") {
-//         return response;
-//       }
+this.addEventListener("fetch", (event) => {
+  if (navigator.onLine) {
+    let fetchRequest = event.request.clone();
+    return fetch(fetchRequest).then((response) => {
+      if (!response || response.status !== 200 || response.type !== "basic") {
+        return response;
+      }
 
-//       let responseToCache = response.clone();
+      let responseToCache = response.clone();
 
-//       caches.open(cacheData).then((chahe) => {
-//         chahe.put(event.request, responseToCache);
-//       });
+      caches.open(cacheData).then((chahe) => {
+        chahe.put(event.request, responseToCache);
+      });
 
-//       return response;
-//     });
-//   } else {
-//     event.respondWith(
-//       caches.match(event.request).then((response) => {
-//         if (response) {
-//           return response;
-//         }
-//       })
-//     );
-//   }
-// });
+      return response;
+    });
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        if (response) {
+          return response;
+        }
+      })
+    );
+  }
+});
