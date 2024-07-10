@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build your React TypeScript app
-RUN npm run  build --verbose
+RUN npm run  build
 
 # Expose port 3000 (or the port your app runs on)
 EXPOSE 3000
