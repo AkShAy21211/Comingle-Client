@@ -53,7 +53,7 @@ function RightPanel() {
       socket?.off("onlineUsers");
       socket?.off("request:onlineUsers");
     };
-  });
+  },[]);
 
   return (
     <div

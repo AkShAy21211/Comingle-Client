@@ -6,9 +6,6 @@ import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Peer from "peerjs";
 import socket from "../../Apis/socket";
-const peerServer = import.meta.env.VITE_PEER_SERVER;
-
-
 
 function Chat() {
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -28,7 +25,7 @@ function Chat() {
   });
   useEffect(() => {
     const peer = new Peer(currentUser._id, {
-      host: peerServer,
+      host: import.meta.env.VITE_PEER_SERVER,
       port: 443,
       path: "/peerjs/myapp",
       secure: true,
@@ -41,17 +38,11 @@ function Chat() {
     });
   }, [currentUser._id]);
 
-  const handleGetUsers = ({
-
-    members,
-  }: {
-    members: string[];
-  }) => {
+  const handleGetUsers = ({ members }: { members: string[] }) => {
     setParticipant(members.toString().split(","));
     const remoteUser = members.find((id) => id !== currentUser._id);
 
-    console.log('remote user  id',remoteId);
-    
+
     if (remoteUser) {
       setRemoteId(remoteUser);
     }
@@ -60,7 +51,6 @@ function Chat() {
     const { room, members } = data;
 
     if (room !== selectedChat.chatId) return;
-    console.log("user left chat room", members, room);
 
     setParticipant(members.toString().split(","));
   };

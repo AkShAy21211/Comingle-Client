@@ -241,7 +241,7 @@ function Posts() {
 
   ///////////////// HANDLE NEW COMMETN BY USER TO POSTS ////////////////////
 
-  const handleCommentSubmit = async (postId: string, userId: string) => {
+  const handleCommentSubmit = async (postId: string, userId: string,authorId:string) => {
     if (!newComment.trim()) {
       setCommentError({ postId: postId, error: "Enter a comment" });
       return;
@@ -252,7 +252,8 @@ function Posts() {
       const commentResponse = await userApi.commentPost(
         newComment,
         postId,
-        userId
+        userId,
+        authorId
       );
       if (commentResponse) {
         setPosts((prevPosts) =>
@@ -353,7 +354,7 @@ function Posts() {
       } col-span-full   overflow-auto h-svh lg:col-start-2 lg:col-end-5`}
       id="scrollableDiv"
     >
-      <CreatePost fetchPost={fetchAllPosts} fetchAgain={setFetchAgain} />
+      <CreatePost fetchAgain={fetchAgain} setfetchAgain={setFetchAgain} />
       <InfiniteScroll
         dataLength={posts.length}
         next={fetchPostOnScroll}
@@ -668,7 +669,7 @@ function Posts() {
                         <span className="p-3">
                           <IoMdSend
                             onClick={() =>
-                              handleCommentSubmit(post._id, currentUser._id)
+                              handleCommentSubmit(post._id, currentUser._id,post.postedUser._id as string)
                             }
                             size={23}
                           />

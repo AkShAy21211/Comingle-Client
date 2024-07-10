@@ -21,9 +21,7 @@ const Loading: React.FC<LoadingProps> = ({ size }) => {
   const fetchUserProfile = async () => {
     try {
       const user = await userApi.profile();
-      console.log("profile accessed");
 
-      console.log(user);
       
       if (token) {
         user.token = token;

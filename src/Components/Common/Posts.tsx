@@ -3,12 +3,15 @@ import { PostsType } from "../../Interface/interface";
 import userApi from "../../Apis/user";
 import InfiniteScroll from "react-infinite-scroll-component";
 import People from "../Skleton/Posts";
+import { useSelector } from "react-redux";
+import { RootState } from '../../Redux/store';
 
 function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<PostsType[]>([]);
-
+  const currentUser = useSelector((state:RootState)=>state.user.user);
+  
   // Handle fetching posts on first visit
   const fetchAllPosts = useCallback(async () => {
     try {
@@ -22,11 +25,11 @@ function Posts() {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [currentUser._id]);
 
   useEffect(() => {
     fetchAllPosts();
-  }, [fetchAllPosts]);
+  }, [currentUser._id]);
 
   // Handle fetching posts on scroll
   const fetchPosts = useCallback(async () => {

@@ -1,14 +1,14 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { SignedInAdmin } from "../Interface/interface";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const axiosInstance = axios.create({
-  baseURL: backendUrl,
-  withCredentials: true,
+  baseURL:
+    import.meta.env.VITE_NODE_ENV == "DEVELOPMENT"
+      ? import.meta.env.VITE_BACKEND_URI_DEV
+      : import.meta.env.VITE_BACKEND_URI,
+        withCredentials: true,
 });
-let data = localStorage.getItem("admin");
 
-const admin: SignedInAdmin = data ? JSON.parse(data) : null;
 
 const authFreeEndpoints = ["/admin/login"];
 // List of prefixes for endpoints that don't require authorization
@@ -17,10 +17,9 @@ const authFreeEndpoints = ["/admin/login"];
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Set Content-Type header conditionally
-    console.log("mp data", config);
+    const token:string = JSON.parse(localStorage.getItem("token") as string);
 
     if (config.data && config.data instanceof FormData) {
-      console.log("confgigggg form datra", config.data);
 
       config.headers["Content-Type"] = "multipart/form-data";
     } else {
@@ -34,8 +33,8 @@ axiosInstance.interceptors.request.use(
     );
 
     if (requiresAuth) {
-      if (admin) {
-        config.headers["Authorization"] = `Bearer ${admin?.token}`;
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
 

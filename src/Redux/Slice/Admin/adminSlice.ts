@@ -5,6 +5,7 @@ const storedAdmin = localStorage.getItem('admin');
 const initialState = {
 
     admin:storedAdmin?JSON.parse(storedAdmin):null,
+    token:""
 }
 
 
@@ -18,12 +19,17 @@ const adminSlice = createSlice({
 
             
             state.admin = action.payload;
+            state.token = action.payload.token
             localStorage.setItem('admin',JSON.stringify(action.payload));
+             localStorage.setItem('tokan',JSON.stringify(action.payload.token));
+
         },
         adminLogout:(state)=>{
 
             state.admin = null;
-            localStorage.removeItem('admin')
+            localStorage.removeItem('admin');
+            localStorage.removeItem('token')
+
         }
     }
 });

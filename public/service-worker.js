@@ -1,4 +1,4 @@
-const cacheData = "app-chache-v1";
+const cacheData = "app-cache-v1";
 
 this.addEventListener("install", (event) => {
   const urlsToCache = [
@@ -6,46 +6,59 @@ this.addEventListener("install", (event) => {
     "/index.html",
     "/manifest.json",
     "https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&display=swap",
-    "/register",
-    "/verify-otp",
     "/login",
-    "/post/:id",
     "/profile",
     "/settings",
-    "/details",
-    "/forgot-password",
     "/explore",
-    "/profile/:username",
     "/notifications",
-    "/settings/subscription",
     "/chats",
-    "/*",
   ];
 
   event.waitUntil(
     caches.open(cacheData).then((cache) => {
-      cache.addAll(urlsToCache);
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-this.addEventListener("activate", (event) => {
-  console.log("service worker activated", event);
+self.addEventListener("activate", (event) => {
+  // Clear outdated caches during activation
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== cacheData) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });
 
-this.addEventListener("fetch", (event) => {
- event.respondWith(
-    caches.open(cacheData).then((cache) => {
-      return cache.match(event.request).then((response) => {
-        if (response) {
-          return response; // Serve cached resource if available
-        }
+// this.addEventListener("fetch", (event) => {
+//   if (navigator.onLine) {
+//     let fetchRequest = event.request.clone();
+//     return fetch(fetchRequest).then((response) => {
+//       if (!response || response.status !== 200 || response.type !== "basic") {
+//         return response;
+//       }
 
-        return fetch(event.request).then((networkResponse) => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        }).catch(() => {
-        });
-      });
-    })
-  );});
+//       let responseToCache = response.clone();
+
+//       caches.open(cacheData).then((chahe) => {
+//         chahe.put(event.request, responseToCache);
+//       });
+
+//       return response;
+//     });
+//   } else {
+//     event.respondWith(
+//       caches.match(event.request).then((response) => {
+//         if (response) {
+//           return response;
+//         }
+//       })
+//     );
+//   }
+// });

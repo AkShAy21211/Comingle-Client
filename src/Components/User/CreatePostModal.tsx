@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { SetStateAction, useRef, useState } from "react";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { MdOutlinePhotoLibrary } from "react-icons/md";
 import userApi from "../../Apis/user";
@@ -10,6 +10,8 @@ import { RootState } from "../../Redux/store";
 import { CgSpinner } from "react-icons/cg";
 type CreatePostProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setfetchAgain: React.Dispatch<SetStateAction<boolean>>;
+  fetchAgain: boolean;
 };
 var settings = {
   dots: true,
@@ -21,6 +23,8 @@ var settings = {
 };
 const CreatePostModal: React.FC<CreatePostProps> = ({
   setOpenModal,
+  fetchAgain,
+  setfetchAgain,
 }) => {
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -61,8 +65,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
         setOpenModal(false);
         setImages([]);
         setText("");
-        // fetchAgain(true);
         setPosting(false);
+        setfetchAgain(!fetchAgain);
       }
     } catch (error) {
       setPosting(false);

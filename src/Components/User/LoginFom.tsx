@@ -28,12 +28,12 @@ function LoginForm() {
     onSubmit: async (values: SignInType) => {
       try {
         const signupResponse = await userApi.signin(values);
+        
         if (signupResponse?.status) {
           dispatch(userLogin(signupResponse.data.userData));
-          setTimeout(() => {
             formik.resetForm();
             navigate("/");
-          }, 1000);
+      
         }
         console.log(signupResponse);
       } catch (error) {

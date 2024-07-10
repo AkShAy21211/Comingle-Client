@@ -1,19 +1,18 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-const backendUrl = import.meta.env.VITE_BACKEND_URI;
+import { json } from "stream/consumers";
+
+const backenndurl = import.meta.env.VITE_NODE_ENV == "DEVELOPMENT"
+  ? import.meta.env.VITE_BACKEND_URI_DEV
+  : import.meta.env.VITE_BACKEND_URI
 
 const axiosInstance = axios.create({
-  baseURL: backendUrl,
+  baseURL: backenndurl,
   withCredentials: true,
 });
 
 
-const currentUser = localStorage.getItem("user");
 
-const user = currentUser ? JSON.parse(currentUser) : null;
 
-let token = localStorage.getItem("token");
-
-token = token ? JSON.parse(token) : null;
 
 
 const authFreeEndpoints = [
@@ -25,15 +24,15 @@ const authFreeEndpoints = [
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
+
   (config: InternalAxiosRequestConfig) => {
 
+    const token:string = JSON.parse(localStorage.getItem("token") as string);
 
+    console.log('eeeeeeeeeeeeeee',token);
     
     if (config.data && config.data instanceof FormData) {
-
-      
       config.headers["Content-Type"] = "multipart/form-data";
-    
     } else {
       config.headers["Content-Type"] = "application/json";
     }
@@ -44,15 +43,11 @@ axiosInstance.interceptors.request.use(
       url.startsWith(endpoint)
     );
 
-    
     if (requiresAuth) {
-      console.log(requiresAuth);
-      
-      if (token|| user) {
+      ;
 
-
-        
-        config.headers["Authorization"] = `Bearer ${user?.token||token}`;
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
 

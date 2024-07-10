@@ -17,7 +17,7 @@ type ViewPostModalProp = {
   currentUserId: string;
   handlePostEdit: (postId: string, text: string) => Promise<void>;
   setNewComent: React.Dispatch<React.SetStateAction<string>>;
-  handleNewComent: (postId: string, userId: string) => Promise<void>;
+  handleNewComent: (postId: string, userId: string,authorId:string) => Promise<void>;
   newComment: string;
   newCommentError: {
     postId: string;
@@ -301,7 +301,8 @@ function ViewPostModal({
                     onClick={() =>
                       handleNewComent(
                         selectedPost?._id as string,
-                        currentUserId
+                        currentUserId,
+                        selectedPost?.postedUser._id as string
                       )
                     }
                     size={23}

@@ -7,10 +7,10 @@ import CreatePostModal from "./CreatePostModal";
 import Avatar from "react-avatar";
 
 type CreatePostProps = {
-  fetchAgain:React.Dispatch<SetStateAction<boolean>>;
-  fetchPost:()=>Promise<void>;
+  setfetchAgain:React.Dispatch<SetStateAction<boolean>>;
+  fetchAgain:boolean;
 };
-function CreatePost({ }: CreatePostProps) {
+function CreatePost({ setfetchAgain,fetchAgain}: CreatePostProps) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [openModal, setOpenModal] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -47,7 +47,7 @@ function CreatePost({ }: CreatePostProps) {
         </div>
       </div>
       {openModal && (
-        <CreatePostModal setOpenModal={setOpenModal} />
+        <CreatePostModal setfetchAgain={setfetchAgain} fetchAgain={fetchAgain} setOpenModal={setOpenModal} />
       )}
     </>
   );

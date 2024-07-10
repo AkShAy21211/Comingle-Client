@@ -46,7 +46,8 @@ function Profile() {
       >
         <ProfileAndBg
           setPosts={setPosts}
-          fetchAgain={setFetchAgain}
+                    fetchAgain={fetchAgain}
+          setfetchAgain={setFetchAgain}
           posts={posts}
           isMyProfile
           user={userData}

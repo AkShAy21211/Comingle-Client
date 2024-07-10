@@ -19,7 +19,7 @@ type ViewTextPostModalProp = {
   unlikePost: (postId: string, userId: string) => Promise<void>;
   deletePost: (postId: string) => Promise<void>;
   setNewComent: React.Dispatch<React.SetStateAction<string>>;
-  handleNewComent: (postId: string, userId: string) => Promise<void>;
+  handleNewComent: (postId: string, userId: string,authorId:string) => Promise<void>;
   newComment: string;
   newCommentError: {
     postId: string;
@@ -319,7 +319,8 @@ function ViewTextPostModal({
                       onClick={() =>
                         handleNewComent(
                           selectedPost?._id as string,
-                          currentUserId
+                          currentUserId,
+                          selectedPost?.postedUser._id as string
                         )
                       }
                       size={23}

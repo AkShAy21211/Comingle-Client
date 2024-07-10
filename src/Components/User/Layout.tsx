@@ -12,12 +12,12 @@ type LayoutProps = {
 
 function Layout({ children, isProflie }: LayoutProps) {
   const location = useLocation();
-  const showPlane = ["/chats"];
+  const showPlane = "/chats";
 
   return (
     <>
       <Header />
-      {!showPlane.includes(location.pathname) && (
+      {showPlane!==location.pathname && (
         <div className="grid grid-cols-5">
           <LeftPanel isProfile={isProflie} />
           {children}

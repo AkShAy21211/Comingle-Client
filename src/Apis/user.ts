@@ -603,11 +603,11 @@ const userApi = {
     }
   },
 
-  commentPost: async (comment: string, postId: string, userId: string) => {
+  commentPost: async (comment: string, postId: string, userId: string,authorId:string) => {
     try {
       const commetnResponse = await axiosInstance.put(
         userEnpoints.COMMENT + `/${postId}/${userId}`,
-        { comment: comment }
+        { comment,authorId }
       );
 
       if (commetnResponse.data.status) {

@@ -19,8 +19,9 @@ import FormattedRelativeTime from "../../Utils/Time";
 import FriendsModal from "./FriendsModal";
 type ProfileProp = {
   isMyProfile: boolean;
-  fetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
+  setfetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
   user: User | null;
+  fetchAgain:boolean
   setPosts: React.Dispatch<React.SetStateAction<PostsType[]>>;
   posts: PostsType[];
 };
@@ -36,6 +37,7 @@ function ProfileAndBg({
   isMyProfile,
   user,
   posts,
+  setfetchAgain,
   fetchAgain,
   setPosts,
 }: ProfileProp) {
@@ -146,7 +148,7 @@ function ProfileAndBg({
       await userApi.editPost(postId, editPostCption);
       setSelectedPost(null);
       setSelectedTextPost(null)
-      fetchAgain(true)
+      setfetchAgain(true)
     } catch (error) {
       console.log(error);
     }
@@ -224,7 +226,7 @@ function ProfileAndBg({
     }
   };
 
-  const handleCommentSubmit = async (postId: string, userId: string) => {
+  const handleCommentSubmit = async (postId: string, userId: string,authorId:string) => {
     if (!newComment.trim()) {
       setCommentError({ postId: postId, error: "Enter a comment" });
       return;
@@ -236,7 +238,8 @@ function ProfileAndBg({
       const commentResponse = await userApi.commentPost(
         newComment,
         postId,
-        userId
+        userId,
+        authorId
       );
       if (commentResponse) {
         setSelectedPost((prevPost) => {
@@ -247,9 +250,11 @@ function ProfileAndBg({
             comments: [...prevPost.comments, commentResponse],
           };
         });
-
+        setSelectedTextPost(null)
+        setfetchAgain(!fetchAgain)
         setNewComment("");
         setReload(true);
+        setSelectedPost(null)
       }
     } catch (error) {
       console.log(error);
@@ -540,7 +545,7 @@ function ProfileAndBg({
         )}
       </div>
       <ProfileModal
-        setFetchAgain={fetchAgain}
+        setFetchAgain={setfetchAgain}
         showCoverModal={showCoverModal}
         setShowCoverMdal={setShowCoverMdal}
         showDpModal={showDpModal}
@@ -593,7 +598,7 @@ function ProfileAndBg({
       {showFriends && (
         <FriendsModal
           isMyProfile={isMyProfile}
-          fetchAgain={fetchAgain}
+          fetchAgain={setfetchAgain}
           type={type}
           currentUser={currentUser}
           followUser={handleFollow}
