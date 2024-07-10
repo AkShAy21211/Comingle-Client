@@ -23,5 +23,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "Page/User", "Page/Admin"]
+  "include": ["src", "Page/User", "Page/Admin", "serviceWorkerRegistration.ts"]
 }
