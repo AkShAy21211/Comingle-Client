@@ -14,13 +14,10 @@ RUN npm install
 COPY . .
 
 # Build your React TypeScript app
-RUN npm run build
+RUN npm run  build --verbose
 
 # Expose port 3000 (or the port your app runs on)
 EXPOSE 3000
-
-# Set environment variables (if needed)
-# ENV NODE_ENV=production
 
 # Command to run the app
 CMD ["npm", "start"]

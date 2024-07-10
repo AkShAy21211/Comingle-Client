@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t achu2002/comingle-client:latest .
+        run: docker build --no-cache -t achu2002/comingle-client:latest .
 
       - name: Push Docker image to Docker Hub
         run: docker push achu2002/comingle-client:latest
