@@ -11,10 +11,10 @@ import { Bounce, toast } from "react-toastify";
 import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 
 function Header() {
-    const socket = useSocket()
+    const socket = connectToSocket()
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
@@ -22,7 +22,6 @@ function Header() {
   const [notifications, setNotifications] = useState<number | null>(0);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-  console.log('fffffffffffffffffffffff',socket);
   
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 

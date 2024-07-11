@@ -6,10 +6,10 @@ import { useLocation } from "react-router-dom";
 import userApi from "../../Apis/user";
 import { useEffect, useState } from "react";
 import { User } from "../../Interface/interface";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 
 function RightPanel() {
-  const socket = useSocket()
+  const socket = connectToSocket()
 
   const location = useLocation();
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);

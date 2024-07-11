@@ -27,7 +27,7 @@ import { addPeer } from "../../Redux/Slice/User/peerSlice";
 import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
 import { playTune, endTune } from "../../Utils/tune";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;
@@ -54,7 +54,7 @@ function SingleChat({
   remoteId,
   setIncommingCall,inCommingCall
 }: SingleChatProp) {
-    const socket = useSocket()
+    const socket = connectToSocket()
 
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);

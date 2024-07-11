@@ -8,7 +8,7 @@ import { BsFillCameraVideoFill } from "react-icons/bs";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 interface VideoChatProps {
   stream: MediaStream | null;
   peerStream: MediaStream | null;
@@ -22,7 +22,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
   peerStream,
   endCall,
 }) => {
-    const socket = useSocket()
+    const socket = connectToSocket()
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
@@ -93,7 +93,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
 
   const toggleVideo = () => {
     if (stream) {
-      socket?.emit("vedio:status", { room: selectedChat.chatId });
+      socket?.emit("video:status", { room: selectedChat.chatId });
       stream.getVideoTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
@@ -110,11 +110,11 @@ const VideoChat: React.FC<VideoChatProps> = ({
 
   useEffect(() => {
     socket?.on("audio:status", handleRemoteAudioStatus);
-    socket?.on("vedio:status", handleRemoteVideoStatus);
+    socket?.on("video:status", handleRemoteVideoStatus);
 
     return () => {
       socket?.off("audio:status", handleRemoteAudioStatus);
-      socket?.off("vedio:status", handleRemoteVideoStatus);
+      socket?.off("video:status", handleRemoteVideoStatus);
     };
   });
 

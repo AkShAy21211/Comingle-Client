@@ -19,11 +19,10 @@ import { IoSend } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { PiShareFatThin } from "react-icons/pi";
 import { Bounce, toast } from "react-toastify";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 
 function Posts() {
-    const socket = useSocket()
-
+  const socket = connectToSocket()
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -71,10 +70,7 @@ function Posts() {
     } catch (error: any) {
       
       console.log(error);
-      
-      const collections = localStorage.getItem("posts");
-      const posts = collections ? JSON.parse(collections) : null;
-      setPosts(posts);
+
     }
   };
 
@@ -84,7 +80,7 @@ function Posts() {
     return () => {
       socket?.off("login");
     };
-  }, [currentUser._id]);
+  }, []);
 
   useEffect(() => {
     fetchAllPosts();

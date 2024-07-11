@@ -5,10 +5,10 @@ import { formatDistance } from "date-fns";
 import Avatar from "react-avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 function Notifications() {
    
-  const socket = useSocket()
+  const socket = connectToSocket()
 
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
 

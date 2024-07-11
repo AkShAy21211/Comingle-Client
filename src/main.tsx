@@ -5,14 +5,17 @@ import { Provider } from "react-redux";
 import { store } from "./Redux/store.ts";
 import ToastProvider from "./Components/Common/ToastProvider.tsx";
 import { registerServiceWorker } from '../serviceWorkerRegistration.ts';
+import React from "react";
 
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <Provider store={store}>
+  <React.StrictMode>
+    <Provider store={store}>
       <ToastProvider>
-          <App />
+        <App />
       </ToastProvider>
     </Provider>
+  </React.StrictMode>
 );
 
 registerServiceWorker()

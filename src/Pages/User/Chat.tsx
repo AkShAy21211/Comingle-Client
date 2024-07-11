@@ -5,9 +5,9 @@ import Header from "../../Components/User/Header";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Peer from "peerjs";
-import useSocket from "../../hooks/useSocket";
+import {connectToSocket} from "../../Apis/socket";
 function Chat() {
-  const socket = useSocket()
+  const socket = connectToSocket()
   const currentUser = useSelector((state: RootState) => state.user.user);
   const [fetchAgain, setFetchAgain] = useState(false);
   const [me, setMe] = useState<Peer | null>(null);
