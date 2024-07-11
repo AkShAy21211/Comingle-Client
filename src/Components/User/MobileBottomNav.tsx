@@ -5,11 +5,10 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { MdOutlineExplore } from "react-icons/md";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CreatePostModal from "./CreatePostModal";
-import userApi from "../../Apis/user";
 function MobileBottomNav() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [openModal, setOpenModal] = useState(false);
