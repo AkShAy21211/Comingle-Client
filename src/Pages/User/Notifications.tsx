@@ -56,8 +56,8 @@ function Notifications() {
   return (
     <div
       className={` ${
-        isDarkMode ? "bg-black" : ""
-      } h-screen   col-span-full lg:col-span-3   mt-20 px-5`}
+        isDarkMode ? "bg-black text-white" : ""
+      } h-screen   col-span-full lg:col-span-3  mt-20  md:mt-16 px-5`}
     >
       {notifications.length > 0 &&
         notifications.map((noti) => (
@@ -85,7 +85,7 @@ function Notifications() {
                     />
                   )}
 
-                  <div className="p-3  ">
+                  <div className={`p-3   ${isDarkMode?"text-white":"text-black"}`}>
                     {"@" + noti.sourceId.recipient.name.toLowerCase()}{" "}
                     <span className="font-light">{noti.content}</span>{" "}
                     <span className="font-bold md:hidden">
@@ -96,7 +96,7 @@ function Notifications() {
                     </span>
                   </div>
                   <button
-                    className={`border border-custom-blue text-custom-blue border-custom-blue'} px-4 rounded-xl mt-2  h-10`}
+                    className={` ${isDarkMode?"border-2 text-white":"border-2 border-custom-blue text-custom-blue "}'} px-4 rounded-xl mt-2  h-10`}
                   >
                     Following
                   </button>

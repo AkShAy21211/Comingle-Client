@@ -365,12 +365,12 @@ function ProfileAndBg({
             <MdVerified className="mt-1 text-blue-600" />
           )}
         </p>
-        <p className="  font-light ">{user?.profile.bio}</p>
+        <p className="  font-light text-center w-full mb-5 ">{user?.profile.bio}</p>
         {!isMyProfile && (
           <div className="w-auto flex gap-1 justify-center mb-5 mt-3">
             {currentUserData?.profile?.following?.includes(user?._id as any) ? (
               <button
-                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
                 // onClick={() => {
                 //   handleFollow(user?._id as string);
                 // }}
@@ -381,7 +381,7 @@ function ProfileAndBg({
                 user?._id as any
               ) ? (
               <button
-                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -390,7 +390,7 @@ function ProfileAndBg({
               </button>
             ) : (
               <button
-                className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -402,7 +402,7 @@ function ProfileAndBg({
             <Link
               to="/chats"
               onClick={() => handleMessage(user?._id as string)}
-              className="bg-custom-blue px-5 py-3 rounded-lg text-white "
+                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
             >
               Message
             </Link>
@@ -412,26 +412,20 @@ function ProfileAndBg({
       <div className=" -mt-5 lg:-mt-14 flex w-full justify-center p-5 gap-5 h-32">
         <div
           onClick={() => handleShowFriends("follower")}
-          className={`border  ${
-            isDarkMode ? "border-white" : "border-black"
-          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={` border-2  h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
         >
           {user?.profile.followers?.length}
           <p>Followers</p>
         </div>
         <div
           onClick={() => handleShowFriends("following")}
-          className={`border  ${
-            isDarkMode ? "border-white" : "border-black"
-          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={`  border-2   h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
         >
           {user?.profile.following?.length}
           <p>Following</p>
         </div>
         <div
-          className={`border  ${
-            isDarkMode ? "border-white" : "border-black"
-          } h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={`  border-2   h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
         >
           {posts?.length}
           <p>Posts</p>

@@ -65,7 +65,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                         return (
                           <div
                             key={i}
-                            className="w-48 h-48 flex-shrink-0 flex items-center justify-center border-custom-blue/90 border-4"
+                            className="w-48 h-48 flex-shrink-0 flex-col items-center justify-center border-custom-blue/90 border-4"
                           >
                             <img
                               src={file.url}
@@ -78,7 +78,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                                 downloadFiles(e, file.url, "image")
                               }
                             >
-                              <IoMdDownload className="mt-1" size={20} />
+                              <IoMdDownload className="mt-3" color={isDarMode?"white":"black"} size={20} />
                             </button>
                           </div>
                         );

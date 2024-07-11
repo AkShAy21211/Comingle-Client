@@ -48,7 +48,6 @@ function Chat() {
     setParticipant(members.toString().split(","));
     const remoteUser = members.find((id) => id !== currentUser._id);
 
-    console.log('remote user  id',remoteId);
     
     if (remoteUser) {
       setRemoteId(remoteUser);
@@ -70,7 +69,6 @@ function Chat() {
     message: string;
     room: string;
   }) => {
-    console.log("call is comming", message, room);
 
     setCallIndication({ message, room });
     setIncommingCall(true);
