@@ -19,9 +19,11 @@ import { IoSend } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { PiShareFatThin } from "react-icons/pi";
 import { Bounce, toast } from "react-toastify";
-import socket from "../../Apis/socket";
+import useSocket from "../../hooks/useSocket";
 
 function Posts() {
+    const socket = useSocket()
+
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -77,10 +79,10 @@ function Posts() {
   };
 
   useEffect(() => {
-    socket.emit("login", { userId: currentUser._id });
+    socket?.emit("login", { userId: currentUser._id });
 
     return () => {
-      socket.off("login");
+      socket?.off("login");
     };
   }, [currentUser._id]);
 
@@ -159,7 +161,7 @@ function Posts() {
               return post;
             })
           );
-          socket.emit("notification",authorId)
+          socket?.emit("notification",authorId)
         }
       } catch (error) {
         console.log(error);

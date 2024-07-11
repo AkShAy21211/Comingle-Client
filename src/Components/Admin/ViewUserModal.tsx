@@ -3,7 +3,7 @@ import { User } from "../../Interface/interface";
 import Avatar from "react-avatar";
 import adminApi from "../../Apis/admin";
 import AlertModal from "../Common/AlertModal";
-import socket from "../../Apis/socket";
+import useSocket from "../../hooks/useSocket";
 type ViewUserModalProps = {
   user: User | null;
   setSelectedUser?: Dispatch<SetStateAction<any>>;
@@ -15,7 +15,7 @@ function ViewUserModal({
   setSelectedUser,
   fetchUsers,
 }: ViewUserModalProps) {
-
+  const socket = useSocket()
   const [userStatus, setUserStatus] = useState(user?.isBlocked);
   const [showAlert, setShoAlert] = useState(false);
   const handleToggleUserStatus = async () => {

@@ -5,9 +5,10 @@ import { formatDistance } from "date-fns";
 import Avatar from "react-avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
-import socket from "../../Apis/socket";
+import useSocket from "../../hooks/useSocket";
 function Notifications() {
    
+  const socket = useSocket()
 
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
 
@@ -35,10 +36,10 @@ function Notifications() {
     setFetchAgain(!fetchAgain);
   };
   useEffect(() => {
-    socket.on("notification", handleNotification);
+    socket?.on("notification", handleNotification);
 
     return () => {
-      socket.off("notification", handleNotification);
+      socket?.off("notification", handleNotification);
     };
   }, [handleNotification]);
 

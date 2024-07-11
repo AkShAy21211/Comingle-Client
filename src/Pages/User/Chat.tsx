@@ -5,9 +5,9 @@ import Header from "../../Components/User/Header";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Peer from "peerjs";
-import socket from "../../Apis/socket";
-
+import useSocket from "../../hooks/useSocket";
 function Chat() {
+  const socket = useSocket()
   const currentUser = useSelector((state: RootState) => state.user.user);
   const [fetchAgain, setFetchAgain] = useState(false);
   const [me, setMe] = useState<Peer | null>(null);
@@ -35,7 +35,7 @@ function Chat() {
       console.log("My peer ID is:", id, currentUser._id);
       setMe(peer);
 
-      socket.emit("user:joined", { userId: currentUser._id });
+      socket?.emit("user:joined", { userId: currentUser._id });
     });
   }, [currentUser._id]);
 
@@ -77,14 +77,14 @@ function Chat() {
   };
 
   useEffect(() => {
-    socket.on("get:users", handleGetUsers);
-    socket.on("user:left", handleUserLeft);
-    socket.on("call", handleIncommingCall);
+    socket?.on("get:users", handleGetUsers);
+    socket?.on("user:left", handleUserLeft);
+    socket?.on("call", handleIncommingCall);
 
     return () => {
-      socket.off("get:users", handleGetUsers);
-      socket.off("user:left", handleUserLeft);
-      socket.off("call", handleIncommingCall);
+      socket?.off("get:users", handleGetUsers);
+      socket?.off("user:left", handleUserLeft);
+      socket?.off("call", handleIncommingCall);
     };
   }, [handleGetUsers, handleIncommingCall, handleUserLeft, isVedioChat]);
 

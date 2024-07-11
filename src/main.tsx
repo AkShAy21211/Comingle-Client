@@ -8,7 +8,7 @@ import { registerServiceWorker } from '../serviceWorkerRegistration.ts';
 
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <Provider store={store}>
+  <Provider store={store}>
       <ToastProvider>
           <App />
       </ToastProvider>

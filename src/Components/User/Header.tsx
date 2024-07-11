@@ -7,13 +7,14 @@ import userApi from "../../Apis/user";
 import { useSelector } from "react-redux";
 import { persistor, RootState } from "../../Redux/store";
 import Avatar from "react-avatar";
-import socket from "../../Apis/socket";
 import { Bounce, toast } from "react-toastify";
 import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
+import useSocket from "../../hooks/useSocket";
 
 function Header() {
+    const socket = useSocket()
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
@@ -63,13 +64,13 @@ function Header() {
     };
 
     if (!currentUser.isBlocked) {
-      socket.on("user_blocked", handleUserBlocked);
+      socket?.on("user_blocked", handleUserBlocked);
     }
-    socket.on("notification", handleNotification);
+    socket?.on("notification", handleNotification);
 
     return () => {
-      socket.off("user_blocked", handleUserBlocked);
-      socket.off("notification", handleNotification);
+      socket?.off("user_blocked", handleUserBlocked);
+      socket?.off("notification", handleNotification);
     };
   }, []);
 

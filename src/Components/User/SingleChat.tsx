@@ -27,7 +27,7 @@ import { addPeer } from "../../Redux/Slice/User/peerSlice";
 import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
 import { playTune, endTune } from "../../Utils/tune";
-import socket from "../../Apis/socket";
+import useSocket from "../../hooks/useSocket";
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;
@@ -54,6 +54,8 @@ function SingleChat({
   remoteId,
   setIncommingCall,inCommingCall
 }: SingleChatProp) {
+    const socket = useSocket()
+
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
@@ -88,7 +90,7 @@ function SingleChat({
       setAllMessages(response.messages);
       setLoading(false);
 
-      socket.emit("chat:start", {
+      socket?.emit("chat:start", {
         room: selectedChat?.chatId,
         peerId: currentUser._id,
       });
@@ -103,17 +105,17 @@ function SingleChat({
   }, [selectedChat?.chatId]);
 
   useEffect(() => {
-    socket.on("typeing", () => {
+    socket?.on("typeing", () => {
       setIstyping(true);
     });
 
-    socket.on("stopTypeing", () => {
+    socket?.on("stopTypeing", () => {
       setIstyping(false);
     });
 
     return () => {
-      socket.off("typeing");
-      socket.off("stopTypeing");
+      socket?.off("typeing");
+      socket?.off("stopTypeing");
     };
   }, [typing]);
 
@@ -165,12 +167,12 @@ function SingleChat({
     }
   };
   useEffect(() => {
-    socket.on("message received", handleNewMessage);
-    socket.on("new message sent", handleNewMessageSent);
+    socket?.on("message received", handleNewMessage);
+    socket?.on("new message sent", handleNewMessageSent);
 
     return () => {
-      socket.off("message received", handleNewMessage);
-      socket.off("new message sent", handleNewMessageSent);
+      socket?.off("message received", handleNewMessage);
+      socket?.off("new message sent", handleNewMessageSent);
     };
   }, [
     selectedChat.chatId,
@@ -185,7 +187,7 @@ function SingleChat({
 
     if (!typing) {
       setTyping(true);
-      socket.emit("typeing", selectedChat.chatId);
+      socket?.emit("typeing", selectedChat.chatId);
     }
 
     const lastTypingTime = new Date().getTime();
@@ -195,7 +197,7 @@ function SingleChat({
       const timeNow = new Date().getTime();
       const timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= typingTimeout && typing) {
-        socket.emit("stopTypeing", selectedChat.chatId);
+        socket?.emit("stopTypeing", selectedChat.chatId);
         setTyping(false);
       }
     }, typingTimeout);
@@ -206,7 +208,7 @@ function SingleChat({
 
     if (newMessage.trim() || selectedFiles) {
       try {
-        socket.emit("stopTypeing", selectedChat.chatId);
+        socket?.emit("stopTypeing", selectedChat.chatId);
         setLoading(true);
         const formData = new FormData();
         if (selectedFiles) {
@@ -228,7 +230,7 @@ function SingleChat({
           setNewMessage("");
           setFetchAgain(!fetchAgain);
 
-          socket.emit("message", {
+          socket?.emit("message", {
             message: response.message,
             room: selectedChat.chatId,
             to:receiver._id
@@ -412,7 +414,7 @@ function SingleChat({
 
       if (!peer) return;
 
-      socket.emit("calluser", {
+      socket?.emit("calluser", {
         room: selectedChat.chatId,
         peerId: currentUser._id,
         to:receiver._id,
@@ -485,7 +487,7 @@ function SingleChat({
   const rejectCall = () => {
     if (currentCall) {
       currentCall.close();
-      socket.emit("call:rejcted", { room: selectedChat.chatId });
+      socket?.emit("call:rejcted", { room: selectedChat.chatId });
     }
     endTune();
     setCallIndication({ message: "", room: "" });
@@ -500,7 +502,7 @@ function SingleChat({
       setLocalStream(null);
       setRemoteStream(null);
       currentCall?.close();
-      socket.emit("call:ended", { room: selectedChat.chatId });
+      socket?.emit("call:ended", { room: selectedChat.chatId });
     }
     setIsModalOpen(false);
     setIncommingCall(false);
@@ -555,21 +557,21 @@ function SingleChat({
   };
 
   useEffect(() => {
-    socket.on("call:rejcted", handleCallRejection);
-    socket.on("call:ended", handleCallEnd);
-    socket.on("incommingCall", handleIncommingCall);
-    socket.on("another:call", handleMultipleCall);
+    socket?.on("call:rejcted", handleCallRejection);
+    socket?.on("call:ended", handleCallEnd);
+    socket?.on("incommingCall", handleIncommingCall);
+    socket?.on("another:call", handleMultipleCall);
 
     return () => {
-      socket.off("incommingCall", handleIncommingCall);
-      socket.off("call:rejcted", handleCallRejection);
-      socket.off("call:ended", handleCallEnd);
-      socket.off("another:call", handleMultipleCall);
+      socket?.off("incommingCall", handleIncommingCall);
+      socket?.off("call:rejcted", handleCallRejection);
+      socket?.off("call:ended", handleCallEnd);
+      socket?.off("another:call", handleMultipleCall);
     };
   }, [handleIncommingCall, handleCallEnd]);
 
   const handleExistChat = () => {
-    socket.emit("exit:chat", {
+    socket?.emit("exit:chat", {
       room: selectedChat.chatId,
       peerId: currentUser._id,
     });

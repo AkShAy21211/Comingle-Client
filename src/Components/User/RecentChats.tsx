@@ -22,7 +22,7 @@ import { RiChatOffFill } from "react-icons/ri";
 import ExpandableSearchBar from "../Common/ExpandableSearchBar";
 import _ from "lodash";
 import { IoMdClose } from "react-icons/io";
-import socket from "../../Apis/socket";
+import useSocket from "../../hooks/useSocket";
 
 type RecentChatsProp = {
   fetchAgain: boolean;
@@ -39,6 +39,7 @@ function RecentChats({
   inCommingCall,
   setIncommingCall,
 }: RecentChatsProp) {
+    const socket = useSocket()
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -136,10 +137,10 @@ function RecentChats({
   };
 
   useEffect(() => {
-    socket.on("new:chat", handleNewChat);
+    socket?.on("new:chat", handleNewChat);
 
     return () => {
-      socket.on("new:chat", handleNewChat);
+      socket?.on("new:chat", handleNewChat);
     };
   }, []);
   console.log("unread messagfes", unReadMessages);
