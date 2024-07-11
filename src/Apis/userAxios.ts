@@ -4,6 +4,9 @@ const backenndurl = import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
   ? import.meta.env.VITE_BACKEND_URI_DEV
   : import.meta.env.VITE_BACKEND_URI
 
+
+  console.log('bakcfdfdsfdsfdsf',backenndurl);
+  
 const axiosInstance = axios.create({
   baseURL: backenndurl,
   withCredentials: true,
@@ -28,7 +31,6 @@ axiosInstance.interceptors.request.use(
 
     const token:string = JSON.parse(localStorage.getItem("token") as string);
 
-    console.log('eeeeeeeeeeeeeee',token);
     
     if (config.data && config.data instanceof FormData) {
       config.headers["Content-Type"] = "multipart/form-data";

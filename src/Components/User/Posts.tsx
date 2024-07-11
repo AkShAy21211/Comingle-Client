@@ -19,10 +19,10 @@ import { IoSend } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { PiShareFatThin } from "react-icons/pi";
 import { Bounce, toast } from "react-toastify";
-import {connectToSocket} from "../../Apis/socket";
+import { connectToSocket } from "../../Apis/socket";
 
 function Posts() {
-  const socket = connectToSocket()
+  const socket = connectToSocket();
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.user.user);
@@ -68,17 +68,21 @@ function Posts() {
         setHasMore(getPosts.posts.length > 0);
       }
     } catch (error: any) {
-      
       console.log(error);
-
     }
+  };
+
+  const handleNepostCreated = () => {
+    setFetchAgain(!fetchAgain);
   };
 
   useEffect(() => {
     socket?.emit("login", { userId: currentUser._id });
+    socket.on("newpost", handleNepostCreated);
 
     return () => {
       socket?.off("login");
+      socket.off("newpost", handleNepostCreated);
     };
   }, []);
 
@@ -141,8 +145,6 @@ function Posts() {
     async (postId: string, userId: string, authorId: string) => {
       try {
         const likeResponse = await userApi.likePost(postId, userId, authorId);
-        
-
 
         if (likeResponse) {
           setPosts((prevPosts) =>
@@ -157,7 +159,7 @@ function Posts() {
               return post;
             })
           );
-          socket?.emit("notification",authorId)
+          socket?.emit("notification", authorId);
         }
       } catch (error) {
         console.log(error);
@@ -238,7 +240,11 @@ function Posts() {
 
   ///////////////// HANDLE NEW COMMETN BY USER TO POSTS ////////////////////
 
-  const handleCommentSubmit = async (postId: string, userId: string,authorId:string) => {
+  const handleCommentSubmit = async (
+    postId: string,
+    userId: string,
+    authorId: string
+  ) => {
     if (!newComment.trim()) {
       setCommentError({ postId: postId, error: "Enter a comment" });
       return;
@@ -393,7 +399,7 @@ function Posts() {
                             ? navigate("/profile")
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
-                        name={post.postedUser.username.slice(0)}
+                        name={post.postedUser.username}
                         className="rounded-full me-4 cursor-pointer"
                         size="35"
                       />
@@ -556,7 +562,11 @@ function Posts() {
                                           editCommentDisabled._id ===
                                             comment._id &&
                                           "border  border-gray-300 mx-1 p-1 rounded-full"
-                                        } ${isDarkMode?"bg-black":"bg-gray-200"}`}
+                                        } ${
+                                          isDarkMode
+                                            ? "bg-black"
+                                            : "bg-gray-200"
+                                        }`}
                                         onChange={(e) =>
                                           setEditedComment(e.target.value)
                                         }
@@ -597,7 +607,13 @@ function Posts() {
                                   )}
                                   {showEditCommentDropDown._id ===
                                     comment._id && (
-                                    <ul className={`flex flex-col gap-2 ${isDarkMode?"bg-gray-900":' bg-gray-300'} rounded-xl p-2 relative right-0 top-8 z-10`}>
+                                    <ul
+                                      className={`flex flex-col gap-2 ${
+                                        isDarkMode
+                                          ? "bg-gray-900"
+                                          : " bg-gray-300"
+                                      } rounded-xl p-2 relative right-0 top-8 z-10`}
+                                    >
                                       <li>
                                         <IoMdClose
                                           onClick={() =>
@@ -666,7 +682,11 @@ function Posts() {
                         <span className="p-3">
                           <IoMdSend
                             onClick={() =>
-                              handleCommentSubmit(post._id, currentUser._id,post.postedUser._id as string)
+                              handleCommentSubmit(
+                                post._id,
+                                currentUser._id,
+                                post.postedUser._id as string
+                              )
                             }
                             size={23}
                           />

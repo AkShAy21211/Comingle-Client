@@ -5,17 +5,17 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { MdOutlineExplore } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CreatePostModal from "./CreatePostModal";
+import userApi from "../../Apis/user";
 function MobileBottomNav() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [openModal, setOpenModal] = useState(false);
   const shoPostButton = ["/"];
   const showNav = ["/chats"];
   const location = useLocation();
-
 
   return (
     <>
@@ -55,9 +55,12 @@ function MobileBottomNav() {
                   isDarkMode ? "bg-custom-blue" : ""
                 } w-10 h-10 font-mediumrounded-full group `}
               >
-              
-                 
-                <AiFillPlusCircle className={`${isDarkMode?'text-white':'text-custom-blue'}`} size={40}/>
+                <AiFillPlusCircle
+                  className={`${
+                    isDarkMode ? "text-white" : "text-custom-blue"
+                  }`}
+                  size={40}
+                />
               </button>
             </div>
 
@@ -85,7 +88,9 @@ function MobileBottomNav() {
           </div>
         </div>
       )}
-      {openModal && <CreatePostModal setfetchAgain={()=>{}} fetchAgain setOpenModal={setOpenModal} />}
+      {openModal && (
+        <CreatePostModal isMobile={true} setOpenModal={setOpenModal} />
+      )}
     </>
   );
 }

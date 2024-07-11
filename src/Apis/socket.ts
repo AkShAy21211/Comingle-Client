@@ -7,7 +7,6 @@ const backendUrl =
 
 let socket: Socket | null = null;
 
-console.log('backend url00000000000000000000',backendUrl);
 
 export const connectToSocket = () => {
   if (socket) {

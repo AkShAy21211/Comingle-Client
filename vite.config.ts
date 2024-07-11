@@ -4,9 +4,9 @@ import { VitePWA } from "vite-plugin-pwa";
 import dotenv from "dotenv";
 dotenv.config();
 export default defineConfig({
+  
   plugins: [
     react(), // Enable React support
-
     VitePWA({
       manifest: {
         theme_color: "#004080",
@@ -60,11 +60,11 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    host: true,
-    strictPort:true,
-    port: 3000,
-  },
+  // server: {
+  //   host: true,
+  //   strictPort:true,
+  //   port: 3000,
+  // },
   define: {
     global: "window", // Define global object as window
   },

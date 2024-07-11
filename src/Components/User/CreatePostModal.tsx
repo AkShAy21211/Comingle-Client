@@ -8,10 +8,13 @@ import Slider from "@ant-design/react-slick";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { CgSpinner } from "react-icons/cg";
+import { connectToSocket } from "../../Apis/socket";
+
 type CreatePostProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setfetchAgain: React.Dispatch<SetStateAction<boolean>>;
-  fetchAgain: boolean;
+  setfetchAgain?: React.Dispatch<SetStateAction<boolean>>;
+  isMobile?: boolean;
+  fetchAgain?: boolean;
 };
 var settings = {
   dots: true,
@@ -24,8 +27,10 @@ var settings = {
 const CreatePostModal: React.FC<CreatePostProps> = ({
   setOpenModal,
   fetchAgain,
+  isMobile,
   setfetchAgain,
 }) => {
+  const socket = connectToSocket();
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const imageRef = useRef<HTMLInputElement | null>(null);
@@ -66,7 +71,10 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
         setImages([]);
         setText("");
         setPosting(false);
-        setfetchAgain(!fetchAgain);
+        setfetchAgain?.(!fetchAgain);
+        if (isMobile) {
+          socket.emit("newpost");
+        }
       }
     } catch (error) {
       setPosting(false);

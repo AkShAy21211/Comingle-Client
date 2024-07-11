@@ -320,7 +320,7 @@ function ProfileAndBg({
   );
   return (
     <>
-      <div className="w-full border">
+      <div className="w-full border ">
         {isMyProfile && (
           <FaRegEdit
             onClick={() => setShowCoverMdal(true)}

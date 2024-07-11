@@ -1,5 +1,6 @@
 
 
+console.log(import.meta.env);
 
 
 export function registerServiceWorker(): void {
