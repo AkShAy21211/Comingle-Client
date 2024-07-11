@@ -21,13 +21,13 @@ import audioEnd from "/User/mixkit-correct-answer-tone-2870.wav";
 import TypingIndicator from "../Common/TypingIndicator";
 import { FaVideo } from "react-icons/fa6";
 import VedioChat from "./VideoChat";
-import socket from "../../Apis/socket";
 import VideoCallNotificationModal from "./VideoCallNotificationModal";
 import Peer, { MediaConnection } from "peerjs";
 import { addPeer } from "../../Redux/Slice/User/peerSlice";
 import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
 import { playTune, endTune } from "../../Utils/tune";
+import socket from "../../Apis/socket";
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;

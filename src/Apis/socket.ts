@@ -1,4 +1,4 @@
-import socketIOClient from "socket.io-client";
+import { io } from 'socket.io-client';
 
 const backendUrl = 
   import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
@@ -9,7 +9,7 @@ const backendUrl =
 const wsProtocol = import.meta.env.VITE_NODE_ENV === "DEVELOPMENT" ? "ws://" : "wss://";
 const ws = backendUrl.startsWith("http") ? backendUrl.replace(/^http/, "ws") : wsProtocol + backendUrl;
 
-const socket = socketIOClient(ws);
+const socket = io(ws);
 console.log(ws);
 
 export default socket;

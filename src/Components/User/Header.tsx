@@ -21,6 +21,8 @@ function Header() {
   const [notifications, setNotifications] = useState<number | null>(0);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  console.log('fffffffffffffffffffffff',socket);
+  
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {

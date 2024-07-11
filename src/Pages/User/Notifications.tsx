@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import socket from "../../Apis/socket";
 function Notifications() {
+   
+
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
 
   const currentUser = useSelector((state: RootState) => state.user.user);

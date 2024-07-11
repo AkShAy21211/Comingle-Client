@@ -6,9 +6,10 @@ import { useLocation } from "react-router-dom";
 import userApi from "../../Apis/user";
 import { useEffect, useState } from "react";
 import { User } from "../../Interface/interface";
-import  socket  from "../../Apis/socket";
+import socket from "../../Apis/socket";
 
 function RightPanel() {
+
   const location = useLocation();
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const showPremiumAds = ["/settings/subscription"];

@@ -5,10 +5,10 @@ import { FaMicrophoneSlash } from "react-icons/fa";
 import { MdOutlineCallEnd } from "react-icons/md";
 import { HiMiniVideoCameraSlash } from "react-icons/hi2";
 import { BsFillCameraVideoFill } from "react-icons/bs";
-import socket from "../../Apis/socket";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
+import socket from "../../Apis/socket";
 interface VideoChatProps {
   stream: MediaStream | null;
   peerStream: MediaStream | null;
