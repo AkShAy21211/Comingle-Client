@@ -148,11 +148,11 @@ function RecentChats({
   return (
     <Fragment>
       <div
-        className={` col-span-full border ${
+        className={` col-span-full  ${
           isDarMode ? "bg-black" : "bg-white"
-        } border-white ${
+        }  ${
           selectedChat.chatId ? "hidden lg:block" : ""
-        } lg:col-span-1 sticky top-0  shadow-lg     h-screen border-gray-400`}
+        } lg:col-span-1 sticky top-0  shadow-lg     h-screen `}
       >
         <div className="mt-20 p-3 flex-col">
           <button onClick={() => navigate(-1)}>
@@ -221,7 +221,7 @@ function RecentChats({
                 ref={(el) => (divRefs.current[chat._id] = el)}
                 onClick={() => handleAccessChat(chat._id, receiver as User)}
                 className={` mt-5 ${
-                  isDarMode ? "bg-black border-y text-white" : ""
+                  isDarMode ? "bg-black  text-white" : ""
                 } flex justify-between gap-5  cursor-pointer p-5 ${
                   isDarMode && selectedChat.chatId === chat._id
                     ? "bg-custom-blue/20"

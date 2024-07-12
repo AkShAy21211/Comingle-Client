@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { MdOutlineExplore } from "react-icons/md";
 import { RootState } from "../../Redux/store";
 import { Fragment } from "react/jsx-runtime";
+import { MdWorkspacePremium } from "react-icons/md";
 
 function LeftPanel({ isProfile }: { isProfile?: boolean }) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -52,16 +53,16 @@ function LeftPanel({ isProfile }: { isProfile?: boolean }) {
                 <span>Explore</span>
               </Link>
             </li>
-            {/* <li className="rounded-sm">
+            <li className="rounded-sm">
               <Link
-                rel="noopener noreferrer"
-                to="#"
-                className="flex items-center p-2 space-x-3 rounded-md"
+                rel="noopener  noreferrer"
+                to="/settings/subscription"
+                className="flex  text-yellow-500 items-center p-2 space-x-3 rounded-md"
               >
-                <CiSaveDown2 size={30} />
-                <span>Saved</span>
+                <MdWorkspacePremium size={30} />
+                <span>Premium</span>
               </Link>
-            </li> */}
+            </li>
           </ul>
         </div>
         {isProfile ? (

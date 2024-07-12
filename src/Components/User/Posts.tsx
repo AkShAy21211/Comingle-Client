@@ -159,7 +159,7 @@ function Posts() {
               return post;
             })
           );
-          socket?.emit("notification", authorId);
+          socket.emit("notification", authorId);
         }
       } catch (error) {
         console.log(error);
@@ -399,7 +399,7 @@ function Posts() {
                             ? navigate("/profile")
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
-                        name={post.postedUser.username}
+                        name={post.postedUser.username.slice(1)}
                         className="rounded-full me-4 cursor-pointer"
                         size="35"
                       />
@@ -541,7 +541,7 @@ function Posts() {
                                     />
                                   ) : (
                                     <Avatar
-                                      name={comment.commenter.slice(0)}
+                                      name={comment.commenter.slice(1)}
                                       className="rounded-full me-4"
                                       size="28"
                                     />
@@ -565,7 +565,7 @@ function Posts() {
                                         } ${
                                           isDarkMode
                                             ? "bg-black"
-                                            : "bg-gray-200"
+                                            : "bg-white"
                                         }`}
                                         onChange={(e) =>
                                           setEditedComment(e.target.value)

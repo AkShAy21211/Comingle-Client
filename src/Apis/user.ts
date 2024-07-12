@@ -17,7 +17,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
 
@@ -62,7 +62,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
 
@@ -77,7 +77,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
     }
@@ -94,7 +94,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
       }
@@ -107,7 +107,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
       }
@@ -128,7 +128,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
 
@@ -143,7 +143,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
       }
@@ -253,7 +253,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
     }
@@ -308,8 +308,19 @@ const userApi = {
 
   googleLogin: async () => {
     try {
-      window.location.href = "http://localhost:5000/user/auth/google";
-    } catch (error) {}
+      window.location.href = import.meta.env.VITE_BACKEND_URI;
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
   },
 
   forgotPassword: async (email: string) => {
@@ -328,7 +339,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
         return forgetPasswprdResponse;
@@ -342,17 +353,17 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
     }
   },
 
-  updatePassword: async (password: string) => {
+  updatePassword: async (password: string,token?:string) => {
     try {
       const updatedResponse = await axiosInstance.post(
         userEnpoints.UPDATE_PASSWORD,
-        { password: password }
+        { password,token }
       );
 
       if (updatedResponse.status) {
@@ -362,7 +373,7 @@ const userApi = {
           hideProgressBar: true,
           closeOnClick: true,
           progress: undefined,
-          theme: "colored",
+          theme: "light",
           transition: Bounce,
         });
 
@@ -377,7 +388,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
 
@@ -423,7 +434,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
       console.log(error);
@@ -455,7 +466,7 @@ const userApi = {
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
       console.log(error);
@@ -601,11 +612,16 @@ const userApi = {
     }
   },
 
-  commentPost: async (comment: string, postId: string, userId: string,authorId:string) => {
+  commentPost: async (
+    comment: string,
+    postId: string,
+    userId: string,
+    authorId: string
+  ) => {
     try {
       const commetnResponse = await axiosInstance.put(
         userEnpoints.COMMENT + `/${postId}/${userId}`,
-        { comment,authorId }
+        { comment, authorId }
       );
 
       if (commetnResponse.data.status) {
@@ -824,8 +840,6 @@ const userApi = {
 
   getSinglePost: async (postId: string) => {
     try {
-      console.log("lllllllllllllllllllllll", postId);
-
       const postResponse = await axiosInstance.get(
         userEnpoints.GET_SIGNLE_POST + `/${postId}`
       );
@@ -854,6 +868,72 @@ const userApi = {
       console.log(error);
     }
   },
+
+  changePasswordVefifyMail: async (email: string) => {
+    try {
+      const response = await axiosInstance.post(
+        userEnpoints.CHANGE_PASSWORD_VEIFY_MAIL,
+        {
+          email,
+        }
+      );
+      toast.success(response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return response;
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      console.log(error);
+    }
+  },
+
+  changePasswordVefifyOTp: async (email: string, otp: string) => {
+    try {
+      const response = await axiosInstance.post(
+        userEnpoints.CHANGE_PASSWORD_VEIFY_OTP,
+        {
+          email,
+          otp,
+        }
+      );
+      toast.success(response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return response;
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      console.log(error);
+    }
+  },
+
   editComment: async (
     postId: string,
     commentId: string,

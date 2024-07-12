@@ -583,9 +583,9 @@ function SingleChat({
     <div
       className={`${
         selectedChat.chatId ? "col-span-full" : "hidden"
-      } lg:block lg:col-span-3  border ${
+      } lg:block lg:col-span-3   ${
         isDarMode ? "bg-black" : "bg-white"
-      } border-white`}
+      }`}
     >
       {  !isVedioChat&&selectedChat.chatId ? (
         <>
@@ -645,7 +645,7 @@ function SingleChat({
             </div>
           )}
 
-          <div className="flex justify-center w-full items-center border-t-2 p-2 relative">
+          <div className="flex justify-center w-full items-center  px-5 mb-2 relative">
             <input
               type="text"
               value={newMessage}

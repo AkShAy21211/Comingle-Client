@@ -5,8 +5,6 @@ import userApi from "../../Apis/user";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "@ant-design/react-slick";
-import { useSelector } from "react-redux";
-import { RootState } from "../../Redux/store";
 import { CgSpinner } from "react-icons/cg";
 import { connectToSocket } from "../../Apis/socket";
 
@@ -35,7 +33,6 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
   const [images, setImages] = useState<File[]>([]);
   const imageRef = useRef<HTMLInputElement | null>(null);
   const [posting, setPosting] = useState(false);
-  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const handleOpenImageInput = () => {
     if (imageRef.current) {
@@ -86,9 +83,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
       className={` fixed top-0 left-0 w-full h-full flex items-center justify-center z-[80]`}
     >
       <div
-        className={`rounded-xl shadow-2xl ${
-          isDarkMode ? "bg-neutral-950" : "bg-gray-200"
-        } w-80 md:w-1/4 h-auto`}
+        className={`rounded-xl shadow-2xl  backdrop-blur-xl w-80 md:w-1/4 h-auto`}
       >
         <div className="flex justify-end items-center py-3 px-4 dark:border-neutral-700">
           <IoCloseCircleSharp
@@ -101,11 +96,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className={`w-full ${
-              isDarkMode
-                ? "bg-neutral-950 text-white"
-                : "bg-gray-200 text-black"
-            }  p-5 bg-gray-200 resize-none text-xlfocus:outline-none h-auto rounded-lg focus:outline-none`}
+            className={`w-full h-20  p-5  bg-transparent resize-none text-xlfocus:outline-none  rounded-lg focus:outline-none`}
             placeholder="Type something"
           ></textarea>
         </div>
@@ -115,17 +106,17 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
             {images.length > 0 &&
               images.map((file) =>
                 file.type.startsWith("image") ? (
-                  <div className="w-full h-full">
+                  <div className="w-full h-auto">
                     <img
-                      className="object-cover h-52 w-full md:w-96 md:h-96 "
+                      className="object-cover h-60 w-full md:w-full md:h-72 "
                       src={URL.createObjectURL(file)}
                       alt=""
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-full">
+                  <div className="w-full h-auto">
                     <video
-                      className="object-cover h-52 w-full md:w-96 md:h-96 "
+                      className="object-cover h-60 w-full md:w-full md:h-72 "
                       src={URL.createObjectURL(file)}
                       controls
                     />

@@ -11,10 +11,11 @@ import { Bounce, toast } from "react-toastify";
 import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
-import {connectToSocket} from "../../Apis/socket";
+import { connectToSocket } from "../../Apis/socket";
+
 
 function Header() {
-    const socket = connectToSocket()
+  const socket = connectToSocket();
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
@@ -22,7 +23,7 @@ function Header() {
   const [notifications, setNotifications] = useState<number | null>(0);
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-  
+
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
@@ -44,34 +45,33 @@ function Header() {
     getNotification();
   };
 
-  useEffect(() => {
-    const handleUserBlocked = (data: { reason: string }) => {
-      toast.warning(data.reason, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      });
-      localStorage.removeItem("user");
-      persistor.purge();
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 5000);
-    };
+  const handleUserBlocked = (data: { reason: string }) => {
+    toast.warning(data.reason, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      progress: undefined,
+      theme: "dark",
+      transition: Bounce,
+    });
+    localStorage.clear();
+    persistor.purge();
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 3000);
+  };
 
-    if (!currentUser.isBlocked) {
-      socket?.on("user_blocked", handleUserBlocked);
-    }
-    socket?.on("notification", handleNotification);
+  useEffect(() => {
+    socket.on("user_blocked", handleUserBlocked);
+
+    socket.on("notification", handleNotification);
 
     return () => {
-      socket?.off("user_blocked", handleUserBlocked);
-      socket?.off("notification", handleNotification);
+      socket.off("user_blocked", handleUserBlocked);
+      socket.off("notification", handleNotification);
     };
-  }, []);
+  }, [handleUserBlocked, handleNotification]);
 
   return (
     <>

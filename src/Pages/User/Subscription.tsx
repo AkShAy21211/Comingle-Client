@@ -40,8 +40,8 @@ function Subscription() {
 
   return (
     <div
-      className={` h-scsreen border  flex ${
-        isDarkMode ? "bg-black text-white lg:border-x" : ""
+      className={` h-scsreen   flex ${
+        isDarkMode ? "bg-black text-white " : ""
       }  flex-col overflow-hidden col-span-full mt-18 pt-20  lg:col-start-2 lg:col-end-5`}
     >
       <div className="flex">

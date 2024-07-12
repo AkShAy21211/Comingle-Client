@@ -39,7 +39,7 @@ function Profile() {
     >
       <div
         className={` h-full ${
-          isDarkMode ? " lg:border-x" : ""
+          isDarkMode ? " " : ""
         } shadow-xl overflow-auto overscroll-y-auto  w-full
        bg-red flex flex-col 
         items-center mb-10`}

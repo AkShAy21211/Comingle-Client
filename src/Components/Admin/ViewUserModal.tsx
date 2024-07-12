@@ -1,9 +1,9 @@
-import  { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { User } from "../../Interface/interface";
 import Avatar from "react-avatar";
 import adminApi from "../../Apis/admin";
 import AlertModal from "../Common/AlertModal";
-import {connectToSocket} from "../../Apis/socket";
+import { connectToSocket } from "../../Apis/socket";
 type ViewUserModalProps = {
   user: User | null;
   setSelectedUser?: Dispatch<SetStateAction<any>>;
@@ -15,9 +15,10 @@ function ViewUserModal({
   setSelectedUser,
   fetchUsers,
 }: ViewUserModalProps) {
-  const socket = connectToSocket()
+  const socket = connectToSocket();
   const [userStatus, setUserStatus] = useState(user?.isBlocked);
   const [showAlert, setShoAlert] = useState(false);
+
   const handleToggleUserStatus = async () => {
     try {
       const userResponse = await adminApi.blockOrUnblockUser(
@@ -26,9 +27,7 @@ function ViewUserModal({
 
       if (userResponse) {
         setUserStatus((prev) => !prev);
-        if (!user?.isBlocked) {
-          socket?.emit("admin_block_user", user?._id);
-        }
+        user?.isBlocked ? null : socket?.emit("admin_block_user", user?._id);
         setShoAlert(false);
         fetchUsers();
       }
@@ -53,7 +52,9 @@ function ViewUserModal({
                 {user?.profile.isPremium ? " Premium user " : ""}
               </h3>
               <button
-                onClick={() => {if(setSelectedUser) setSelectedUser(null)}}
+                onClick={() => {
+                  if (setSelectedUser) setSelectedUser(null);
+                }}
                 type="button"
                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                 data-modal-hide="authentication-modal"

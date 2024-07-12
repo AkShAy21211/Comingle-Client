@@ -13,6 +13,8 @@ function SectionOne() {
       const subscriptions = await adminApi.getSubscriptions();
       if (subscriptions) {
         setSubscriptions(subscriptions.subscriptions);
+        console.log(subscriptions);
+        
       }
     } catch (error) {
       console.log(error);

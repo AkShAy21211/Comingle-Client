@@ -446,9 +446,9 @@ function ProfileAndBg({
           <CiText />
         </button>
       </div>{" "}
-      <div className=" h-auto w-full flex p-3 justify-center">
+      <div className=" h-full w-full flex p-3 justify-center">
         {activeTab === "text" ? (
-          <div className="text-content break-words w-full ">
+          <div className="text-content break-words w-full h-full">
             {posts &&
               posts.map(
                 (post) =>
@@ -502,7 +502,7 @@ function ProfileAndBg({
                   )
               )}
             {!posts?.length && (
-              <div className=" flex justify-center w-full mt-10 h-auto overflow-auto overscroll-y-auto col-span-full">
+              <div className=" flex justify-center w-full mt-10 h-full overflow-auto overscroll-y-auto col-span-full">
                 <p className="text-center w-full">
                   {isMyProfile
                     ? "You didn't post anything yet. Share your thoughts with others"
@@ -527,7 +527,7 @@ function ProfileAndBg({
                 )
               )}
             {!posts?.length && (
-              <div className=" flex justify-center w-full mt-10 h-auto overflow-auto overscroll-y-auto col-span-full">
+              <div className=" flex justify-center h-full w-full mt-10 overflow-auto overscroll-y-auto col-span-full">
                 <p className="text-center">
                   {isMyProfile
                     ? "You didn't post anything yet. Share your thoughts with others"

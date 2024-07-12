@@ -42,6 +42,8 @@ const userEnpoints = {
     GET_SIGNLE_POST:"/user/post",
     UNFOLLOW:"/user/unfollow",
     FRIENDS_SUGGESTIONS:"/user/friends/suggestions",
+    CHANGE_PASSWORD_VEIFY_MAIL:"/user/change-password/send-otp",
+    CHANGE_PASSWORD_VEIFY_OTP:"/user/change-password/verify-otp",
     LOGOUT:'/user/logout'
 
     

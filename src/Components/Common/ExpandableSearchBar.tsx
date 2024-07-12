@@ -42,7 +42,7 @@ function ExpandableSearchBar({isFocused,setIsFocused,searchUsers}:ExpandableSear
               type="submit"
               className={` absolute end-auto bottom-2.5  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-3 py-1`}
             >
-              <IoSearch className={`text-black" size={20} ${isDarMode?'text-red-300':"text-black"}`} />
+              <IoSearch className={`text-black" size={20} ${isDarMode?'text-white':"text-black"}`} />
             </button>
           </div>
         </form>
