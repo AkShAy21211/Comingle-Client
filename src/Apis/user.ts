@@ -4,6 +4,40 @@ import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
 const userApi = {
+  guestLogin: async () => {
+    try {
+      const signinResponse = await axiosInstance.post(userEnpoints.SIGNIN, {
+        email: "guest@gmail.com",
+        password: "Guest*#123",
+      });
+      if (signinResponse.data.status) {
+        toast.success(signinResponse.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+
+        return signinResponse;
+      }
+    } catch (error: any) {
+      console.log(error);
+      if (error.response.data.message) {
+        toast.error(error.response.data.message, {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
+    }
+  },
   signup: async (formData: SignUpType) => {
     try {
       const signupResponse = await axiosInstance.post(
@@ -359,11 +393,11 @@ const userApi = {
     }
   },
 
-  updatePassword: async (password: string,token?:string) => {
+  updatePassword: async (password: string, token?: string) => {
     try {
       const updatedResponse = await axiosInstance.post(
         userEnpoints.UPDATE_PASSWORD,
-        { password,token }
+        { password, token }
       );
 
       if (updatedResponse.status) {

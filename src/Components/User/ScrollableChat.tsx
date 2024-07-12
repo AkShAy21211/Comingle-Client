@@ -78,7 +78,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                                 downloadFiles(e, file.url, "image")
                               }
                             >
-                              <IoMdDownload className="mt-3" color={isDarMode?"white":"black"} size={20} />
+                              <IoMdDownload className="mt-3" color={isDarMode?"white":"black"} size={18} />
                             </button>
                           </div>
                         );
@@ -120,7 +120,7 @@ const ScrollableChat = ({ messages }: ScrollableChatPro) => {
                                 downloadFiles(e, file.url, "audio")
                               }
                             >
-                              <IoMdDownload className="mt-1" size={20} />
+                              <IoMdDownload className="mt-1" size={18} />
                             </button>
                           </div>
                         );

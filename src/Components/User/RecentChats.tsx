@@ -197,12 +197,12 @@ function RecentChats({
                         size="30"
                       />
                     )}
-                    <p className="p-1">{user.username}</p>
+                    <p className={`p-1 ${isDarMode?"text-white":"text-black"}`}>{user.username}</p>
                   </li>
                 ))
               ) : (
                 <li className="flex m-5 gap-2 cursor-pointer">
-                  <p className="p-2">No user found</p>
+                  <p className={`p-2 ${isDarMode?"text-white":"text-black"}`}>No user found</p>
                 </li>
               )}
             </ul>

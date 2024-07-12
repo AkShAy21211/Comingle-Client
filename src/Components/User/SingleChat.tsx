@@ -27,15 +27,15 @@ import { addPeer } from "../../Redux/Slice/User/peerSlice";
 import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
 import { playTune, endTune } from "../../Utils/tune";
-import {connectToSocket} from "../../Apis/socket";
+import { connectToSocket } from "../../Apis/socket";
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;
   participants: string[];
-  setIncommingCall:React.Dispatch<React.SetStateAction<boolean>>;
-  inCommingCall:boolean;
-  setIsVedioChat:React.Dispatch<React.SetStateAction<boolean>>;
-  isVedioChat:boolean;
+  setIncommingCall: React.Dispatch<React.SetStateAction<boolean>>;
+  inCommingCall: boolean;
+  setIsVedioChat: React.Dispatch<React.SetStateAction<boolean>>;
+  isVedioChat: boolean;
   remoteId: string;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
   setCallIndication: React.Dispatch<
@@ -52,9 +52,10 @@ function SingleChat({
   setIsVedioChat,
   isVedioChat,
   remoteId,
-  setIncommingCall,inCommingCall
+  setIncommingCall,
+  inCommingCall,
 }: SingleChatProp) {
-    const socket = connectToSocket()
+  const socket = connectToSocket();
 
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
@@ -128,7 +129,7 @@ function SingleChat({
   }) => {
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
       console.log("New unread message", message);
-      dispatch(setUnreadMessage(  message.chat ));
+      dispatch(setUnreadMessage(message.chat));
       setFetchAgain(!fetchAgain);
     } else {
       console.log("New message", message);
@@ -150,9 +151,8 @@ function SingleChat({
     room: string;
   }) => {
     if (
-      !selectedChat.chatId||
-      selectedChat.chatId === room &&
-      message.sender._id === currentUser._id
+      !selectedChat.chatId ||
+      (selectedChat.chatId === room && message.sender._id === currentUser._id)
     ) {
       console.log("New message sent", message);
       setFetchAgain(!fetchAgain);
@@ -167,12 +167,12 @@ function SingleChat({
     }
   };
   useEffect(() => {
-    socket?.on("message received", handleNewMessage);
-    socket?.on("new message sent", handleNewMessageSent);
+    socket.on("message received", handleNewMessage);
+    socket.on("new message sent", handleNewMessageSent);
 
     return () => {
-      socket?.off("message received", handleNewMessage);
-      socket?.off("new message sent", handleNewMessageSent);
+      socket.off("message received", handleNewMessage);
+      socket.off("new message sent", handleNewMessageSent);
     };
   }, [
     selectedChat.chatId,
@@ -233,7 +233,7 @@ function SingleChat({
           socket?.emit("message", {
             message: response.message,
             room: selectedChat.chatId,
-            to:receiver._id
+            to: receiver._id,
           });
 
           setSelectedFiles([]);
@@ -400,8 +400,6 @@ function SingleChat({
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
 
-
-
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
 
@@ -414,22 +412,19 @@ function SingleChat({
 
       if (!peer) return;
 
-      socket?.emit("calluser", {
+      socket.emit("calluser", {
         room: selectedChat.chatId,
         peerId: currentUser._id,
-        to:receiver._id,
+        to: receiver._id,
         name: currentUser.name,
       });
       const call = peer.call(remoteId, stream);
 
       call.on("stream", (peerStream) => {
-        console.log("stream of the remote user", peerStream);
-
         dispatch(addPeer({ userId: call.peer, stream: peerStream }));
         setRemoteStream(peerStream);
       });
     } catch (error) {
-      console.log("error accessing user media");
       alert(error);
     }
   };
@@ -442,10 +437,7 @@ function SingleChat({
     message: string;
   }) => {
     try {
-  
-      console.log('call recived');
-      
-      setIsVedioChat(true)
+      setIsVedioChat(true);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
@@ -456,8 +448,6 @@ function SingleChat({
       setIncommingCall(true);
       playTune();
       if (peer) {
-        console.log("me is ok");
-
         peer.on("call", (call) => {
           setCurrentCall(call);
         });
@@ -472,12 +462,11 @@ function SingleChat({
     if (currentCall && localStream) {
       currentCall.answer(localStream);
       currentCall.on("stream", (remoteStream) => {
-        console.log("insde remote stream event", currentCall);
         dispatch(addPeer({ userId: currentCall.peer, stream: remoteStream }));
         setRemoteStream(remoteStream);
       });
       setCallIndication({ message: "", room: "" });
-      setIsVedioChat(true)
+      setIsVedioChat(true);
       setIsModalOpen(false);
       setIncommingCall(false);
       endTune();
@@ -493,17 +482,15 @@ function SingleChat({
     setCallIndication({ message: "", room: "" });
     setIsModalOpen(false);
     setIncommingCall(false);
-    setIsVedioChat(false)
+    setIsVedioChat(false);
   };
 
   const endCall = () => {
-    if (remoteStream) {
-      setIsVedioChat(false);
-      setLocalStream(null);
-      setRemoteStream(null);
-      currentCall?.close();
-      socket?.emit("call:ended", { room: selectedChat.chatId });
-    }
+    setIsVedioChat(false);
+    setLocalStream(null);
+    setRemoteStream(null);
+    currentCall?.close();
+    socket?.emit("call:ended", { room: selectedChat.chatId });
     setIsModalOpen(false);
     setIncommingCall(false);
   };
@@ -519,7 +506,7 @@ function SingleChat({
       hideProgressBar: true,
       closeOnClick: true,
       progress: undefined,
-      theme: "colored",
+      theme: "light",
       transition: Bounce,
     });
   };
@@ -530,6 +517,7 @@ function SingleChat({
     setRemoteStream(null);
     setIsModalOpen(false);
     setIncommingCall(false);
+    endTune();
     currentCall?.close();
     toast.info(data.message, {
       position: "bottom-center",
@@ -537,7 +525,7 @@ function SingleChat({
       hideProgressBar: true,
       closeOnClick: true,
       progress: undefined,
-      theme: "colored",
+      theme: "light",
       transition: Bounce,
     });
   };
@@ -550,7 +538,7 @@ function SingleChat({
         hideProgressBar: true,
         closeOnClick: true,
         progress: undefined,
-        theme: "colored",
+        theme: "light",
         transition: Bounce,
       });
     }
@@ -583,11 +571,9 @@ function SingleChat({
     <div
       className={`${
         selectedChat.chatId ? "col-span-full" : "hidden"
-      } lg:block lg:col-span-3   ${
-        isDarMode ? "bg-black" : "bg-white"
-      }`}
+      } lg:block lg:col-span-3   ${isDarMode ? "bg-black" : "bg-white"}`}
     >
-      {  !isVedioChat&&selectedChat.chatId ? (
+      {!isVedioChat && selectedChat.chatId ? (
         <>
           <div className="mb-1 flex mt-16 justify-between gap-8 p-5 border-t-2 h-20 bg-custom-blue/90 backdrop:blur-xl">
             <div className="flex items-center gap-2">
@@ -645,7 +631,7 @@ function SingleChat({
             </div>
           )}
 
-          <div className="flex justify-center w-full items-center  px-5 mb-2 relative">
+          <div className="flex justify-center w-full   items-center  px-5 py-3 relative">
             <input
               type="text"
               value={newMessage}
@@ -653,7 +639,7 @@ function SingleChat({
               placeholder="Type your message..."
               className={`flex-1  ${
                 isDarMode ? "bg-black text-white" : "bg-gray-200"
-              } border rounded-lg py-2 px-4 mr-2 focus:outline-none focus:ring-2 ml-1 `}
+              } border rounded-lg  py-2 px-4 mr-2 focus:outline-none focus:ring-2 ml-1 `}
             />
             <button
               className="text-white px-4 py-2 border-none rounded-lg focus:outline-none"
@@ -717,7 +703,7 @@ function SingleChat({
         />
       )}
 
-      {inCommingCall &&  (
+      {inCommingCall && (
         <VideoCallNotificationModal
           setIsOpen={setIsModalOpen}
           onAccept={acceptCall}

@@ -30,8 +30,8 @@ function ProfileCard() {
   return (
     <div className=" w-full h-auto flex flex-col items-center mt-36  ">
       <div
-        className={` px-10 py-5 w-auto h-auto  flex flex-col items-center  ${
-          isDarkMode ? "" : "shadow-2xl shadow-gray-300"
+        className={` px-10 py-5 w-auto h-auto      flex flex-col items-center  ${
+          isDarkMode ? "border border-gray-900" : " border border-gray-300 shadow-gray-400"
         } rounded-lg `}
       >
        {
@@ -39,12 +39,12 @@ function ProfileCard() {
           src={userData?.profile.image}
           className="w-20 h-20 rounded-full "
           alt=""
-        />:<Avatar name={userData?.name} className="rounded-full"/>
+        />:<Avatar name={userData?.name} size="80" className="rounded-full"/>
 
        }
         <p className="text-lg font-bold mt-5">{userData?.username}</p>
 
-        <div className="w-full h-32 gap-10 flex justify-around mt-3">
+        <div className="w-full h-32 gap-10 flex justify-around ">
           <div className=" flex flex-col gap4 justify-center items-center">
             {userData?.profile.followers?.length}
             <p>Followers</p>
@@ -56,8 +56,8 @@ function ProfileCard() {
         </div>
 
         {location.pathname === "/profile" ? null : (
-          <Link className="font-bold text-custom-blue" to={"/profile"}>
-            Vew profile
+          <Link className="font-bold text-sm text-custom-blue" to={"/profile"}>
+            View profile
           </Link>
         )}
       </div>

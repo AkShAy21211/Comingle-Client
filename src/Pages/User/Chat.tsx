@@ -32,10 +32,9 @@ function Chat() {
     });
 
     peer.on("open", (id) => {
-      console.log("My peer ID is:", id, currentUser._id);
       setMe(peer);
 
-      socket?.emit("user:joined", { userId: currentUser._id });
+      socket.emit("user:joined", { userId: currentUser._id });
     });
   }, [currentUser._id]);
 
@@ -57,7 +56,6 @@ function Chat() {
     const { room, members } = data;
 
     if (room !== selectedChat.chatId) return;
-    console.log("user left chat room", members, room);
 
     setParticipant(members.toString().split(","));
   };

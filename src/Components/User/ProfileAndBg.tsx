@@ -320,7 +320,7 @@ function ProfileAndBg({
   );
   return (
     <>
-      <div className="w-full border ">
+      <div className="w-full  ">
         {isMyProfile && (
           <FaRegEdit
             onClick={() => setShowCoverMdal(true)}
@@ -337,7 +337,7 @@ function ProfileAndBg({
       
       {isMyProfile && (
         <FaRegEdit
-          size={18}
+          size={50}
           onClick={() => setShowDpMdal(true)}
           className={`float-end relative z-50  cursor-pointer top-24 md:top-20 `}
         />

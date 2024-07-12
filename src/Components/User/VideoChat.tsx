@@ -8,7 +8,7 @@ import { BsFillCameraVideoFill } from "react-icons/bs";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
-import {connectToSocket} from "../../Apis/socket";
+import { connectToSocket } from "../../Apis/socket";
 interface VideoChatProps {
   stream: MediaStream | null;
   peerStream: MediaStream | null;
@@ -22,7 +22,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
   peerStream,
   endCall,
 }) => {
-    const socket = connectToSocket()
+  const socket = connectToSocket();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
@@ -36,7 +36,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
   const receiver: any = useSelector(
     (state: RootState) => state.chat.selectedChat.receiver
   );
-    const [isSpeaking, setIsSpeaking] = useState(false); // State to track speaking activity
+  const [isSpeaking, setIsSpeaking] = useState(false); // State to track speaking activity
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -47,43 +47,44 @@ const VideoChat: React.FC<VideoChatProps> = ({
       remoteRef.current.srcObject = peerStream;
     }
 
-       // Track audio activity in the peerStream
-       if(!peerStream) return;
-      const audioContext = new AudioContext();
-      const analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaStreamSource(peerStream);
+    // Track audio activity in the peerStream
+    if (!peerStream) return;
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaStreamSource(peerStream);
 
-      source.connect(analyser);
-      analyser.fftSize = 256;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
+    source.connect(analyser);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-      const updateAudioActivity = () => {
-        analyser.getByteFrequencyData(dataArray);
-        const average = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+    const updateAudioActivity = () => {
+      analyser.getByteFrequencyData(dataArray);
+      const average =
+        dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
 
-        // Adjust threshold as needed based on your audio levels
-        const threshold = 100;
+      // Adjust threshold as needed based on your audio levels
+      const threshold = 100;
 
-        if (average > threshold) {
-          setIsSpeaking(true);
-        } else {
-          setIsSpeaking(false);
-        }
-      };
+      if (average > threshold) {
+        setIsSpeaking(true);
+      } else {
+        setIsSpeaking(false);
+      }
+    };
 
-      // Start monitoring audio activity
-      const interval = setInterval(updateAudioActivity, 200); // Adjust interval as needed
+    // Start monitoring audio activity
+    const interval = setInterval(updateAudioActivity, 200); // Adjust interval as needed
 
-      return () => {
-        clearInterval(interval);
-        audioContext.close();
-      };
+    return () => {
+      clearInterval(interval);
+      audioContext.close();
+    };
   }, [stream, peerStream, peer, remoteVideoMuted]);
 
   const toggleAudio = () => {
     if (stream) {
-      socket?.emit("audio:status", { room: selectedChat.chatId });
+      socket.emit("audio:status", { room: selectedChat.chatId });
       stream.getAudioTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
@@ -93,7 +94,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
 
   const toggleVideo = () => {
     if (stream) {
-      socket?.emit("video:status", { room: selectedChat.chatId });
+      socket.emit("video:status", { room: selectedChat.chatId });
       stream.getVideoTracks().forEach((track) => {
         track.enabled = !track.enabled;
       });
@@ -102,31 +103,44 @@ const VideoChat: React.FC<VideoChatProps> = ({
   };
 
   const handleRemoteVideoStatus = () => {
+    
     setRemoteVideoMuted(!remoteVideoMuted);
   };
   const handleRemoteAudioStatus = () => {
+
     setRemoteAudioMuted(!remoteAudioMuted);
   };
 
   useEffect(() => {
-    socket?.on("audio:status", handleRemoteAudioStatus);
-    socket?.on("video:status", handleRemoteVideoStatus);
+    socket.on("audio:status", handleRemoteAudioStatus);
+    socket.on("video:status", handleRemoteVideoStatus);
 
     return () => {
-      socket?.off("audio:status", handleRemoteAudioStatus);
-      socket?.off("video:status", handleRemoteVideoStatus);
+      socket.off("audio:status", handleRemoteAudioStatus);
+      socket.off("video:status", handleRemoteVideoStatus);
     };
-  });
+  }, [
+    handleRemoteAudioStatus,
+    handleRemoteVideoStatus,
+   
+  ]);
 
   return (
-    <div className="flex flex-col items-center justify-center  h-screen  bg-gray-900 text-white p-4">
+    <div className="flex flex-col items-center justify-center  h-screen   text-white p-4">
       <div className="w-full flex flex-col md:flex-row items-center   justify-center gap-4">
         <div className="relative  h-[70vh] mt-16  w-10/12   rounded-lg overflow-hidden">
           <p className="absolute top-2 left-2   text-sm font-semibold p-1 rounded-md">
             {remoteAudioMuted ? (
               <FaMicrophoneSlash className="text-custom-blue/80" size={20} />
             ) : (
-              <BsMicFill className={` ${isSpeaking?'text-blue-600 scale-125    ':'text-custom-blue/80'}`} size={20} />
+              <BsMicFill
+                className={` ${
+                  isSpeaking
+                    ? "text-blue-600 scale-125    "
+                    : "text-custom-blue/80"
+                }`}
+                size={20}
+              />
             )}
           </p>
           <p className="absolute top-2 left-10 text-sm font-semibold p-1 rounded-md">
@@ -153,7 +167,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
             <div className="w-auto  h-96 flex justify-center items-center ">
               {receiver.profile.image ? (
                 <img
-                  className="w-32 h-32 rounded-full"
+                  className="w-28 h-28 rounded-full"
                   src={receiver?.profile?.image}
                   alt=""
                 />
@@ -197,7 +211,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
           {videoMuted ? <HiMiniVideoCameraSlash /> : <BsFillCameraVideoFill />}
         </button>
         <button
-          onClick={()=>endCall()}
+          onClick={endCall}
           className="p-4 bg-red-600 rounded-full text-sm font-semibold"
         >
           <MdOutlineCallEnd />
