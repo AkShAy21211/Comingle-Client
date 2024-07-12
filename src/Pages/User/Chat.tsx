@@ -34,7 +34,7 @@ function Chat() {
     peer.on("open", (id) => {
       setMe(peer);
 
-      socket.emit("user:joined", { userId: currentUser._id });
+      socket.emit("user:joined", { userId: id });
     });
   }, [currentUser._id]);
 
