@@ -20,12 +20,12 @@ const Loading: React.FC<LoadingProps> = ({ size }) => {
 
   const fetchUserProfile = async () => {
     try {
-      const user = await userApi.profile();
-
+      const {user} = await userApi.profile();
+      
       
       if (token) {
         user.token = token;
-        dispatch(userLogin(user))
+        dispatch(userLogin({user,token}))
         navigate('/')
       }
     } catch (error) {

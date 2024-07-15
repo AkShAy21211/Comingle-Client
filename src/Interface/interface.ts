@@ -82,7 +82,7 @@ export interface PostsType {
       image: string;
     };
   };
-  image: {url:string,type:string}[];
+  image: {url:string,type:string,_id:string}[];
   description: string;
   isHidden: boolean;
   timestamp: Date;

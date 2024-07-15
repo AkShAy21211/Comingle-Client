@@ -4,14 +4,16 @@ import userApi from "../../Apis/user";
 import InfiniteScroll from "react-infinite-scroll-component";
 import People from "../Skleton/Posts";
 import { useSelector } from "react-redux";
-import { RootState } from '../../Redux/store';
+import { RootState } from "../../Redux/store";
+import { useNavigate } from "react-router-dom";
 
 function Posts() {
   const [index, setIndex] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<PostsType[]>([]);
-  const currentUser = useSelector((state:RootState)=>state.user.user);
-  
+  const currentUser = useSelector((state: RootState) => state.user.user);
+  const navigate = useNavigate();
+
   // Handle fetching posts on first visit
   const fetchAllPosts = useCallback(async () => {
     try {
@@ -46,7 +48,6 @@ function Posts() {
 
   // Fetch next set of posts on scroll
   const fetchPostOnScroll = useCallback(() => {
-    console.log("Fetching next set of posts..."); // Add logging
     setIndex((prev) => prev + 1);
   }, []);
 
@@ -56,6 +57,31 @@ function Posts() {
     }
   }, [index, fetchPosts]);
 
+
+  const renderContent = (content: {
+    type: string;
+    url: string;
+    _id: string;
+  }) => {
+    if (content.type === "image") {
+      return (
+        <img
+          key={content._id} // Ensure each element has a unique key
+          src={content.url}
+          alt="Post"
+          className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
+        />
+      );
+    } else {
+      return (
+        <video
+          key={content._id} // Ensure each element has a unique key
+          src={content.url}
+          className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
+        />
+      );
+    }
+  };
   return (
     <div className="h-svh overflow-auto p-4" id="scrollableDiv">
       <InfiniteScroll
@@ -73,14 +99,7 @@ function Posts() {
       >
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-min gap-5">
           {posts.map((post) => (
-            <div>
-              <img
-                key={post._id} // Ensure each element has a unique key
-                src={post.image[0]?.url}
-                alt="Post"
-                className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
-              />
-            </div>
+            <div className="cursor-pointer" key={post._id} onClick={()=>navigate('/post/'+post._id)}>{renderContent(post.image[0])}</div>
           ))}
         </div>
       </InfiniteScroll>

@@ -27,7 +27,14 @@ function LoginForm() {
         const signupResponse = await userApi.signin(values);
 
         if (signupResponse?.status) {
-          dispatch(userLogin(signupResponse.data.userData));
+          dispatch(
+            userLogin({
+              user: signupResponse.data.userData,
+              token: signupResponse.data.userData.token,
+            })
+          );
+          console.log("dddddddddddddddddddd", signupResponse.data);
+
           formik.resetForm();
           navigate("/");
         }
@@ -51,7 +58,12 @@ function LoginForm() {
     try {
       const response = await userApi.guestLogin();
       if (response) {
-        dispatch(userLogin(response.data.userData));
+        dispatch(
+          userLogin({
+            user: response.data.userData,
+            token: response.data.userData.token,
+          })
+        );
         formik.resetForm();
         navigate("/");
       }

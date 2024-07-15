@@ -12,6 +12,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
 import { connectToSocket } from "../../Apis/socket";
+import { User } from "../../Interface/interface";
 
 
 function Header() {
@@ -21,9 +22,10 @@ function Header() {
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
   const [notifications, setNotifications] = useState<number | null>(0);
-  const currentUser = useSelector((state: RootState) => state.user.user);
+  const currentUser:User = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
+  
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
@@ -119,10 +121,10 @@ function Header() {
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">Open user menu</span>
-                    {currentUser.profile ? (
+                    {currentUser.profile?.image ? (
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={currentUser.profile}
+                        src={currentUser?.profile?.image}
                         alt=""
                       />
                     ) : (

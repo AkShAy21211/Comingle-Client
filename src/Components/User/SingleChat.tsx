@@ -127,12 +127,13 @@ function SingleChat({
     message: Message;
     room: string;
   }) => {
+
+    
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
-      console.log("New unread message", message);
+      
       dispatch(setUnreadMessage(message.chat));
       setFetchAgain(!fetchAgain);
     } else {
-      console.log("New message", message);
       setAllMessages((prevMessages) => {
         setFetchAgain(!fetchAgain);
         if (!prevMessages.some((msg) => msg._id === message._id)) {
@@ -152,9 +153,8 @@ function SingleChat({
   }) => {
     if (
       !selectedChat.chatId ||
-      (selectedChat.chatId === room && message.sender._id === currentUser._id)
+      (selectedChat.chatId === room)
     ) {
-      console.log("New message sent", message);
       setFetchAgain(!fetchAgain);
 
       setAllMessages((prevMessages) => {
@@ -176,7 +176,7 @@ function SingleChat({
     };
   }, [
     selectedChat.chatId,
-    allMessages,
+    // allMessages,
     handleNewMessage,
     handleNewMessageSent,
   ]);

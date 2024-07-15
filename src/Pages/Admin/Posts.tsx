@@ -281,7 +281,7 @@ function Posts() {
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                {report.length ? (
+                {report?.length ? (
                   report.map((report, i) => (
                     <ul className="list-disc p-3" key={i}>
                       <li className="border p-3">{report.reason}</li>
@@ -290,7 +290,7 @@ function Posts() {
                 ) : (
                   <p>No reports yet</p>
                 )}
-                {report.length ? (
+                {report?.length ? (
                   <button
                     className="float-end bg-yellow-400 text-white rounded-lg p-2"
                     onClick={dismissReport}

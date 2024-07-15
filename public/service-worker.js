@@ -48,4 +48,5 @@ this.addEventListener("fetch", (event) => {
       })
     );
   }
+  return;
 });

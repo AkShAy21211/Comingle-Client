@@ -337,9 +337,9 @@ function ProfileAndBg({
       
       {isMyProfile && (
         <FaRegEdit
-          size={50}
+          size={40}
           onClick={() => setShowDpMdal(true)}
-          className={`float-end relative z-50  cursor-pointer top-24 md:top-20 `}
+          className={`float-end relative z-40  cursor-pointer top-24 md:top-20 `}
         />
       )}
       <div

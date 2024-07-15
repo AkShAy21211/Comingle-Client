@@ -5,7 +5,6 @@ const backenndurl = import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
   : import.meta.env.VITE_BACKEND_URI
 
 
-  console.log('bakcfdfdsfdsfdsf',backenndurl);
   
 const axiosInstance = axios.create({
   baseURL: backenndurl,

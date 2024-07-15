@@ -22,10 +22,10 @@ function CreatePost({ setfetchAgain,fetchAgain}: CreatePostProps) {
           isDarkMode ? "bg-black border" : "bg-gray-100"
         } items-center   mx-auto shadow-md rounded-xl border-gray-600  lg:w-3/5 mb-20  `}
       >
-        {currentUser.profile ? (
+        {currentUser.profile?.image ? (
           <img
             className="h-10 w-10 mx-5 object-cover rounded-full"
-            src={currentUser.profile}
+            src={currentUser.profile.image}
             alt=""
           />
         ) : (

@@ -174,7 +174,7 @@ const userApi = {
         toast.error(error.response.data.message, {
           position: "bottom-center",
           autoClose: 3000,
-          hideProgressBar: true,
+          hideProgressBar: false,
           closeOnClick: true,
           progress: undefined,
           theme: "light",
@@ -342,7 +342,7 @@ const userApi = {
 
   googleLogin: async () => {
     try {
-      window.location.href = import.meta.env.VITE_BACKEND_URI+'/user/auth/google';
+      window.location.href = `${import.meta.env.VITE_BACKEND_URI}/user/auth/google`;
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message, {
@@ -384,7 +384,7 @@ const userApi = {
       toast.error(error.response.data.message, {
         position: "bottom-center",
         autoClose: 3000,
-        hideProgressBar: true,
+        hideProgressBar: false,
         closeOnClick: true,
         progress: undefined,
         theme: "light",
