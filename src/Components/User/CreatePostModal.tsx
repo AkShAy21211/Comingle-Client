@@ -93,10 +93,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
         setImages([]);
         setText("");
         setPosting(false);
-        setfetchAgain?.(!fetchAgain);
-        if (isMobile) {
-          socket.emit("newpost");
-        }
+        socket.emit("newpost");
       }
     } catch (error) {
       setPosting(false);
@@ -105,7 +102,11 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
 
   return (
     <div className="fixed top-0 left-0 right-0 w-full h-full flex items-center justify-center z-[80]">
-      <div className={`rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[350px] ${isDarkMode?"backdrop-blur-lg":"bg-white"}`}>
+      <div
+        className={`rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[350px] ${
+          isDarkMode ? "backdrop-blur-lg" : "bg-white"
+        }`}
+      >
         <div className="flex justify-end items-center py-3 px-4 dark:border-neutral-700">
           <IoCloseCircleSharp
             onClick={() => setOpenModal(false)}
