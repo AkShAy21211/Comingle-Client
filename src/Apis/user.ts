@@ -341,8 +341,12 @@ const userApi = {
   },
 
   googleLogin: async () => {
-    try {
-      window.location.href = `${import.meta.env.VITE_BACKEND_URI}/user/auth/google`;
+    try 
+      
+    {
+
+      window.open(import.meta.env.VITE_BACKEND_URI+userEnpoints.GOOGLE_LOGIN)
+
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message, {
