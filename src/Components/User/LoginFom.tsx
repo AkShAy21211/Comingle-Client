@@ -33,7 +33,6 @@ function LoginForm() {
               token: signupResponse.data.userData.token,
             })
           );
-          console.log("dddddddddddddddddddd", signupResponse.data);
 
           formik.resetForm();
           navigate("/");
@@ -71,6 +70,7 @@ function LoginForm() {
       console.log(error);
     }
   };
+  
   return (
     <div className="w-full flex flex-col justify-center items-center ">
       <div className="space-y-2 md:space-y-2 w-full flex flex-col items-center">
