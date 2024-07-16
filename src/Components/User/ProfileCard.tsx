@@ -42,7 +42,7 @@ function ProfileCard() {
         />:<Avatar name={userData?.name} size="80" className="rounded-full"/>
 
        }
-        <p className="text-lg font-bold mt-5">{userData?.username}</p>
+        <p className="text-lg  text-center font-bold mt-5">{userData?.username}</p>
 
         <div className="w-full h-32 gap-10 flex justify-around ">
           <div className=" flex flex-col gap4 justify-center items-center">
