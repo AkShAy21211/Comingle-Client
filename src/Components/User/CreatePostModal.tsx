@@ -33,9 +33,6 @@ type ValuePiece = Date | null;
 
 const CreatePostModal: React.FC<CreatePostProps> = ({
   setOpenModal,
-  fetchAgain,
-  isMobile,
-  setfetchAgain,
 }) => {
   const socket = connectToSocket();
   const [text, setText] = useState("");
