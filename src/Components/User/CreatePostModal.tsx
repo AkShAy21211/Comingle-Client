@@ -8,8 +8,10 @@ import Slider from "@ant-design/react-slick";
 import { CgSpinner } from "react-icons/cg";
 import { connectToSocket } from "../../Apis/socket";
 import { Tooltip } from "react-tooltip";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Add date picker CSS for better styling
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // Add date picker CSS for better styling
+import { RootState } from "../../Redux/rootReducer";
+import { useSelector } from "react-redux";
 
 type CreatePostProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,6 +45,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
   const [schedule, onChange] = useState<ValuePiece>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateError, setDateError] = useState<string | null>(null);
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const handleOpenImageInput = () => {
     if (imageRef.current) {
@@ -67,7 +70,6 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
     }
   };
 
-  
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
@@ -79,8 +81,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
       }
       formData.append("text", text);
       formData.append("type", "post");
-      if(schedule){
-        formData.append("schedule",schedule.toString())
+      if (schedule) {
+        formData.append("schedule", schedule.toString());
       }
       setPosting(true);
 
@@ -101,11 +103,9 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
     }
   };
 
-
-
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[80]">
-      <div className="rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[400px] bg-white">
+    <div className="fixed top-0 left-0 right-0 w-full h-full flex items-center justify-center z-[80]">
+      <div className={`rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[350px] ${isDarkMode?"backdrop-blur-lg":"bg-white"}`}>
         <div className="flex justify-end items-center py-3 px-4 dark:border-neutral-700">
           <IoCloseCircleSharp
             onClick={() => setOpenModal(false)}
@@ -157,13 +157,13 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
             <Tooltip id="photoLibraryTooltip" place="top">
               Select Photo/Video
             </Tooltip>
-             <input
-            type="file"
-            multiple
-            className="hidden"
-            ref={imageRef}
-            onChange={handleImageChange}
-          />
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              ref={imageRef}
+              onChange={handleImageChange}
+            />
           </div>
 
           <div>
@@ -192,7 +192,9 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
             />
           )}
 
-          {dateError && <p className="text-red-500 text-xs text-nowrap">{dateError}</p>}
+          {dateError && (
+            <p className="text-red-500 text-xs text-nowrap">{dateError}</p>
+          )}
         </div>
 
         <div className="flex justify-end items-center gap-x-2 py-3 px-4">

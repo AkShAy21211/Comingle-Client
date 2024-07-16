@@ -112,7 +112,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
                 <div className="relative p-6 flex flex-col justify-center items-center">
                   {showCoverModal && (
                     <div
-                      className={`w-full h-20 cursor-pointer ${
+                      className={`w-52 h-52 cursor-pointer ${
                         isDarkMode ? "bg-black" : "bg-gray-200"
                       } flex items-center p-4 justify-center text-gray-500`}
                       onClick={changeCover}
@@ -124,7 +124,9 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
                           alt="Background"
                         />
                       ) : (
-                        <span>Click to upload background image</span>
+                        <span className="text-sm text-center">
+                          Click to upload background image
+                        </span>
                       )}
                     </div>
                   )}
