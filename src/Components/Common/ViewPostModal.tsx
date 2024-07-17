@@ -124,12 +124,12 @@ function ViewPostModal({
     <div
       id="modal"
       aria-hidden="true"
-      className="fixed inset-0 z-50 flex items-center max-h-auto justify-center"
+      className="fixed inset-0 z-50 flex items-center  justify-center"
     >
       <div
         className={`relative w-full max-w-4xl mx-5 shadow-xl h-auto ${
           isDarkMode ? " backdrop-blur-lg bg-black/60" : "bg-gray-200"
-        }   rounded-lg overflow-auto-`}
+        }   rounded-lg `}
       >
         {/* Modal content */}
         <div className="relative shadow-xl border">
