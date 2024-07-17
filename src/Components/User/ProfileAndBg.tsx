@@ -330,7 +330,7 @@ function ProfileAndBg({
         )}
         <img
           src={user?.profile.background}
-          className="object-cover h-52 lg:h-72 w-full "
+          className="object-fill h-60 lg:h-96 w-full "
           alt=""
         />
       </div>
@@ -339,7 +339,7 @@ function ProfileAndBg({
         <FaRegEdit
           size={40}
           onClick={() => setShowDpMdal(true)}
-          className={`float-end relative z-40  cursor-pointer top-20 md:top-20 `}
+          className={`float-end relative z-40  cursor-pointer top-24 md:top-20 `}
         />
       )}
       <div
