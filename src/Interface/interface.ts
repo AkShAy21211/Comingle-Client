@@ -52,7 +52,7 @@ export interface User {
   password?: string;
   isVerified?: boolean;
   isBlocked?: boolean;
-  profile: Profile;
+  profile: string;
 }
 
 export interface Comment {

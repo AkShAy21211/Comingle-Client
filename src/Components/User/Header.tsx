@@ -121,10 +121,10 @@ function Header() {
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">Open user menu</span>
-                    {currentUser.profile?.image ? (
+                    {currentUser?.profile ? (
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={currentUser?.profile?.image}
+                        src={currentUser?.profile}
                         alt=""
                       />
                     ) : (
