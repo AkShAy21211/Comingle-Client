@@ -31,7 +31,7 @@ function Header() {
     try {
       const notifications = await userApi.notifications();
 
-      if (notifications) {
+      if (notifications.length) {
         setNotifications((prev)=>prev+1);
       }
     } catch (error) {
