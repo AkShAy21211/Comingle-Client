@@ -40,6 +40,8 @@ function Header() {
   }
   useEffect(() => {
     getNotification();
+    setNotifications(0);
+    
   }, []);
 
   const handleNotification = () => {
