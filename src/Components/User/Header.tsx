@@ -20,7 +20,7 @@ function Header() {
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
-  const [notifications, setNotifications] = useState<number | null>(0);
+  const [noti, setNotifications] = useState<number >(0);
   const currentUser:any = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
@@ -32,7 +32,7 @@ function Header() {
       const notifications = await userApi.notifications();
 
       if (notifications) {
-        setNotifications(notifications.length);
+        setNotifications((prev)=>prev+1);
       }
     } catch (error) {
       console.log(error);
@@ -98,9 +98,9 @@ function Header() {
                 to="/notifications"
                 className="relative rounded-fullp-1  text-gray-400 hover:text-white focus:outline-none  focus:ring-offset-2 focus:ring-offset-gray-800"
               >
-                {notifications && notifications > 0 ? (
+                {noti && noti > 0 ? (
                   <span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">
-                    {notifications ? notifications : null}
+                    {noti ? noti : null}
                   </span>
                 ) : (
                   ""
