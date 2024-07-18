@@ -12,7 +12,6 @@ import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
 import { connectToSocket } from "../../Apis/socket";
-import { User } from "../../Interface/interface";
 
 
 function Header() {
