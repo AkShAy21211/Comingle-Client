@@ -72,7 +72,7 @@ const userApi = {
   checkUsername: async (username: string) => {
     try {
       const checkUsernameReponse = await axiosInstance.get(
-        userEnpoints.CHECK_USERNAME + `?username=${username}`
+        userEnpoints.CHECK_USERNAME + `?username=${"@"+username}`
       );
 
       return checkUsernameReponse.data;

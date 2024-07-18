@@ -67,7 +67,7 @@ function RegisterForm() {
         setLoading(true);
         setUsernameError(null);
         const response = await userApi.checkUsername(
-          "@" + usernamae.toLowerCase()
+           usernamae.toLowerCase()
         );
 
         if (!response.status) {

@@ -21,7 +21,7 @@ function DashBoard() {
     try {
       const data = await adminApi.getAnalytics();
 
-      console.log(data);
+      
 
       if (data) {
         setTotalPosts(data.post);

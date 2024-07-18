@@ -21,7 +21,7 @@ const adminSlice = createSlice({
             state.admin = action.payload;
             state.token = action.payload.token
             localStorage.setItem('admin',JSON.stringify(action.payload));
-             localStorage.setItem('tokan',JSON.stringify(action.payload.token));
+            localStorage.setItem('token',JSON.stringify(action.payload.token));
 
         },
         adminLogout:(state)=>{
