@@ -22,7 +22,7 @@ function Header() {
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
   const [notifications, setNotifications] = useState<number | null>(0);
-  const currentUser:User = useSelector((state: RootState) => state.user.user);
+  const currentUser:any = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   
