@@ -71,7 +71,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
 
       const formData = new FormData();
 
-      if (images && images.length > 0) {
+      if (images && images.length) {
         images.forEach((image) => {
           formData.append("images", image);
         });
