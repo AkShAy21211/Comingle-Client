@@ -9,7 +9,7 @@ import { CgSpinner } from "react-icons/cg";
 import { connectToSocket } from "../../Apis/socket";
 import { Tooltip } from "react-tooltip";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; 
+import "react-datepicker/dist/react-datepicker.css";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 
@@ -31,9 +31,7 @@ var settings = {
 
 type ValuePiece = Date | null;
 
-const CreatePostModal: React.FC<CreatePostProps> = ({
-  setOpenModal,
-}) => {
+const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
   const socket = connectToSocket();
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -69,6 +67,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
 
   const handleSubmit = async () => {
     try {
+      setPosting(true);
+
       const formData = new FormData();
 
       if (images && images.length > 0) {
@@ -81,7 +81,6 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
       if (schedule) {
         formData.append("schedule", schedule.toString());
       }
-      setPosting(true);
 
       const newPost = await userApi.createNewPost(formData);
 
@@ -98,7 +97,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full h-full flex items-center justify-center z-[80]">
+    <div className="fixed top-0 left-0 right-0 w-full h-full flex items-center justify-center z-[50]">
       <div
         className={`rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[350px] ${
           isDarkMode ? "backdrop-blur-lg" : "bg-white"
@@ -199,7 +198,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({
           <button
             onClick={handleSubmit}
             type="button"
-            className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700"
+            className="py-2 px-7 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700"
           >
             {posting ? (
               <CgSpinner size={20} className="animate-spin" />
