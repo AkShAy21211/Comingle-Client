@@ -2,8 +2,6 @@ import Avatar from "react-avatar";
 import { User } from "../../Interface/interface";
 import React from "react";
 import userApi from "../../Apis/user";
-import { RootState } from "../../Redux/rootReducer";
-import { useSelector } from "react-redux";
 
 type FriendsModalProp = {
   friends: User[] | [];
