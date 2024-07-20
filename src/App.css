@@ -33,5 +33,11 @@
     display: none;
     display: none;
 } 
-
-
+#remoteVideo{
+-webkit-transform: scaleX(-1);
+transform: scaleX(-1)
+}
+#localVideo{
+    -webkit-transform: scaleX(-1);
+        transform: scaleX(-1)
+}

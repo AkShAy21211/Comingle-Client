@@ -160,6 +160,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
             <video
               ref={remoteRef}
               autoPlay
+              id="remoteVideo"
               playsInline
               className="w-full h-full object-cover"
             ></video>
@@ -184,6 +185,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
             <video
               ref={videoRef}
               autoPlay
+          id="localVideo"
               playsInline
               className="absolute bottom-2 right-2 w-20 md:w-32 h-28 md:h-36 object-cover rounded-md border-2 border-white"
             ></video>
