@@ -13,27 +13,21 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
 import { connectToSocket } from "../../Apis/socket";
 
-
 function Header() {
   const socket = connectToSocket();
   const [profileMenue, setProfileMenu] = useState(false);
   const handleProfileToogle = () => setProfileMenu(!profileMenue);
   const [logoutMdal, setLogoutModal] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 992px)");
-  const [noti, setNotifications] = useState<number >(0);
-  const currentUser:any = useSelector((state: RootState) => state.user.user);
+  const [noti, setNotifications] = useState<number>(0);
+  const currentUser: any = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
-  
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
   async function getNotification() {
     try {
-      const notifications = await userApi.notifications();
-
-      if (notifications.length) {
-        setNotifications((prev)=>prev+1);
-      }
+      await userApi.notifications();
     } catch (error) {
       console.log(error);
     }
@@ -46,6 +40,7 @@ function Header() {
 
   const handleNotification = () => {
     getNotification();
+    setNotifications((noti) => noti + 1);
   };
 
   const handleUserBlocked = (data: { reason: string }) => {

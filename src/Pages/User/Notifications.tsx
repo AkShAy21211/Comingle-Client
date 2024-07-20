@@ -57,7 +57,7 @@ function Notifications() {
     <div
       className={` ${
         isDarkMode ? "bg-black text-white" : ""
-      } h-screen   col-span-full lg:col-span-3  mt-14  md:mt-16 px-5`}
+      }    col-span-full lg:col-span-3  mt-14  md:mt-16 px-5`}
     >
       {notifications.length > 0 &&
         notifications.map((noti) => (
