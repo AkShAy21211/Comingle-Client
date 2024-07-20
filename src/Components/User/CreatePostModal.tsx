@@ -66,8 +66,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
   };
 
   const handleSubmit = async () => {
-    try {
-      setPosting(true);
+
+     setPosting(true);
 
       const formData = new FormData();
 
@@ -81,10 +81,11 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
       if (schedule) {
         formData.append("schedule", schedule.toString());
       }
-
+    try {
+     
       const newPost = await userApi.createNewPost(formData);
 
-      if (newPost?.data.status) {
+      if (newPost?.data) {
         setOpenModal(false);
         setImages([]);
         setText("");
