@@ -130,9 +130,10 @@ function SingleChat({
 
     
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
+      console.log('dddddddddddddddddddddddd');
       
       dispatch(setUnreadMessage(message.chat));
-      setFetchAgain(!fetchAgain);
+   
     } else {
       setAllMessages((prevMessages) => {
         setFetchAgain(!fetchAgain);
@@ -176,7 +177,6 @@ function SingleChat({
     };
   }, [
     selectedChat.chatId,
-    // allMessages,
     handleNewMessage,
     handleNewMessageSent,
   ]);
