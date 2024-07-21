@@ -21,7 +21,7 @@ type ProfileProp = {
   isMyProfile: boolean;
   setfetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
   user: User | null;
-  fetchAgain:boolean
+  fetchAgain: boolean;
   setPosts: React.Dispatch<React.SetStateAction<PostsType[]>>;
   posts: PostsType[];
 };
@@ -72,9 +72,9 @@ function ProfileAndBg({
 
   const deletePost = async (postId: string) => {
     try {
-      console.log("fdsfdsfsf");
-
       await userApi.deletePost(postId);
+      setfetchAgain(true);
+      setSelectedPost(null)
     } catch (error) {
       console.error("Error deleting post:", error);
     }
@@ -100,8 +100,8 @@ function ProfileAndBg({
       if (user) {
         try {
           const response: User = await userApi.getFriends(userId);
-          const followers: User[]|[] = response.profile.followers || [];
-          const following: User[]|[] = response.profile.following || [];
+          const followers: User[] | [] = response.profile.followers || [];
+          const following: User[] | [] = response.profile.following || [];
           setFollowers(followers);
           setFollowing(following);
           return;
@@ -147,8 +147,8 @@ function ProfileAndBg({
       }
       await userApi.editPost(postId, editPostCption);
       setSelectedPost(null);
-      setSelectedTextPost(null)
-      setfetchAgain(true)
+      setSelectedTextPost(null);
+      setfetchAgain(true);
     } catch (error) {
       console.log(error);
     }
@@ -226,7 +226,11 @@ function ProfileAndBg({
     }
   };
 
-  const handleCommentSubmit = async (postId: string, userId: string,authorId:string) => {
+  const handleCommentSubmit = async (
+    postId: string,
+    userId: string,
+    authorId: string
+  ) => {
     if (!newComment.trim()) {
       setCommentError({ postId: postId, error: "Enter a comment" });
       return;
@@ -250,11 +254,11 @@ function ProfileAndBg({
             comments: [...prevPost.comments, commentResponse],
           };
         });
-        setSelectedTextPost(null)
-        setfetchAgain(!fetchAgain)
+        setSelectedTextPost(null);
+        setfetchAgain(!fetchAgain);
         setNewComment("");
         setReload(true);
-        setSelectedPost(null)
+        setSelectedPost(null);
       }
     } catch (error) {
       console.log(error);
@@ -334,7 +338,6 @@ function ProfileAndBg({
           alt=""
         />
       </div>
-      
       {isMyProfile && (
         <FaRegEdit
           size={40}
@@ -365,12 +368,16 @@ function ProfileAndBg({
             <MdVerified className="mt-1 text-blue-600" />
           )}
         </p>
-        <p className="  font-light text-center w-full mb-5 ">{user?.profile.bio}</p>
+        <p className="  font-light text-center w-full mb-5 ">
+          {user?.profile.bio}
+        </p>
         {!isMyProfile && (
           <div className="w-auto flex gap-1 justify-center mb-5 mt-3">
             {currentUserData?.profile?.following?.includes(user?._id as any) ? (
               <button
-                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
+                className={` px-2 py-2 rounded-lg ${
+                  isDarkMode ? "text-white" : "text-custom-blue "
+                } font-extrabold `}
                 // onClick={() => {
                 //   handleFollow(user?._id as string);
                 // }}
@@ -381,7 +388,9 @@ function ProfileAndBg({
                 user?._id as any
               ) ? (
               <button
-                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
+                className={` px-2 py-2 rounded-lg ${
+                  isDarkMode ? "text-white" : "text-custom-blue "
+                } font-extrabold `}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -390,7 +399,9 @@ function ProfileAndBg({
               </button>
             ) : (
               <button
-                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
+                className={` px-2 py-2 rounded-lg ${
+                  isDarkMode ? "text-white" : "text-custom-blue "
+                } font-extrabold `}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -402,7 +413,9 @@ function ProfileAndBg({
             <Link
               to="/chats"
               onClick={() => handleMessage(user?._id as string)}
-                className={` px-2 py-2 rounded-lg ${isDarkMode?"text-white":"text-custom-blue "} font-extrabold `}
+              className={` px-2 py-2 rounded-lg ${
+                isDarkMode ? "text-white" : "text-custom-blue "
+              } font-extrabold `}
             >
               Message
             </Link>
@@ -430,7 +443,6 @@ function ProfileAndBg({
           {posts?.length}
           <p>Posts</p>
         </div>
-        
       </div>
       <div className="tab-buttons flex justify-around w-full">
         <button
@@ -494,7 +506,11 @@ function ProfileAndBg({
                           </div>
                           <div className="flex flex-col items-center justify-center">
                             <FaRegComment />
-                            <p>{post.comments[0].comment?post.comments.length: 0}</p>
+                            <p>
+                              {post.comments[0].comment
+                                ? post.comments.length
+                                : 0}
+                            </p>
                           </div>
                         </div>
                       </li>

@@ -31,6 +31,7 @@ axiosInstance.interceptors.request.use(
     const token:string = JSON.parse(localStorage.getItem("token") as string);
 
     
+    
     if (config.data && config.data instanceof FormData) {
       config.headers["Content-Type"] = "multipart/form-data";
     } else {
