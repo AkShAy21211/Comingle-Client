@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
+import { Bounce, toast } from "react-toastify";
 
 type CreatePostProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -66,23 +67,33 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
   };
 
   const handleSubmit = async () => {
+    if (!images.length || !text) {
+      toast.error("Please select a file or type something", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    }
+    setPosting(true);
 
-     setPosting(true);
+    const formData = new FormData();
 
-      const formData = new FormData();
-
-      if (images && images.length) {
-        images.forEach((image) => {
-          formData.append("images", image);
-        });
-      }
-      formData.append("text", text);
-      formData.append("type", "post");
-      if (schedule) {
-        formData.append("schedule", schedule.toString());
-      }
+    if (images && images.length) {
+      images.forEach((image) => {
+        formData.append("images", image);
+      });
+    }
+    formData.append("text", text);
+    formData.append("type", "post");
+    if (schedule) {
+      formData.append("schedule", schedule.toString());
+    }
     try {
-     
       const newPost = await userApi.createNewPost(formData);
 
       if (newPost?.data) {
