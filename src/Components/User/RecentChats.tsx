@@ -143,7 +143,6 @@ function RecentChats({
       socket?.on("new:chat", handleNewChat);
     };
   }, []);
-  console.log("unread messagfes", unReadMessages);
 
   return (
     <Fragment>
@@ -286,9 +285,9 @@ function RecentChats({
           <div
             className={` ${
               isDarMode ? "bg-black border-y text-white" : ""
-            } flex justify-between gap-5  cursor-pointer p-5  `}
+            } flex justify-between gap-5  cursor-pointer p-5  mt-10 `}
           >
-            <div className="flex gap-1 w-full h-full   justify-center items-center">
+            <div className="flex gap-1 w-full h-full  justify-center items-center">
               <RiChatOffFill size={20} />{" "}
               <p className="m-5">You dont have any chats</p>
             </div>

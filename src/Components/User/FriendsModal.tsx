@@ -215,10 +215,10 @@ function FriendsModal({
                         type === "follower" &&
                         currentUser?._id === friend._id && (
                           <button
-                            onClick={() => unfollowUser(friend._id)}
+                            // onClick={() => unfollowUser(friend._id)}
                             className=" rounded-lg px-2 text-custom-blue text-sm font-bold"
                           >
-                            Unfollow
+                            following
                           </button>
                         )}
 

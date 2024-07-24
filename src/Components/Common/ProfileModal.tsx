@@ -6,6 +6,7 @@ import { updateUser } from "../../Redux/Slice/User/userSlice";
 import { CgSpinner } from "react-icons/cg";
 import ReactCrop, { Crop, PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { Bounce, toast } from "react-toastify";
 
 type ProfileModalProp = {
   showDpModal: boolean;
@@ -52,8 +53,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
       if (file) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => {
-        };
+        reader.onload = () => {};
       }
     }
   }, [showCoverModal, showDpModal, cover, DP]);
@@ -69,7 +69,6 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
       !completedCrop.width ||
       !completedCrop.height
     ) {
-      console.log("Image not cropped correctly");
       return;
     }
 
@@ -135,6 +134,19 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   /////////// HANDLE FILE UPLOAD //////////////////////////////
 
   const handleSubmit = async (type: string) => {
+    if (!cover || !DP) {
+      toast.error("Please select an image", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+
+      return;
+    }
     const formData = new FormData();
     setIsCroping(false);
 

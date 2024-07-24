@@ -74,7 +74,7 @@ function ProfileAndBg({
     try {
       await userApi.deletePost(postId);
       setfetchAgain(true);
-      setSelectedPost(null)
+      setSelectedPost(null);
     } catch (error) {
       console.error("Error deleting post:", error);
     }
@@ -129,6 +129,7 @@ function ProfileAndBg({
 
   const handleFollow = async (id: string) => {
     await userApi.followRequest(id);
+    fetchCurrentUserProfile()
   };
 
   const handleMessage = async (participantId: string) => {
@@ -148,7 +149,7 @@ function ProfileAndBg({
       await userApi.editPost(postId, editPostCption);
       setSelectedPost(null);
       setSelectedTextPost(null);
-      setfetchAgain(true);
+      setfetchAgain(!fetchAgain);
     } catch (error) {
       console.log(error);
     }

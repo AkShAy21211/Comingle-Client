@@ -48,7 +48,6 @@ function SingleChat({
   setFetchAgain,
   setCallIndication,
   peer,
-  participants,
   setIsVedioChat,
   isVedioChat,
   remoteId,
@@ -130,7 +129,6 @@ function SingleChat({
 
     
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
-      console.log('dddddddddddddddddddddddd');
       
       dispatch(setUnreadMessage(message.chat));
    
@@ -437,7 +435,7 @@ function SingleChat({
     message: string;
   }) => {
     try {
-      setIsVedioChat(true);
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
@@ -476,7 +474,7 @@ function SingleChat({
   const rejectCall = () => {
     if (currentCall) {
       currentCall.close();
-      socket?.emit("call:rejcted", { room: selectedChat.chatId });
+      socket?.emit("call:rejcted", { room: selectedChat.chatId ,remoteId});
     }
     endTune();
     setCallIndication({ message: "", room: "" });
@@ -596,11 +594,12 @@ function SingleChat({
               <FaCircle
                 size={10}
                 className={`mt-4 ${
-                  participants.some((id) => id !== currentUser._id)
+                  remoteId
                     ? "text-green-600"
                     : "text-gray-400"
                 }`}
               />
+              <span className=" text-white font-light mt-2">{remoteId?"online":"offline"}</span>
               <FaVideo
                 size={25}
                 onClick={handleStartVedioCall}

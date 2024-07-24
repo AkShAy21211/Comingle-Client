@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@react-hook/media-query";
 import { FaRegBell } from "react-icons/fa6";
 import LogoutModal from "../Common/LogoutModal";
@@ -22,6 +22,7 @@ function Header() {
   const [noti, setNotifications] = useState<number>(0);
   const currentUser: any = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const navigate = useNavigate();
 
   //////////////////////  GET ALL NOTIFICATIONS ///////////////////////
 
@@ -35,12 +36,11 @@ function Header() {
   useEffect(() => {
     getNotification();
     setNotifications(0);
-    
   }, []);
 
   const handleNotification = () => {
     getNotification();
-    setNotifications((noti) => noti + 1);
+    setNotifications((noti) => noti+1);
   };
 
   const handleUserBlocked = (data: { reason: string }) => {
@@ -60,16 +60,21 @@ function Header() {
     }, 3000);
   };
 
+  const handleCall = () => {
+    navigate("/chats")
+  };
   useEffect(() => {
     socket.on("user_blocked", handleUserBlocked);
 
     socket.on("notification", handleNotification);
+    socket.on("call", handleCall);
 
     return () => {
       socket.off("user_blocked", handleUserBlocked);
       socket.off("notification", handleNotification);
+      socket.off("call", handleCall);
     };
-  }, [handleUserBlocked, handleNotification]);
+  }, [handleUserBlocked, handleNotification,handleCall]);
 
   return (
     <>
@@ -95,7 +100,7 @@ function Header() {
                 to="/notifications"
                 className="relative rounded-fullp-1  text-gray-400 hover:text-white focus:outline-none  focus:ring-offset-2 focus:ring-offset-gray-800"
               >
-                {noti && noti > 0 ? (
+                {noti ? (
                   <span className="absolute inset-x-2  flex justify-center items-center -inset-2 w-5 h-5 rounded-full bg-yellow-500 text-white text-sm">
                     {noti ? noti : null}
                   </span>
