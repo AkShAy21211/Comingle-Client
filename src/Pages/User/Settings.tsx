@@ -32,7 +32,7 @@ const EmailVerificationModal = ({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordErrror] = useState("");
-  const token = useSelector((state:RootState)=>state.user.token)
+  const token = useSelector((state: RootState) => state.user.token);
 
   if (!isopen) return;
 
@@ -88,15 +88,15 @@ const EmailVerificationModal = ({
       setPasswordErrror("Enter new password");
       return;
     }
-  
+
     if (password.trim() !== confirmPassword.trim()) {
       setPasswordErrror("Password should match");
       return;
     }
 
     try {
-      await userApi.updatePassword(password.trim(),token);
-      handleReset()
+      await userApi.updatePassword(password.trim(), token);
+      handleReset();
     } catch (error) {
       console.log(error);
     }
@@ -273,9 +273,18 @@ function Settings() {
               type="checkbox"
               checked={isDarkMode}
               onChange={() => dispatch(toggleMode())}
-              className="sr-only peer "
+              className="sr-only peer  "
             />
-            <div className="relative w-11   h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div
+              className="relative  w-11  
+               
+             h-6 bg-gray-200 peer-focus:outline-none 
+              rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full
+               rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white 
+               after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white
+                after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5
+                 after:transition-all peer-checked:bg-blue-600"
+            ></div>
           </label>
         </li>
 

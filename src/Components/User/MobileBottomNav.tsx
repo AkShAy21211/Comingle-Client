@@ -1,11 +1,11 @@
 import { PiSquaresFour } from "react-icons/pi";
 import { BsChatLeftText } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import { MdOutlineExplore } from "react-icons/md";
-import {  useState } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CreatePostModal from "./CreatePostModal";
@@ -15,6 +15,14 @@ function MobileBottomNav() {
   const shoPostButton = ["/"];
   const showNav = ["/chats"];
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleShowmodal = () => {
+    if (location.pathname !== shoPostButton[0]) {
+      navigate("/");
+    }
+    setOpenModal(true);
+  };
 
   return (
     <>
@@ -46,10 +54,10 @@ function MobileBottomNav() {
 
             <div className="flex items-center justify-center">
               <button
-                disabled={!shoPostButton.includes(location.pathname)}
+                // disabled={!shoPostButton.includes(location.pathname)}
                 data-tooltip-target="tooltip-new"
                 type="button"
-                onClick={() => setOpenModal(true)}
+                onClick={handleShowmodal}
                 className={`inline-flex items-center justify-center ${
                   isDarkMode ? "bg-custom-blue" : ""
                 } w-10 h-10 font-mediumrounded-full group `}

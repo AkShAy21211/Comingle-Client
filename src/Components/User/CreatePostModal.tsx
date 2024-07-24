@@ -51,10 +51,30 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
+
+  
       const selectedImages = Array.from(event.target.files);
+
+      selectedImages.map((file=> {
+
+        if(file.type.startsWith('video') &&  !file.type.endsWith('mp4') ){
+
+        toast.error("Unsuported file format (mov) select video or image", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+        }
+      }))
       setImages([...images, ...selectedImages]);
     }
+
   };
+ 
 
   const handleDateChange = (date: Date | null) => {
     const currentDate = new Date();
@@ -62,12 +82,14 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
       setDateError("Invalid date");
     } else {
       onChange(date);
-      setDateError(null); // Clear any previous error
+      setDateError(null); 
     }
   };
 
   const handleSubmit = async () => {
-    if (!images.length || !text) {
+
+    if (!images.length && !text) {
+
       toast.error("Please select a file or type something", {
         position: "bottom-center",
         autoClose: 3000,
@@ -148,7 +170,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
                     <video
                       className="object-cover h-60 w-full md:w-full md:h-72"
                       src={URL.createObjectURL(file)}
-                      controls
+                      controls autoPlay
                     />
                   </div>
                 )
@@ -209,7 +231,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
         <div className="flex justify-end items-center gap-x-2 py-3 px-4">
           <button
             onClick={handleSubmit}
-            type="button"
+            type="submit"
             className="py-2 px-7 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700"
           >
             {posting ? (
