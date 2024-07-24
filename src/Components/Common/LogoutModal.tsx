@@ -25,7 +25,7 @@ function LogoutModal({ setLogoutModal }: LogoutModalPro) {
     }
   };
   return (
-    <>
+   
       <div
         id="popup-modal"
         className="fixed  inset-0 flex items-center justify-center z-50"
@@ -94,7 +94,7 @@ function LogoutModal({ setLogoutModal }: LogoutModalPro) {
           </div>
         </div>
       </div>
-    </>
+    
   );
 }
 

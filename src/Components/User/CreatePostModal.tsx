@@ -51,30 +51,29 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-
-  
       const selectedImages = Array.from(event.target.files);
 
-      selectedImages.map((file=> {
-
-        if(file.type.startsWith('video') &&  !file.type.endsWith('mp4') ){
-
-        toast.error("Unsuported file format (mov) select video or image", {
-        position: "bottom-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+      selectedImages.map((file) => {
+        if (file.type.startsWith("video") && !file.type.endsWith("mp4")) {
+          toast.error(
+            "Unsuported file format (mov) select video(mp4) or image",
+            {
+              position: "bottom-center",
+              autoClose: 3000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              progress: undefined,
+              theme: "light",
+              transition: Bounce,
+            }
+          );
+          return;
+        } else {
+          setImages([...images, ...selectedImages]);
         }
-      }))
-      setImages([...images, ...selectedImages]);
+      });
     }
-
   };
- 
 
   const handleDateChange = (date: Date | null) => {
     const currentDate = new Date();
@@ -82,14 +81,12 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
       setDateError("Invalid date");
     } else {
       onChange(date);
-      setDateError(null); 
+      setDateError(null);
     }
   };
 
   const handleSubmit = async () => {
-
     if (!images.length && !text) {
-
       toast.error("Please select a file or type something", {
         position: "bottom-center",
         autoClose: 3000,
@@ -170,7 +167,8 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
                     <video
                       className="object-cover h-60 w-full md:w-full md:h-72"
                       src={URL.createObjectURL(file)}
-                      controls autoPlay
+                      controls
+                      autoPlay
                     />
                   </div>
                 )
