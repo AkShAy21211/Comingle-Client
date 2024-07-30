@@ -28,7 +28,7 @@ function ProfileCard() {
     fetchUserProfile();
   }, [fetchAgain]);
   return (
-    <div className=" w-full h-auto flex flex-col items-center mt-36  ">
+    <div className=" w-full h-auto flex flex-col items-center mt-20  ">
       <div
         className={` px-10 py-5 w-auto h-auto      flex flex-col items-center  ${
           isDarkMode ? "border border-gray-900" : " border border-gray-300 shadow-gray-400"
