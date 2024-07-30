@@ -134,7 +134,7 @@ const ProfileModal: React.FC<ProfileModalProp> = ({
   /////////// HANDLE FILE UPLOAD //////////////////////////////
 
   const handleSubmit = async (type: string) => {
-    if (!cover || !DP) {
+    if (!cover && !DP) {
       toast.error("Please select an image", {
         position: "bottom-center",
         autoClose: 3000,
