@@ -151,7 +151,7 @@ function RecentChats({
           isDarMode ? "bg-black" : "bg-white"
         }  ${
           selectedChat.chatId ? "hidden lg:block" : ""
-        } lg:col-span-1 sticky top-0  shadow-lg     h-screen `}
+        } lg:col-span-1 sticky top-0  shadow-lg     h-screen  overflow-y-auto overflow-auto l`}
       >
         <div className="mt-20 p-3 flex-col">
           <button onClick={() => navigate(-1)}>
