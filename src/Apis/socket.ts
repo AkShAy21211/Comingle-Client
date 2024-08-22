@@ -14,7 +14,6 @@ export const connectToSocket = () => {
     return socket;
   }
 
-  console.log("Connecting to:", backendUrl);
   socket = io(backendUrl, {
   });
 
