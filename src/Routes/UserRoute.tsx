@@ -22,6 +22,7 @@ import SettingsPage from "../Pages/User/Settings";
 function UserRoute() {
   return (
     <Routes>
+      
       <Route
         path="/register"
         element={
