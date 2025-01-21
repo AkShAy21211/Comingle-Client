@@ -16,6 +16,13 @@ function App() {
         />
         <Route path="/admin/*" element={<AdminRoute />} />
       </Routes>
+
+      {/* make not found route below */}
+
+      
+
+
+
     </Router>
   );
 }

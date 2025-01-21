@@ -70,7 +70,7 @@ function LoginForm() {
       console.log(error);
     }
   };
-  
+
   return (
     <div className="w-full flex flex-col justify-center items-center ">
       <div className="space-y-2 md:space-y-2 w-full flex flex-col items-center">
@@ -140,13 +140,7 @@ function LoginForm() {
           >
             Signin
           </button>
-          <button
-            onClick={handleLoginGuest}
-            type="submit"
-            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none bg-black lg:bg-custom-teal focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
-          >
-            Signin as Guest
-          </button>
+
           <p className="text-sm pt-0 font-light text-center text-white lg:text-black ">
             <Link
               to="/forgot-password"
@@ -165,6 +159,13 @@ function LoginForm() {
             </Link>
           </p>
         </form>
+        <button
+          onClick={handleLoginGuest}
+          type="submit"
+          className="w-auto text-white lg:text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none  focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+        >
+          Signin as Guest
+        </button>
       </div>
       <div className="flex justify-center items-center mb-4 text-white lg:text-black">
         <hr className="flex-1 border-1 lg:border-black h-0" />

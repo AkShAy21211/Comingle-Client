@@ -3,13 +3,19 @@ import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
+console.log(import.meta.env);
+
 const userApi = {
   guestLogin: async () => {
     try {
+      console.log("called");
+      
       const signinResponse = await axiosInstance.post(userEnpoints.SIGNIN, {
         email: "guest@gmail.com",
         password: "Guest*#123",
       });
+
+
       if (signinResponse.data.status) {
         toast.success(signinResponse.data.message, {
           position: "bottom-center",
@@ -72,7 +78,7 @@ const userApi = {
   checkUsername: async (username: string) => {
     try {
       const checkUsernameReponse = await axiosInstance.get(
-        userEnpoints.CHECK_USERNAME + `?username=${"@"+username}`
+        userEnpoints.CHECK_USERNAME + `?username=${"@" + username}`
       );
 
       return checkUsernameReponse.data;
@@ -341,12 +347,8 @@ const userApi = {
   },
 
   googleLogin: async () => {
-    try 
-      
-    {
-
-      window.open(import.meta.env.VITE_BACKEND_URI+userEnpoints.GOOGLE_LOGIN)
-
+    try {
+      window.open(import.meta.env.VITE_BACKEND_URI + userEnpoints.GOOGLE_LOGIN);
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message, {

@@ -7,27 +7,13 @@ const backendUrl =
 
 let socket: Socket | null = null;
 
-
 export const connectToSocket = () => {
   if (socket) {
     console.log("Already connected to WebSocket server");
     return socket;
   }
 
-  socket = io(backendUrl, {
-  });
-
-  socket.on("connect", () => {
-    console.log("Connected to WebSocket server");
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Disconnected from WebSocket server");
-  });
-
-  socket.on("connect_error", (err) => {
-    console.error("Connection error:", err);
-  });
+  socket = io(backendUrl);
 
   return socket;
 };
