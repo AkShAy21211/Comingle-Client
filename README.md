@@ -1,30 +1,50 @@
-# React + TypeScript + Vite
+# 📱 Commingle - A Social Media Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Commingle is a modern social media platform designed for seamless user interaction, real-time communication, and engaging content sharing. Built with the MERN stack and Socket.IO, it provides a dynamic user experience with powerful features.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔐 **User Authentication** – Secure signup, login, and account management.
+- 📝 **Post Creation & Management** – Users can create, edit, and delete posts.
+- ❤️ **Likes & Comments** – Engage with posts through likes and comments.
+- 📩 **Real-time Chat** – Instant messaging with WebSockets (Socket.IO).
+- 👥 **Friend Requests & Connections** – Connect with other users.
+- 🔔 **Notifications System** – Get notified about activities.
+- 🖼 **Media Uploads** – Share images, videos, and other media files.
+- 🛠 **Admin Panel** – Manage users, posts, and reports.
+- 🔎 **Search & Explore** – Find users and trending posts.
+- 🌙 **Dark Mode Support** – User-friendly dark mode UI.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Frontend:** React.js, TailwindCSS
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Real-time Communication:** Socket.IO
+- **Authentication:** JWT (JSON Web Tokens)
+- **Storage:** Cloudinary 
+- **Deployment:** Railway, Vercel
 
-- Configure the top-level `parserOptions` property like this:
+## ScreenShots
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+![Screenshot 2025-02-08 160254](https://github.com/user-attachments/assets/7afd74b7-5164-4450-ba86-e01e087578d7)
+![Screenshot 2025-02-08 160220](https://github.com/user-attachments/assets/92594e60-826c-40cd-a0f0-1926414da145)
+![Screenshot 2025-02-08 160210](https://github.com/user-attachments/assets/ac352d51-2b67-4691-a185-11821f4ff4bd)
+![Screenshot 2025-02-08 160111](https://github.com/user-attachments/assets/1b3c0f2e-a092-4f0d-8f30-79e4380acd92)
+![Screenshot 2025-02-08 160050](https://github.com/user-attachments/assets/e6f03b99-8ca6-4a0e-b06e-447c3f9f97ff)
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+
+## 🤝 Contributing
+We welcome contributions! To contribute:
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a pull request.
+
+## 📜 License
+This project is licensed under the MIT License.
+
+## 📬 Contact
+For any inquiries or suggestions, reach out at [your-email@example.com](mailto:your-email@example.com).
