@@ -9,6 +9,8 @@ type UserAvatarProp = {
   isRight: boolean;
   friends?: any[] | [];
   onlineUsers?: string[];
+  isLoading?: boolean;
+  onFollowSuccess?: (userId: string) => void;
 };
 
 function UserAvatar({
@@ -16,10 +18,16 @@ function UserAvatar({
   isRight,
   friends,
   onlineUsers,
+  isLoading = false,
+  onFollowSuccess,
 }: UserAvatarProp) {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const handleFollow = async (id: string) => {
-    await userApi.followRequest(id);
+    const response = await userApi.followRequest(id);
+
+    if (response?.status) {
+      onFollowSuccess?.(id);
+    }
   };
   return (
     <>
@@ -39,15 +47,23 @@ function UserAvatar({
           {isRight ? "See who is active right now" : "Fresh people worth connecting with"}
         </p>
       </div>
-      {!friends?.length && !isRight && (
+      {isLoading && !isRight && (
         <div className="rounded-[22px] border border-slate-100 bg-slate-50/80 p-4">
-          <p className="text-sm font-medium text-slate-700">No suggestions yet</p>
+          <p className="text-sm font-medium text-slate-700">Finding people for you</p>
           <p className="mt-1 text-sm text-slate-500">
-            As you connect with more people, new recommendations will appear here.
+            We are preparing fresh profile suggestions.
           </p>
         </div>
       )}
-      {!friends?.length && isRight && (
+      {!isLoading && !friends?.length && !isRight && (
+        <div className="rounded-[22px] border border-slate-100 bg-slate-50/80 p-4">
+          <p className="text-sm font-medium text-slate-700">No suggestions yet</p>
+          <p className="mt-1 text-sm text-slate-500">
+            We will show new people here as more accounts become available for you to follow.
+          </p>
+        </div>
+      )}
+      {!isLoading && !friends?.length && isRight && (
         <div className="rounded-[22px] border border-white/10 bg-white/5 p-4">
           <p className="text-sm font-medium">No active friends right now</p>
           <p className="mt-1 text-sm app-muted">
