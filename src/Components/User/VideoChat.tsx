@@ -154,7 +154,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
               autoPlay
               id="remoteVideo"
               playsInline
-              className="h-full w-full object-cover"
+              className="h-full w-full bg-slate-950 object-contain"
             ></video>
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-slate-900/80">
@@ -180,7 +180,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
               muted
               id="localVideo"
               playsInline
-              className="absolute bottom-3 right-3 h-24 w-20 rounded-2xl border-2 border-white/80 object-cover shadow-lg sm:h-32 sm:w-24 lg:bottom-5 lg:right-5 lg:h-40 lg:w-32"
+              className="absolute bottom-3 right-3 h-24 w-20 rounded-2xl border-2 border-white/80 bg-slate-950 object-contain shadow-lg sm:h-32 sm:w-24 lg:bottom-5 lg:right-5 lg:h-40 lg:w-32"
             ></video>
           )}
         </div>
