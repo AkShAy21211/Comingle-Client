@@ -75,19 +75,29 @@ function SingleChat({
   const [isRecording, setIsRecording] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [callingUser, setCallingUser] = useState<{
+    userId: string;
+    message: string;
+  }>();
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
+  const [incomingPeerId, setIncomingPeerId] = useState("");
+  const [pendingAccept, setPendingAccept] = useState(false);
 
   const fetchMessages = async () => {
     try {
       if (!selectedChat.chatId) return;
 
       setLoading(true);
-      const response = await userApi.fetchAllMessages(selectedChat?.chatId);
+      const response = await userApi.fetchAllMessages(selectedChat.chatId);
 
       setAllMessages(response.messages);
       setLoading(false);
 
       socket?.emit("chat:start", {
-        room: selectedChat?.chatId,
+        room: selectedChat.chatId,
         peerId: currentUser._id,
       });
     } catch (error) {
@@ -101,19 +111,17 @@ function SingleChat({
   }, [selectedChat?.chatId]);
 
   useEffect(() => {
-    socket?.on("typeing", () => {
-      setIstyping(true);
-    });
+    const handleTyping = () => setIstyping(true);
+    const handleStopTyping = () => setIstyping(false);
 
-    socket?.on("stopTypeing", () => {
-      setIstyping(false);
-    });
+    socket?.on("typeing", handleTyping);
+    socket?.on("stopTypeing", handleStopTyping);
 
     return () => {
-      socket?.off("typeing");
-      socket?.off("stopTypeing");
+      socket?.off("typeing", handleTyping);
+      socket?.off("stopTypeing", handleStopTyping);
     };
-  }, [typing]);
+  }, []);
 
   const handleNewMessage = ({
     message,
@@ -162,7 +170,7 @@ function SingleChat({
       socket.off("message received", handleNewMessage);
       socket.off("new message sent", handleNewMessageSent);
     };
-  }, [selectedChat.chatId, handleNewMessage, handleNewMessageSent]);
+  }, [selectedChat.chatId, fetchAgain]);
 
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -193,6 +201,7 @@ function SingleChat({
         socket?.emit("stopTypeing", selectedChat.chatId);
         setLoading(true);
         const formData = new FormData();
+
         if (selectedFiles.length) {
           selectedFiles.forEach((file) => {
             formData.append("files", file);
@@ -235,39 +244,45 @@ function SingleChat({
 
     if (fileType === "image") {
       return (
-        <div key={i} className="h-20 w-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl">
           <img
             src={URL.createObjectURL(file)}
-            className="h-full w-full object-cover border-4 border-custom-blue/90"
+            className="h-full w-full border-2 border-custom-blue/80 object-cover"
             alt=""
           />
         </div>
       );
-    } else if (fileType === "video") {
+    }
+
+    if (fileType === "video") {
       return (
-        <div key={i} className="h-20 w-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl">
           <video
             src={URL.createObjectURL(file)}
             muted
-            className="h-full w-full object-cover border-4 border-custom-blue/90"
+            className="h-full w-full border-2 border-custom-blue/80 object-cover"
           />
         </div>
       );
-    } else if (fileType === "audio") {
+    }
+
+    if (fileType === "audio") {
       return (
         <audio
           key={i}
           src={URL.createObjectURL(file)}
-          className="h-10 w-52 rounded-full border-4 border-custom-blue/90 object-cover"
+          className="h-10 w-52 rounded-full border-2 border-custom-blue/80 object-cover"
           controls
         />
       );
-    } else if (extension === "pdf") {
+    }
+
+    if (extension === "pdf") {
       return (
-        <div key={i} className="h-20 w-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl">
           <iframe
             src={URL.createObjectURL(file)}
-            className="h-full w-full border-4 border-custom-blue/90"
+            className="h-full w-full border-2 border-custom-blue/80"
             title="PDF Preview"
           />
         </div>
@@ -277,7 +292,7 @@ function SingleChat({
     return (
       <div
         key={i}
-        className="flex h-20 w-20 flex-shrink-0 items-center justify-center border-4 border-custom-blue/90"
+        className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-2xl border-2 border-custom-blue/80"
       >
         <span className="text-xs">Unsupported file</span>
       </div>
@@ -285,9 +300,7 @@ function SingleChat({
   };
 
   const handleOpenFiles = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,7 +318,7 @@ function SingleChat({
   const AudioRecorder = () => {
     const startRecording = async () => {
       try {
-        let song = new Audio(audioStartBg);
+        const song = new Audio(audioStartBg);
         song.play();
         setIsRecording(true);
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -333,7 +346,7 @@ function SingleChat({
     };
 
     const stopRecording = () => {
-      let song = new Audio(audioEnd);
+      const song = new Audio(audioEnd);
       song.play();
       setIsRecording(false);
       if (
@@ -364,19 +377,22 @@ function SingleChat({
     );
   };
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [callingUser, setCallingUser] = useState<{
-    userId: string;
-    message: string;
-  }>();
-
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
-  const [incomingPeerId, setIncomingPeerId] = useState("");
-
   const stopMediaTracks = (stream: MediaStream | null) => {
     stream?.getTracks().forEach((track) => track.stop());
+  };
+
+  const answerIncomingCall = (call: MediaConnection, stream: MediaStream) => {
+    call.answer(stream);
+    call.on("stream", (peerStream) => {
+      dispatch(addPeer({ userId: call.peer, stream: peerStream }));
+      setRemoteStream(peerStream);
+    });
+    setCallIndication({ message: "", room: "", from: "" });
+    setIsVedioChat(true);
+    setIsModalOpen(false);
+    setIncommingCall(false);
+    setPendingAccept(false);
+    endTune();
   };
 
   useEffect(() => {
@@ -394,17 +410,25 @@ function SingleChat({
     };
   }, [peer]);
 
+  useEffect(() => {
+    if (pendingAccept && currentCall && localStream) {
+      answerIncomingCall(currentCall, localStream);
+    }
+  }, [pendingAccept, currentCall, localStream]);
+
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
 
+    let stream: MediaStream | null = null;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
       setLocalStream(stream);
 
-      if (!peer) return;
+      if (!peer || !receiver?._id) return;
 
       socket.emit("calluser", {
         room: selectedChat.chatId,
@@ -412,7 +436,12 @@ function SingleChat({
         to: receiver._id,
         name: currentUser.name,
       });
-      const call = peer.call(remoteId, stream);
+
+      const call = peer.call(receiver._id, stream);
+      if (!call) {
+        throw new Error("Unable to start the call");
+      }
+
       setCurrentCall(call);
 
       call.on("stream", (peerStream) => {
@@ -420,7 +449,19 @@ function SingleChat({
         setRemoteStream(peerStream);
       });
     } catch (error) {
-      alert(error);
+      setIsVedioChat(false);
+      stopMediaTracks(stream);
+      setLocalStream(null);
+      console.log(error);
+      toast.error("Unable to start the video call", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -437,29 +478,32 @@ function SingleChat({
         audio: true,
       });
       setLocalStream(stream);
-      setCallingUser({ userId: from, message: message });
+      setCallingUser({ userId: from, message });
       setIsModalOpen(true);
       setIncommingCall(true);
+      setPendingAccept(false);
       playTune();
     } catch (error) {
       console.log(error);
-      alert(error);
+      toast.error("Camera or microphone access was denied", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
   const acceptCall = () => {
     if (currentCall && localStream) {
-      currentCall.answer(localStream);
-      currentCall.on("stream", (peerStream) => {
-        dispatch(addPeer({ userId: currentCall.peer, stream: peerStream }));
-        setRemoteStream(peerStream);
-      });
-      setCallIndication({ message: "", room: "", from: "" });
-      setIsVedioChat(true);
-      setIsModalOpen(false);
-      setIncommingCall(false);
-      endTune();
+      answerIncomingCall(currentCall, localStream);
+      return;
     }
+
+    setPendingAccept(true);
   };
 
   const rejectCall = () => {
@@ -483,6 +527,7 @@ function SingleChat({
     setRemoteStream(null);
     setCurrentCall(null);
     setIncomingPeerId("");
+    setPendingAccept(false);
   };
 
   const endCall = () => {
@@ -497,6 +542,7 @@ function SingleChat({
     setIncommingCall(false);
     setCurrentCall(null);
     setIncomingPeerId("");
+    setPendingAccept(false);
   };
 
   const handleCallRejection = (data: { message: string }) => {
@@ -507,6 +553,8 @@ function SingleChat({
     setLocalStream(null);
     setRemoteStream(null);
     setCurrentCall(null);
+    setIncomingPeerId("");
+    setPendingAccept(false);
     toast.info(data.message, {
       position: "bottom-center",
       autoClose: 3000,
@@ -529,6 +577,8 @@ function SingleChat({
     endTune();
     currentCall?.close();
     setCurrentCall(null);
+    setIncomingPeerId("");
+    setPendingAccept(false);
     toast.info(data.message, {
       position: "bottom-center",
       autoClose: 3000,
@@ -566,7 +616,7 @@ function SingleChat({
       socket?.off("call:ended", handleCallEnd);
       socket?.off("another:call", handleMultipleCall);
     };
-  }, [handleIncommingCall, handleCallEnd]);
+  }, [currentCall, inCommingCall, localStream, remoteStream]);
 
   const handleExistChat = () => {
     socket?.emit("exit:chat", {
@@ -661,6 +711,7 @@ function SingleChat({
               </button>
             </div>
           </div>
+
           <div
             id="messages"
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto"
@@ -676,57 +727,75 @@ function SingleChat({
             </div>
           )}
 
-          <div className={`relative flex w-full items-center justify-center gap-2 border-t px-3 py-3 sm:px-5 ${
-            isDarMode ? "border-white/5 bg-slate-950/70" : "border-gray-100 bg-white/80"
-          }`}>
-            <input
-              type="text"
-              value={newMessage}
-              onChange={handleMessageChange}
-              placeholder="Type a message..."
-              className={`h-12 flex-1 rounded-full border py-2 px-4 text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-custom-blue/30 sm:px-5 ${
-                isDarMode
-                  ? "border-white/5 bg-slate-800 text-white placeholder-slate-400"
-                  : "border-gray-200 bg-gray-50 text-slate-800 placeholder-slate-400"
-              }`}
-            />
-            <button
-              className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4"
-              onClick={() => setEmojiPickerVisible((prev) => !prev)}
-            >
-              🙂
-            </button>
-            {AudioRecorder()}
-            {emojiPickerVisible && (
-              <div className="absolute bottom-14 right-2 z-10 sm:right-24">
-                <Picker
-                  theme={isDarMode ? "dark" : "light"}
-                  onEmojiSelect={handleEmoji}
+          <div
+            className={`border-t px-3 py-3 sm:px-5 ${
+              isDarMode
+                ? "border-white/5 bg-slate-950/70"
+                : "border-gray-100 bg-white/80"
+            }`}
+          >
+            <div className="relative flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={handleMessageChange}
+                  placeholder="Type a message..."
+                  className={`h-12 w-full rounded-2xl border py-2 pl-4 pr-12 text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-custom-blue/30 sm:rounded-full sm:pl-5 sm:pr-14 ${
+                    isDarMode
+                      ? "border-white/5 bg-slate-800 text-white placeholder-slate-400"
+                      : "border-gray-200 bg-gray-50 text-slate-800 placeholder-slate-400"
+                  }`}
                 />
+                <button
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-xl leading-none text-slate-500 transition hover:text-custom-blue focus:outline-none"
+                  onClick={() => setEmojiPickerVisible((prev) => !prev)}
+                >
+                  🙂
+                </button>
               </div>
-            )}
-            <button className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4">
-              <CgAttachment
-                onClick={handleOpenFiles}
-                className="text-blue-600"
-                size={20}
-              />
-            </button>
 
-            <button
-              onClick={handleSendMessage}
-              className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4"
-            >
-              {loading ? (
-                <PiSpinnerBold
-                  size={20}
-                  className="animate-spin text-blue-600"
-                />
-              ) : (
-                <IoSend className="text-blue-600" size={20} />
+              <div className="flex items-center justify-end gap-2">
+                <div
+                  className={`rounded-full p-2 ${
+                    isDarMode ? "bg-white/5" : "bg-slate-100"
+                  }`}
+                >
+                  {AudioRecorder()}
+                </div>
+
+                <button
+                  className={`rounded-full p-2.5 transition ${
+                    isDarMode ? "bg-white/5" : "bg-slate-100"
+                  }`}
+                  onClick={handleOpenFiles}
+                >
+                  <CgAttachment className="text-blue-600" size={20} />
+                </button>
+
+                <button
+                  onClick={handleSendMessage}
+                  className="rounded-full bg-custom-blue p-2.5 text-white shadow-sm transition hover:bg-custom-blue/90 focus:outline-none"
+                >
+                  {loading ? (
+                    <PiSpinnerBold size={20} className="animate-spin" />
+                  ) : (
+                    <IoSend size={20} />
+                  )}
+                </button>
+              </div>
+
+              {emojiPickerVisible && (
+                <div className="absolute bottom-[calc(100%+0.75rem)] right-0 z-10">
+                  <Picker
+                    theme={isDarMode ? "dark" : "light"}
+                    onEmojiSelect={handleEmoji}
+                  />
+                </div>
               )}
-            </button>
+            </div>
           </div>
+
           <input
             type="file"
             multiple

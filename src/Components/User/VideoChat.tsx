@@ -1,14 +1,14 @@
 import Peer from "peerjs";
 import React, { useEffect, useRef, useState } from "react";
-import { BsMicFill } from "react-icons/bs";
+import { BsMicFill, BsFillCameraVideoFill } from "react-icons/bs";
 import { FaMicrophoneSlash } from "react-icons/fa";
 import { MdOutlineCallEnd } from "react-icons/md";
 import { HiMiniVideoCameraSlash } from "react-icons/hi2";
-import { BsFillCameraVideoFill } from "react-icons/bs";
 import { RootState } from "../../Redux/rootReducer";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
 import { connectToSocket } from "../../Apis/socket";
+
 interface VideoChatProps {
   stream: MediaStream | null;
   peerStream: MediaStream | null;
@@ -23,7 +23,6 @@ const VideoChat: React.FC<VideoChatProps> = ({
   endCall,
 }) => {
   const socket = connectToSocket();
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
   const [audioMuted, setAudioMuted] = useState(false);
@@ -36,7 +35,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
   const receiver: any = useSelector(
     (state: RootState) => state.chat.selectedChat.receiver
   );
-  const [isSpeaking, setIsSpeaking] = useState(false); // State to track speaking activity
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -47,8 +46,8 @@ const VideoChat: React.FC<VideoChatProps> = ({
       remoteRef.current.srcObject = peerStream;
     }
 
-    // Track audio activity in the peerStream
     if (!peerStream) return;
+
     const audioContext = new AudioContext();
     const analyser = audioContext.createAnalyser();
     const source = audioContext.createMediaStreamSource(peerStream);
@@ -63,18 +62,10 @@ const VideoChat: React.FC<VideoChatProps> = ({
       const average =
         dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
 
-      // Adjust threshold as needed based on your audio levels
-      const threshold = 100;
-
-      if (average > threshold) {
-        setIsSpeaking(true);
-      } else {
-        setIsSpeaking(false);
-      }
+      setIsSpeaking(average > 100);
     };
 
-    // Start monitoring audio activity
-    const interval = setInterval(updateAudioActivity, 200); // Adjust interval as needed
+    const interval = setInterval(updateAudioActivity, 200);
 
     return () => {
       clearInterval(interval);
@@ -102,16 +93,14 @@ const VideoChat: React.FC<VideoChatProps> = ({
     }
   };
 
-  const handleRemoteVideoStatus = () => {
-    
-    setRemoteVideoMuted(!remoteVideoMuted);
-  };
-  const handleRemoteAudioStatus = () => {
-
-    setRemoteAudioMuted(!remoteAudioMuted);
-  };
-
   useEffect(() => {
+    const handleRemoteVideoStatus = () => {
+      setRemoteVideoMuted((prev) => !prev);
+    };
+    const handleRemoteAudioStatus = () => {
+      setRemoteAudioMuted((prev) => !prev);
+    };
+
     socket.on("audio:status", handleRemoteAudioStatus);
     socket.on("video:status", handleRemoteVideoStatus);
 
@@ -119,31 +108,27 @@ const VideoChat: React.FC<VideoChatProps> = ({
       socket.off("audio:status", handleRemoteAudioStatus);
       socket.off("video:status", handleRemoteVideoStatus);
     };
-  }, [
-    handleRemoteAudioStatus,
-    handleRemoteVideoStatus,
-   
-  ]);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center  h-screen   text-white p-4">
-      <div className="w-full flex flex-col md:flex-row items-center   justify-center gap-4">
-        <div className="relative  h-[70vh] mt-16  w-10/12   rounded-lg overflow-hidden">
-          <p className="absolute top-2 left-2   text-sm font-semibold p-1 rounded-md">
+    <div className="flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center px-3 py-24 text-white lg:min-h-[calc(100vh-8rem)] lg:px-6 lg:py-8">
+      <div className="flex w-full max-w-6xl flex-col items-center justify-center gap-4">
+        <div className="relative mt-2 h-[62vh] w-full overflow-hidden rounded-[28px] bg-slate-950 shadow-[0_24px_70px_-36px_rgba(15,23,42,0.6)] sm:h-[68vh] lg:mt-0 lg:h-[72vh]">
+          <p className="absolute left-2 top-2 rounded-md p-1 text-sm font-semibold">
             {remoteAudioMuted ? (
               <FaMicrophoneSlash className="text-custom-blue/80" size={20} />
             ) : (
               <BsMicFill
-                className={` ${
+                className={`${
                   isSpeaking
-                    ? "text-blue-600 scale-125    "
+                    ? "scale-125 text-blue-600"
                     : "text-custom-blue/80"
                 }`}
                 size={20}
               />
             )}
           </p>
-          <p className="absolute top-2 left-10 text-sm font-semibold p-1 rounded-md">
+          <p className="absolute left-10 top-2 rounded-md p-1 text-sm font-semibold">
             {remoteVideoMuted ? (
               <HiMiniVideoCameraSlash
                 className="text-custom-blue/80"
@@ -156,49 +141,49 @@ const VideoChat: React.FC<VideoChatProps> = ({
               />
             )}
           </p>
+
           {!remoteVideoMuted ? (
             <video
               ref={remoteRef}
               autoPlay
               id="remoteVideo"
               playsInline
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             ></video>
           ) : (
-            <div className="w-auto  h-96 flex justify-center items-center ">
-              {receiver.profile.image ? (
+            <div className="flex h-full w-full items-center justify-center bg-slate-900/80">
+              {receiver?.profile?.image ? (
                 <img
-                  className="w-28 h-28 rounded-full"
-                  src={receiver?.profile?.image}
+                  className="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32"
+                  src={receiver.profile.image}
                   alt=""
                 />
               ) : (
                 <Avatar
-                  className="w-32 h-32 rounded-full"
-                  name={receiver.name}
+                  className="h-32 w-32 rounded-full"
+                  name={receiver?.name}
                 />
               )}
             </div>
           )}
-          {/* Local video positioned bottom-right */}
+
           {stream && (
             <video
               ref={videoRef}
               autoPlay
-          id="localVideo"
+              muted
+              id="localVideo"
               playsInline
-              className="absolute bottom-2 right-2 w-20 md:w-32 h-28 md:h-36 object-cover rounded-md border-2 border-white"
+              className="absolute bottom-3 right-3 h-24 w-20 rounded-2xl border-2 border-white/80 object-cover shadow-lg sm:h-32 sm:w-24 lg:bottom-5 lg:right-5 lg:h-40 lg:w-32"
             ></video>
           )}
         </div>
-        {/* <div className="relative w-full mt-1 h-64 md:w-1/2 md:h-96 bg-gray-800 rounded-lg overflow-hidden">
-          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover"></video>
-        </div> */}
       </div>
-      <div className="mt-4 flex gap-4">
+
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
         <button
           onClick={toggleAudio}
-          className={`p-4 rounded-full text-sm font-semibold ${
+          className={`rounded-full p-4 text-sm font-semibold shadow-sm transition ${
             audioMuted ? "bg-red-600" : "bg-custom-teal"
           }`}
         >
@@ -206,7 +191,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
         </button>
         <button
           onClick={toggleVideo}
-          className={`p-4 rounded-full text-sm font-semibold ${
+          className={`rounded-full p-4 text-sm font-semibold shadow-sm transition ${
             videoMuted ? "bg-red-600" : "bg-custom-teal"
           }`}
         >
@@ -214,7 +199,7 @@ const VideoChat: React.FC<VideoChatProps> = ({
         </button>
         <button
           onClick={endCall}
-          className="p-4 bg-red-600 rounded-full text-sm font-semibold"
+          className="rounded-full bg-red-600 p-4 text-sm font-semibold shadow-sm transition"
         >
           <MdOutlineCallEnd />
         </button>
