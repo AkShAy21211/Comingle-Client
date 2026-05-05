@@ -85,6 +85,8 @@ function SingleChat({
   const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
   const [incomingPeerId, setIncomingPeerId] = useState("");
   const [pendingAccept, setPendingAccept] = useState(false);
+  const [cameraFacingMode, setCameraFacingMode] = useState<"user" | "environment">("user");
+  const [isSwitchingCamera, setIsSwitchingCamera] = useState(false);
 
   const fetchMessages = async () => {
     try {
@@ -381,6 +383,24 @@ function SingleChat({
     stream?.getTracks().forEach((track) => track.stop());
   };
 
+  const getCallMediaStream = async (
+    facingMode: "user" | "environment" = cameraFacingMode
+  ) => {
+    return navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: facingMode },
+        width: { ideal: 1280, max: 1920 },
+        height: { ideal: 720, max: 1080 },
+        frameRate: { ideal: 24, max: 30 },
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
+  };
+
   const answerIncomingCall = (call: MediaConnection, stream: MediaStream) => {
     call.answer(stream);
     call.on("stream", (peerStream) => {
@@ -422,10 +442,7 @@ function SingleChat({
     let stream: MediaStream | null = null;
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      stream = await getCallMediaStream(cameraFacingMode);
       setLocalStream(stream);
 
       if (!peer || !receiver?._id) return;
@@ -473,10 +490,7 @@ function SingleChat({
     message: string;
   }) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      const stream = await getCallMediaStream(cameraFacingMode);
       setLocalStream(stream);
       setCallingUser({ userId: from, message });
       setIsModalOpen(true);
@@ -625,6 +639,54 @@ function SingleChat({
     });
 
     dispatch(removeSlectedChat());
+  };
+
+  const handleSwitchCamera = async () => {
+    if (!localStream) return;
+
+    try {
+      setIsSwitchingCamera(true);
+      const nextFacingMode = cameraFacingMode === "user" ? "environment" : "user";
+      const nextStream = await getCallMediaStream(nextFacingMode);
+      const nextVideoTrack = nextStream.getVideoTracks()[0];
+
+      if (!nextVideoTrack) {
+        stopMediaTracks(nextStream);
+        return;
+      }
+
+      const sender = currentCall?.peerConnection
+        ?.getSenders()
+        .find((item) => item.track?.kind === "video");
+
+      if (sender) {
+        await sender.replaceTrack(nextVideoTrack);
+      }
+
+      localStream.getVideoTracks().forEach((track) => track.stop());
+
+      const preservedAudioTracks = localStream.getAudioTracks();
+      const mergedStream = new MediaStream([
+        ...preservedAudioTracks,
+        nextVideoTrack,
+      ]);
+
+      setLocalStream(mergedStream);
+      setCameraFacingMode(nextFacingMode);
+    } catch (error) {
+      console.log(error);
+      toast.error("Unable to switch camera", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } finally {
+      setIsSwitchingCamera(false);
+    }
   };
 
   return (
@@ -820,6 +882,11 @@ function SingleChat({
           stream={localStream}
           peerStream={remoteStream}
           peer={peer}
+          switchCamera={handleSwitchCamera}
+          canSwitchCamera={Boolean(
+            localStream && localStream.getVideoTracks().length > 0
+          )}
+          isSwitchingCamera={isSwitchingCamera}
         />
       )}
 

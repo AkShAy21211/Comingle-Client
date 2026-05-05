@@ -14,6 +14,9 @@ interface VideoChatProps {
   peerStream: MediaStream | null;
   peer: Peer | null;
   endCall: () => void;
+  switchCamera: () => Promise<void>;
+  canSwitchCamera: boolean;
+  isSwitchingCamera: boolean;
 }
 
 const VideoChat: React.FC<VideoChatProps> = ({
@@ -21,6 +24,9 @@ const VideoChat: React.FC<VideoChatProps> = ({
   peer,
   peerStream,
   endCall,
+  switchCamera,
+  canSwitchCamera,
+  isSwitchingCamera,
 }) => {
   const socket = connectToSocket();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -197,6 +203,15 @@ const VideoChat: React.FC<VideoChatProps> = ({
         >
           {videoMuted ? <HiMiniVideoCameraSlash /> : <BsFillCameraVideoFill />}
         </button>
+        {canSwitchCamera && (
+          <button
+            onClick={switchCamera}
+            disabled={isSwitchingCamera}
+            className="rounded-full bg-slate-700 p-4 text-sm font-semibold shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSwitchingCamera ? "..." : "Flip"}
+          </button>
+        )}
         <button
           onClick={endCall}
           className="rounded-full bg-red-600 p-4 text-sm font-semibold shadow-sm transition"
