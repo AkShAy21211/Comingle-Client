@@ -14,7 +14,6 @@ function Posts() {
   const currentUser = useSelector((state: RootState) => state.user.user);
   const navigate = useNavigate();
 
-  // Handle fetching posts on first visit
   const fetchAllPosts = useCallback(async () => {
     try {
       const getPosts = await userApi.getAllPosts(0);
@@ -33,7 +32,6 @@ function Posts() {
     fetchAllPosts();
   }, [currentUser._id]);
 
-  // Handle fetching posts on scroll
   const fetchPosts = useCallback(async () => {
     try {
       const getPosts = await userApi.getAllPosts(index);
@@ -46,7 +44,6 @@ function Posts() {
     }
   }, [index]);
 
-  // Fetch next set of posts on scroll
   const fetchPostOnScroll = useCallback(() => {
     setIndex((prev) => prev + 1);
   }, []);
@@ -57,7 +54,6 @@ function Posts() {
     }
   }, [index, fetchPosts]);
 
-
   const renderContent = (content: {
     type: string;
     url: string;
@@ -65,42 +61,62 @@ function Posts() {
   }) => {
     if (content.type === "image") {
       return (
-        <img
-          key={content._id} // Ensure each element has a unique key
-          src={content.url}
-          alt="Post"
-          className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
-        />
-      );
-    } else {
-      return (
-        <video
-          key={content._id} // Ensure each element has a unique key
-          src={content.url}
-          className="w-full h-52 md:h-72 object-cover mt-5 rounded-lg"
-        />
+        <div className="aspect-[4/5] w-full overflow-hidden rounded-[20px] bg-slate-100/50 dark:bg-white/5">
+          <img
+            key={content._id}
+            src={content.url}
+            alt="Post"
+            className="h-full w-full object-cover"
+          />
+        </div>
       );
     }
+
+    return (
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-[20px] bg-slate-100/50 dark:bg-white/5">
+        <video
+          key={content._id}
+          src={content.url}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
   };
+
   return (
-    <div className="h-svh overflow-auto p-4" id="scrollableDiv">
+    <div className="app-page h-[calc(100vh-5rem)] overflow-auto pt-6" id="scrollableDiv">
       <InfiniteScroll
         dataLength={posts.length}
         next={fetchPostOnScroll}
         hasMore={hasMore}
         loader={<People />}
         endMessage={
-          <div className="text-center py-4 text-xs text-gray-500 w-full h-40">
+          <div className="h-40 w-full py-4 text-center text-xs text-gray-500">
             <p>You have seen it all!</p>
             <p>Stay tuned for more updates.</p>
           </div>
         }
         scrollableTarget="scrollableDiv"
       >
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-min gap-5">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {posts.map((post) => (
-            <div className="cursor-pointer" key={post._id} onClick={()=>navigate('/post/'+post._id)}>{renderContent(post.image[0])}</div>
+            <div
+              className="group app-panel cursor-pointer overflow-hidden rounded-[26px] p-2 transition duration-300 hover:-translate-y-1"
+              key={post._id}
+              onClick={() => navigate("/post/" + post._id)}
+            >
+              <div className="overflow-hidden rounded-[20px]">
+                {renderContent(post.image[0])}
+              </div>
+            </div>
           ))}
+          {!posts.length && (
+            <div className="app-panel col-span-full mx-auto flex min-h-52 max-w-xl flex-col items-center justify-center gap-3 p-8 text-center">
+              <span className="app-chip">No posts yet</span>
+              <p className="text-lg font-semibold text-slate-900">Your feed is ready for fresh content.</p>
+              <p className="app-muted">Once people share photos or videos, they'll show up here.</p>
+            </div>
+          )}
         </div>
       </InfiniteScroll>
     </div>

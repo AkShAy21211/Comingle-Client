@@ -22,13 +22,24 @@ function Chat() {
   const [callIndication, setCallIndication] = useState({
     message: "",
     room: "",
+    from: "",
   });
   useEffect(() => {
+    const backendUrl =
+      import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
+        ? import.meta.env.VITE_BACKEND_URI_DEV
+        : import.meta.env.VITE_BACKEND_URI;
+    const parsedBackendUrl = new URL(backendUrl);
     const peer = new Peer(currentUser._id, {
-      host: import.meta.env.VITE_PEER_SERVER,
-      port: 443,
-      path: "/peerjs/myapp",
-      secure: true,
+      host: parsedBackendUrl.hostname,
+      port:
+        parsedBackendUrl.port !== ""
+          ? Number(parsedBackendUrl.port)
+          : parsedBackendUrl.protocol === "https:"
+            ? 443
+            : 80,
+      path: "/peerjs",
+      secure: parsedBackendUrl.protocol === "https:",
     });
     handleAllowMedia();
     peer.on("open", (id) => {
@@ -65,11 +76,13 @@ function Chat() {
   const handleIncommingCall = ({
     message,
     room,
+    from,
   }: {
     message: string;
     room: string;
+    from: string;
   }) => {
-    setCallIndication({ message, room });
+    setCallIndication({ message, room, from });
     setIncommingCall(true);
   };
 
@@ -88,7 +101,7 @@ function Chat() {
   return (
     <Fragment>
       <Header />
-      <div className="grid  grid-cols-4">
+      <div className="mx-auto grid min-h-screen max-w-[1600px] grid-cols-1 px-0 pt-24 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-6 lg:px-6 lg:pt-28 xl:px-8">
         <RecentChats
           inCommingCall={inCommingCall}
           setIncommingCall={setIncommingCall}

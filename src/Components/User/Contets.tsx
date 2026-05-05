@@ -31,20 +31,28 @@ const Contents: React.FC<ContentsProps> = ({
 
   const renderContentItem = (item: {url:string,type:string}, index: number) => {
     return item.type === 'image' ? (
-      <img
+      <div
         key={index}
-        src={item.url}
-        alt={`Image ${index}`}
-        className={`object-cover ${isProfile ? 'w-52 h-52' : 'w-full max-h-[90vh] object-fill'}`}
-      />
+        className={`${isProfile ? "aspect-square w-full overflow-hidden rounded-[20px]" : "aspect-[4/5] w-full overflow-hidden bg-slate-100/40 dark:bg-white/5"}`}
+      >
+        <img
+          src={item.url}
+          alt={`Image ${index}`}
+          className={`h-full w-full ${isProfile ? "object-cover" : "object-cover"}`}
+        />
+      </div>
     ) : (
-      <video
+      <div
         key={index}
-        controls
-        className={`object-cover ${isProfile ? 'w-52 h-52' : 'w-full h-full'}`}
-        autoPlay
-        src={item.url}
-      ></video>
+        className={`${isProfile ? "aspect-square w-full overflow-hidden rounded-[20px]" : "aspect-[4/5] w-full overflow-hidden bg-slate-100/40 dark:bg-white/5"}`}
+      >
+        <video
+          controls
+          className="h-full w-full object-cover"
+          autoPlay
+          src={item.url}
+        ></video>
+      </div>
     );
   };
 

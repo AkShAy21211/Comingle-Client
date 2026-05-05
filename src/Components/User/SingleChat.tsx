@@ -14,8 +14,7 @@ import { IoSend } from "react-icons/io5";
 import Avatar from "react-avatar";
 import { CgAttachment } from "react-icons/cg";
 import Picker from "@emoji-mart/react";
-import { FaMicrophone } from "react-icons/fa";
-import { FaRegStopCircle } from "react-icons/fa";
+import { FaMicrophone, FaRegStopCircle, FaCircle } from "react-icons/fa";
 import audioStartBg from "/User/mixkit-atm-cash-machine-key-press-2841.wav";
 import audioEnd from "/User/mixkit-correct-answer-tone-2870.wav";
 import TypingIndicator from "../Common/TypingIndicator";
@@ -24,10 +23,10 @@ import VedioChat from "./VideoChat";
 import VideoCallNotificationModal from "./VideoCallNotificationModal";
 import Peer, { MediaConnection } from "peerjs";
 import { addPeer } from "../../Redux/Slice/User/peerSlice";
-import { FaCircle } from "react-icons/fa";
 import { Bounce, toast } from "react-toastify";
 import { playTune, endTune } from "../../Utils/tune";
 import { connectToSocket } from "../../Apis/socket";
+
 type SingleChatProp = {
   fetchAgain: boolean;
   peer: Peer | null;
@@ -39,7 +38,7 @@ type SingleChatProp = {
   remoteId: string;
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
   setCallIndication: React.Dispatch<
-    React.SetStateAction<{ message: string; room: string }>
+    React.SetStateAction<{ message: string; room: string; from: string }>
   >;
 };
 
@@ -55,7 +54,6 @@ function SingleChat({
   inCommingCall,
 }: SingleChatProp) {
   const socket = connectToSocket();
-
   const dispatch = useDispatch();
   const [allMessages, setAllMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
@@ -77,8 +75,6 @@ function SingleChat({
   const [isRecording, setIsRecording] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIstyping] = useState(false);
-
-  /////////////////// FETCH ALL THE MESSAGES //////////////////////////
 
   const fetchMessages = async () => {
     try {
@@ -126,12 +122,8 @@ function SingleChat({
     message: Message;
     room: string;
   }) => {
-
-    
     if (!selectedChat.chatId || selectedChat.chatId !== room) {
-      
       dispatch(setUnreadMessage(message.chat));
-   
     } else {
       setAllMessages((prevMessages) => {
         setFetchAgain(!fetchAgain);
@@ -150,14 +142,10 @@ function SingleChat({
     message: Message;
     room: string;
   }) => {
-    if (
-      !selectedChat.chatId ||
-      (selectedChat.chatId === room)
-    ) {
+    if (!selectedChat.chatId || selectedChat.chatId === room) {
       setFetchAgain(!fetchAgain);
 
       setAllMessages((prevMessages) => {
-        // Check if message already exists to avoid duplicates
         if (!prevMessages.some((msg) => msg._id === message._id)) {
           return [...prevMessages, message];
         }
@@ -165,6 +153,7 @@ function SingleChat({
       });
     }
   };
+
   useEffect(() => {
     socket.on("message received", handleNewMessage);
     socket.on("new message sent", handleNewMessageSent);
@@ -173,13 +162,8 @@ function SingleChat({
       socket.off("message received", handleNewMessage);
       socket.off("new message sent", handleNewMessageSent);
     };
-  }, [
-    selectedChat.chatId,
-    handleNewMessage,
-    handleNewMessageSent,
-  ]);
+  }, [selectedChat.chatId, handleNewMessage, handleNewMessageSent]);
 
-  /////////////////// HANDLE NEW MESSAGE ///////////////////////////////
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
 
@@ -204,12 +188,12 @@ function SingleChat({
   const handleSendMessage = async () => {
     if (!selectedChat) return;
 
-    if (newMessage.trim() || selectedFiles) {
+    if (newMessage.trim() || selectedFiles.length) {
       try {
         socket?.emit("stopTypeing", selectedChat.chatId);
         setLoading(true);
         const formData = new FormData();
-        if (selectedFiles) {
+        if (selectedFiles.length) {
           selectedFiles.forEach((file) => {
             formData.append("files", file);
           });
@@ -251,52 +235,53 @@ function SingleChat({
 
     if (fileType === "image") {
       return (
-        <div key={i} className="w-20 h-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0">
           <img
             src={URL.createObjectURL(file)}
-            className="object-cover border-custom-blue/90 border-4 w-full h-full"
+            className="h-full w-full object-cover border-4 border-custom-blue/90"
             alt=""
           />
         </div>
       );
     } else if (fileType === "video") {
       return (
-        <div key={i} className="w-20 h-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0">
           <video
             src={URL.createObjectURL(file)}
             muted
-            className="object-cover border-custom-blue/90 border-4 w-full h-full"
+            className="h-full w-full object-cover border-4 border-custom-blue/90"
           />
         </div>
       );
     } else if (fileType === "audio") {
       return (
         <audio
+          key={i}
           src={URL.createObjectURL(file)}
-          className="object-cover rounded-full border-custom-blue/90 border-4 w-52 h-10"
+          className="h-10 w-52 rounded-full border-4 border-custom-blue/90 object-cover"
           controls
         />
       );
     } else if (extension === "pdf") {
       return (
-        <div key={i} className="w-20 h-20 flex-shrink-0">
+        <div key={i} className="h-20 w-20 flex-shrink-0">
           <iframe
             src={URL.createObjectURL(file)}
-            className="border-custom-blue/90 border-4 w-full h-full"
+            className="h-full w-full border-4 border-custom-blue/90"
             title="PDF Preview"
           />
         </div>
       );
-    } else {
-      return (
-        <div
-          key={i}
-          className="w-20 h-20 flex-shrink-0 flex items-center justify-center border-custom-blue/90 border-4"
-        >
-          <span className="text-xs">Unsupported file</span>
-        </div>
-      );
     }
+
+    return (
+      <div
+        key={i}
+        className="flex h-20 w-20 flex-shrink-0 items-center justify-center border-4 border-custom-blue/90"
+      >
+        <span className="text-xs">Unsupported file</span>
+      </div>
+    );
   };
 
   const handleOpenFiles = () => {
@@ -308,17 +293,13 @@ function SingleChat({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const files = Array.from(event.target.files);
-      setSelectedFiles([...selectedFiles, ...files]);
+      setSelectedFiles((prev) => [...prev, ...files]);
     }
   };
 
   const handleEmoji = (e: any) => {
     const emoji = e.native;
     setNewMessage((prev) => prev + emoji);
-  };
-
-  const toggleEmojiPicker = () => {
-    setEmojiPickerVisible((prev) => !prev);
   };
 
   const AudioRecorder = () => {
@@ -343,16 +324,11 @@ function SingleChat({
             type: recordedBlob.type,
           });
           chunks.current = [];
-          // Pass file to previewFile
           setSelectedFiles((prevFiles) => [...prevFiles, file]);
         };
         mediaRecorder.current.start();
       } catch (error) {
         console.error("Error accessing microphone:", error);
-        alert(
-          "Error accessing microphone. Please ensure microphone permissions are granted."
-        );
-        // Handle error gracefully, show a message to the user, etc.
       }
     };
 
@@ -374,7 +350,7 @@ function SingleChat({
     };
 
     return (
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         {!isRecording ? (
           <button onClick={startRecording}>
             <FaMicrophone className="text-custom-blue/90" />
@@ -397,6 +373,26 @@ function SingleChat({
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
+  const [incomingPeerId, setIncomingPeerId] = useState("");
+
+  const stopMediaTracks = (stream: MediaStream | null) => {
+    stream?.getTracks().forEach((track) => track.stop());
+  };
+
+  useEffect(() => {
+    if (!peer) return;
+
+    const handlePeerCall = (call: MediaConnection) => {
+      setCurrentCall(call);
+      setIncomingPeerId(call.peer);
+    };
+
+    peer.on("call", handlePeerCall);
+
+    return () => {
+      peer.off("call", handlePeerCall);
+    };
+  }, [peer]);
 
   const handleStartVedioCall = async () => {
     setIsVedioChat(true);
@@ -417,6 +413,7 @@ function SingleChat({
         name: currentUser.name,
       });
       const call = peer.call(remoteId, stream);
+      setCurrentCall(call);
 
       call.on("stream", (peerStream) => {
         dispatch(addPeer({ userId: call.peer, stream: peerStream }));
@@ -435,7 +432,6 @@ function SingleChat({
     message: string;
   }) => {
     try {
-      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
@@ -445,11 +441,6 @@ function SingleChat({
       setIsModalOpen(true);
       setIncommingCall(true);
       playTune();
-      if (peer) {
-        peer.on("call", (call) => {
-          setCurrentCall(call);
-        });
-      }
     } catch (error) {
       console.log(error);
       alert(error);
@@ -459,11 +450,11 @@ function SingleChat({
   const acceptCall = () => {
     if (currentCall && localStream) {
       currentCall.answer(localStream);
-      currentCall.on("stream", (remoteStream) => {
-        dispatch(addPeer({ userId: currentCall.peer, stream: remoteStream }));
-        setRemoteStream(remoteStream);
+      currentCall.on("stream", (peerStream) => {
+        dispatch(addPeer({ userId: currentCall.peer, stream: peerStream }));
+        setRemoteStream(peerStream);
       });
-      setCallIndication({ message: "", room: "" });
+      setCallIndication({ message: "", room: "", from: "" });
       setIsVedioChat(true);
       setIsModalOpen(false);
       setIncommingCall(false);
@@ -472,32 +463,50 @@ function SingleChat({
   };
 
   const rejectCall = () => {
+    const peerTarget = incomingPeerId || callingUser?.userId || remoteId;
     if (currentCall) {
       currentCall.close();
-      socket?.emit("call:rejcted", { room: selectedChat.chatId ,remoteId});
     }
+    if (peerTarget) {
+      socket?.emit("call:rejcted", {
+        room: selectedChat.chatId,
+        remoteId: peerTarget,
+      });
+    }
+    stopMediaTracks(localStream);
     endTune();
-    setCallIndication({ message: "", room: "" });
+    setCallIndication({ message: "", room: "", from: "" });
     setIsModalOpen(false);
     setIncommingCall(false);
     setIsVedioChat(false);
+    setLocalStream(null);
+    setRemoteStream(null);
+    setCurrentCall(null);
+    setIncomingPeerId("");
   };
 
   const endCall = () => {
     setIsVedioChat(false);
+    stopMediaTracks(localStream);
+    stopMediaTracks(remoteStream);
     setLocalStream(null);
     setRemoteStream(null);
     currentCall?.close();
     socket?.emit("call:ended", { room: selectedChat.chatId });
     setIsModalOpen(false);
     setIncommingCall(false);
+    setCurrentCall(null);
+    setIncomingPeerId("");
   };
 
   const handleCallRejection = (data: { message: string }) => {
     setIsVedioChat(false);
     endTune();
+    stopMediaTracks(localStream);
+    stopMediaTracks(remoteStream);
     setLocalStream(null);
     setRemoteStream(null);
+    setCurrentCall(null);
     toast.info(data.message, {
       position: "bottom-center",
       autoClose: 3000,
@@ -511,12 +520,15 @@ function SingleChat({
 
   const handleCallEnd = (data: { message: string }) => {
     setIsVedioChat(false);
+    stopMediaTracks(localStream);
+    stopMediaTracks(remoteStream);
     setLocalStream(null);
     setRemoteStream(null);
     setIsModalOpen(false);
     setIncommingCall(false);
     endTune();
     currentCall?.close();
+    setCurrentCall(null);
     toast.info(data.message, {
       position: "bottom-center",
       autoClose: 3000,
@@ -569,93 +581,131 @@ function SingleChat({
     <div
       className={`${
         selectedChat.chatId ? "col-span-full" : "hidden"
-      } lg:block lg:col-span-3   ${isDarMode ? "bg-black" : "bg-white"}`}
+      } px-0 pb-24 lg:block lg:col-span-1`}
     >
       {!isVedioChat && selectedChat.chatId ? (
-        <>
-          <div className="mb-1 flex mt-16 justify-between gap-8 p-5 border-t-2 h-20 bg-custom-blue/90 backdrop:blur-xl">
-            <div className="flex items-center gap-2">
-              {receiver?.profile.image ? (
-                <img
-                  className="w-10 h-10 rounded-full"
-                  src={receiver.profile.image}
-                  alt=""
+        <div
+          className={`flex h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-none border-t lg:h-[calc(100vh-8rem)] lg:rounded-[32px] lg:border ${
+            isDarMode
+              ? "border-white/10 bg-slate-950/85"
+              : "border-white/80 bg-white/92 shadow-[0_28px_80px_-42px_rgba(15,23,42,0.36)]"
+          }`}
+        >
+          <div
+            className={`flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors duration-300 sm:gap-8 sm:px-5 ${
+              isDarMode
+                ? "border-white/5 bg-slate-900/80 backdrop-blur-xl"
+                : "border-gray-100 bg-white/90 backdrop-blur-xl"
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                {receiver?.profile.image ? (
+                  <img
+                    className="h-11 w-11 rounded-full object-cover shadow-sm"
+                    src={receiver.profile.image}
+                    alt=""
+                  />
+                ) : (
+                  <Avatar
+                    size="44"
+                    className="rounded-full shadow-sm"
+                    name={receiver?.name}
+                  />
+                )}
+                <FaCircle
+                  size={12}
+                  className={`absolute bottom-0 right-0 rounded-full border-2 ${
+                    isDarMode ? "border-slate-900" : "border-white"
+                  } ${remoteId ? "text-green-500" : "text-gray-400"}`}
                 />
-              ) : (
-                <Avatar
-                  size="45"
-                  className="rounded-full"
-                  name={receiver?.name}
-                />
-              )}
-              <p className="p-2 text-white text-lg">{receiver?.username}</p>
+              </div>
+              <div className="flex min-w-0 flex-col">
+                <p
+                  className={`truncate text-[15px] font-semibold tracking-tight sm:text-[17px] ${
+                    isDarMode ? "text-white" : "text-slate-800"
+                  }`}
+                >
+                  {receiver?.username}
+                </p>
+                <span
+                  className={`text-[13px] font-medium ${
+                    remoteId ? "text-green-500" : "text-slate-500"
+                  }`}
+                >
+                  {remoteId ? "Active Now" : "Offline"}
+                </span>
+              </div>
             </div>
-            <div className="flex gap-5">
-              <FaCircle
-                size={10}
-                className={`mt-4 ${
-                  remoteId
-                    ? "text-green-600"
-                    : "text-gray-400"
-                }`}
-              />
-              <span className=" text-white font-light mt-2">{remoteId?"online":"offline"}</span>
-              <FaVideo
-                size={25}
+            <div className="flex items-center gap-2 pr-0 sm:gap-4 sm:pr-2">
+              <button
                 onClick={handleStartVedioCall}
-                className="mt-2 cursor-pointer"
-                color="white"
-              />
+                className={`rounded-full p-2.5 transition-colors duration-300 ${
+                  isDarMode
+                    ? "bg-white/5 text-white hover:bg-white/10"
+                    : "bg-gray-50 text-slate-700 hover:bg-gray-100"
+                }`}
+              >
+                <FaVideo size={20} />
+              </button>
 
-              <IoIosCloseCircle
-                size={25}
-                className="mt-2 cursor-pointer"
+              <button
                 onClick={handleExistChat}
-                color="white"
-              />
+                className={`rounded-full p-2.5 transition-colors duration-300 ${
+                  isDarMode
+                    ? "bg-white/5 text-slate-400 hover:bg-red-500/20 hover:text-red-400"
+                    : "bg-gray-50 text-slate-500 hover:bg-red-50 hover:text-red-500"
+                }`}
+              >
+                <IoIosCloseCircle size={22} />
+              </button>
             </div>
           </div>
           <div
             id="messages"
-            className="flex flex-col gap-4 overflow-y-auto h-[calc(100vh-192px)]"
+            className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto"
           >
             <ScrollableChat messages={allMessages} />
           </div>
 
-          {isTyping ? <TypingIndicator /> : <></>}
+          {isTyping ? <TypingIndicator /> : null}
 
-          {selectedFiles && (
-            <div className=" h-auto w-auto  flex gap-1 overflow-auto overflow-x-scroll">
+          {selectedFiles.length > 0 && (
+            <div className="flex h-auto w-auto gap-2 overflow-auto overflow-x-scroll px-3 py-2 sm:px-4">
               {selectedFiles.map((file, index) => previewFile(file, index))}
             </div>
           )}
 
-          <div className="flex justify-center w-full   items-center  px-5 py-3 relative">
+          <div className={`relative flex w-full items-center justify-center gap-2 border-t px-3 py-3 sm:px-5 ${
+            isDarMode ? "border-white/5 bg-slate-950/70" : "border-gray-100 bg-white/80"
+          }`}>
             <input
               type="text"
               value={newMessage}
               onChange={handleMessageChange}
-              placeholder="Type your message..."
-              className={`flex-1  ${
-                isDarMode ? "bg-black text-white" : "bg-gray-200"
-              } border rounded-lg  py-2 px-4 mr-2 focus:outline-none focus:ring-2 ml-1 `}
+              placeholder="Type a message..."
+              className={`h-12 flex-1 rounded-full border py-2 px-4 text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-custom-blue/30 sm:px-5 ${
+                isDarMode
+                  ? "border-white/5 bg-slate-800 text-white placeholder-slate-400"
+                  : "border-gray-200 bg-gray-50 text-slate-800 placeholder-slate-400"
+              }`}
             />
             <button
-              className="text-white px-4 py-2 border-none rounded-lg focus:outline-none"
-              onClick={toggleEmojiPicker}
+              className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4"
+              onClick={() => setEmojiPickerVisible((prev) => !prev)}
             >
-              😊
+              🙂
             </button>
             {AudioRecorder()}
             {emojiPickerVisible && (
-              <div className="absolute bottom-14 right-30 z-10">
+              <div className="absolute bottom-14 right-2 z-10 sm:right-24">
                 <Picker
                   theme={isDarMode ? "dark" : "light"}
                   onEmojiSelect={handleEmoji}
                 />
               </div>
             )}
-            <button className="text-white px-4 py-2  border-none  rounded-lg focus:outline-none ">
+            <button className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4">
               <CgAttachment
                 onClick={handleOpenFiles}
                 className="text-blue-600"
@@ -665,7 +715,7 @@ function SingleChat({
 
             <button
               onClick={handleSendMessage}
-              className="text-white px-4 py-2  border-none  rounded-lg focus:outline-none "
+              className="rounded-full border-none px-2 py-2 text-white focus:outline-none sm:px-4"
             >
               {loading ? (
                 <PiSpinnerBold
@@ -684,12 +734,14 @@ function SingleChat({
             className="hidden"
             ref={fileInputRef}
           />
-        </>
+        </div>
       ) : !selectedChat.chatId ? (
         <div
-          className={`flex text-xl justify-center ${
-            isDarMode ? "text-white" : "text-black"
-          } items-center h-[calc(100vh-192px)] mt-16`}
+          className={`mx-3 mt-24 flex h-[calc(100vh-220px)] items-center justify-center rounded-[28px] border px-6 text-center text-xl lg:mx-0 lg:mt-0 lg:h-[calc(100vh-8rem)] lg:rounded-[32px] ${
+            isDarMode
+              ? "border-white/10 bg-slate-950/80 text-white"
+              : "border-white/80 bg-white/92 text-black shadow-[0_28px_80px_-42px_rgba(15,23,42,0.36)]"
+          }`}
         >
           Select a chat to start messaging
         </div>

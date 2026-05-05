@@ -72,39 +72,37 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center ">
-      <div className="space-y-2 md:space-y-2 w-full flex flex-col items-center">
-        <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 ">
-          <strong className="text-white sm:text-white lg:text-gray-500">
-            SIGN
-          </strong>
-          <strong className="text-black lg:text-blue-800"> IN</strong>
+    <div className="mx-auto flex w-full max-w-xl flex-col justify-center items-center py-6">
+      <div className="app-surface-strong space-y-4 md:space-y-6 w-full flex flex-col items-center p-6 sm:p-8 rounded-[2rem]">
+        <h1 className="text-3xl text-center font-display font-bold leading-tight tracking-tight">
+          <span className="text-slate-800">Welcome </span>
+          <span className="text-custom-blue bg-clip-text text-transparent bg-gradient-to-r from-custom-blue to-custom-teal">Back</span>
         </h1>
         <form
-          className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-96"
+          className="space-y-5 w-full sm:w-full md:w-[22rem]"
           onSubmit={formik.handleSubmit}
           noValidate
         >
           <div>
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-white sm:text-white lg:text-gray-900"
+              className="block mb-2 text-sm font-semibold text-slate-700"
             >
-              Your email
+              Email Address
             </label>
             <input
               type="email"
               id="email"
               {...formik.getFieldProps("email")}
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="name@gmail.com"
+              className="app-input"
+              placeholder="name@example.com"
             />
-            <p className="text-red-500 text-sm mt-2">{formik.errors.email}</p>
+            <p className="text-red-500 text-xs font-medium mt-1.5 px-1">{formik.errors.email}</p>
           </div>
           <div>
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-white sm:text-white lg:text-gray-900 "
+              className="block mb-2 text-sm font-semibold text-slate-700"
             >
               Password
             </label>
@@ -116,64 +114,71 @@ function LoginForm() {
                 {...formik.getFieldProps("password")}
                 ref={passwordRef}
                 placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 pr-10 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="app-input pr-10"
               />
               {!togglePassword ? (
                 <ImEyeBlocked
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                   onClick={togglePasswordVisibility}
+                  size={18}
                 />
               ) : (
                 <ImEye
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-custom-blue cursor-pointer"
                   onClick={togglePasswordVisibility}
+                  size={18}
                 />
               )}
             </div>
-            <p className="text-red-500 text-sm mt-2">
+            <p className="text-red-500 text-xs font-medium mt-1.5 px-1">
               {formik.errors.password}
             </p>
           </div>
           <button
             type="submit"
-            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none bg-black lg:bg-blue-900 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+            className="app-button-primary w-full text-sm"
           >
-            Signin
+            Sign In
           </button>
 
-          <p className="text-sm pt-0 font-light text-center text-white lg:text-black ">
+          <div className="flex flex-col gap-2 pt-2 text-sm font-medium text-center text-slate-600">
             <Link
               to="/forgot-password"
-              className="font-medium lg:text-blue-800 text-primary-600 hover:underline dark:text-primary-500"
+              className="text-custom-teal hover:text-custom-blue hover:underline transition-colors"
             >
-              forget password?{" "}
+              Forgot password?
             </Link>
-          </p>
-          <p className="text-sm pt-2 font-light text-center text-white lg:text-black ">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="font-medium lg:text-blue-800 text-primary-600 hover:underline dark:text-primary-500"
-            >
-              Signup here
-            </Link>
-          </p>
+            <p>
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-custom-blue font-semibold hover:underline"
+              >
+                Sign up here
+              </Link>
+            </p>
+          </div>
         </form>
+        
         <button
           onClick={handleLoginGuest}
-          type="submit"
-          className="w-auto text-white lg:text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none  focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+          type="button"
+          className="app-button-secondary w-full sm:w-full md:w-[22rem] mt-2 text-sm"
         >
-          Signin as Guest
+          Continue as Guest
         </button>
       </div>
-      <div className="flex justify-center items-center mb-4 text-white lg:text-black">
-        <hr className="flex-1 border-1 lg:border-black h-0" />
-        <p className="px-3 text-sm">or</p>
-        <hr className="flex-1 border-1 w-32 lg:border-black h-0" />
+      <div className="flex w-full sm:w-full md:w-[22rem] justify-center items-center my-6 text-slate-400 font-medium">
+        <hr className="flex-1 border-slate-200" />
+        <span className="px-4 text-sm bg-transparent">or continue with</span>
+        <hr className="flex-1 border-slate-200" />
       </div>
-      <button type="button" onClick={userApi.googleLogin}>
-        <FcGoogle size={30} />
+      <button 
+        type="button" 
+        onClick={userApi.googleLogin}
+        className="flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-soft border border-slate-100 hover:scale-110 hover:shadow-glass transition-all duration-300"
+      >
+        <FcGoogle size={28} />
       </button>
     </div>
   );

@@ -112,20 +112,20 @@ function PremiumAd({ plan, isPremiumPage }: PremiumProp) {
     <div
       className={`${
         !isDarkMode ? "border-l border-gray-300" : ""
-      }  h-auto  overflow-hidden rounded-lg ${
+      } h-auto overflow-hidden rounded-[24px] ${
         isDarkMode ? "" : "bg-white"
-      }  mt-14 p-10 flex flex-col  border `}
+      } mt-4 flex flex-col border p-5 sm:mt-8 sm:p-8`}
     >
-      <h2 className={`text-center lg:text-f-10 xl:text-xl`}>{plan?.title}</h2>
+      <h2 className={`text-center text-lg font-semibold xl:text-xl`}>{plan?.title}</h2>
       <ul
         className={` w-auto ${
           isPremiumPage ? "block" : "hidden"
-        }  text-nowrap lg:text-sm md:text-f-10 list-inside space-y-1  list-disc ${
+        } list-inside space-y-1 text-sm ${
           isDarkMode ? "text-white" : "text-gray-500"
         } `}
       >
         {plan?.benefits?.map((benifit) => (
-          <li className=" w-auto text-wrap p-3">{benifit}</li>
+          <li key={benifit} className="w-auto p-2 text-wrap">{benifit}</li>
         ))}
       </ul>
       {!isPremiumPage && (
@@ -133,12 +133,12 @@ function PremiumAd({ plan, isPremiumPage }: PremiumProp) {
         <Link
           to={"/settings/subscription"}
           className={` 
-            bg-custom-gold mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full  font-bold py-2 md:px-0 px-4 rounded-full xl:text-sm`}
+            bg-custom-gold mt-4 text-center w-full font-bold py-3 px-4 rounded-full text-sm`}
         >
           {"UPGRADE"}
         </Link>
         <p    className={` 
-            mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full   py-2 md:px-0 px-4 rounded-full xl:text-sm`}
+            mt-4 text-center w-full py-2 px-2 rounded-full text-sm`}
         >Enjoy premium benifits for jus Rs:499</p>
        </>
       )}
@@ -154,7 +154,7 @@ function PremiumAd({ plan, isPremiumPage }: PremiumProp) {
               : isDarkMode && plan?.title === "Premium"
               ? "bg-custom-gold text-black"
               : " bg-custom-blue"
-          } mt-4  md:w-full  lg:bgg lg:text-f-10 text-center w-full  font-bold py-2 md:px-0 px-4 rounded-full xl:text-sm text-white`}
+          } mt-4 text-center w-full font-bold py-3 px-4 rounded-full text-sm text-white`}
         >
           {plan?.title == "Premium" && !isPremiumPage
             ? "View Benifits"

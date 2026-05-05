@@ -31,35 +31,32 @@ function People({ users,isAdminView }: PeopleProps) {
     
   return (
     <>
-      <div className="container mx-auto p-4 h-screen">
-        <div className="h-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="app-page pt-6">
+        <div className="mx-auto grid h-auto max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {users.map((user) => {
-
-      
-
             return (
               <div
                 key={user._id}
-                className="w-full h-36 md:h-52 rounded-lg flex flex-col items-center cursor-pointer"
+                className="app-panel flex min-h-[220px] w-full cursor-pointer flex-col items-center justify-center gap-3 px-5 py-6 text-center transition duration-300 hover:-translate-y-1"
                 onClick={isAdminView?()=>handleViewUser(user._id):()=>navigate(`/profile/${user.username}`)}
               >
-
                 {
                   user?.profile.image?  <img
                   src={user.profile.image}
-                  className={`${isAdminView?'w-36 h-36':'w-20 h-20'} rounded-full object-cover mt-5`}
+                  className={`${isAdminView?'h-28 w-28':'h-20 w-20'} rounded-[28px] object-cover ring-4 ring-white/70`}
                   alt={user.name}
-                />:<Avatar name={user.name} className="rounded-full mt-2" size={isAdminView?'150':'90'}/>
+                />:<Avatar name={user.name} className="rounded-[28px]" size={isAdminView?'112':'80'}/>
                 }
               
-                <h6 className="mt-3 text-center">{user.username.toLowerCase()}</h6>
-               
-
+                <div>
+                  <h6 className="text-center text-base font-semibold">{user.username.toLowerCase()}</h6>
+                  <p className="mt-1 text-sm app-muted">{user.name}</p>
+                </div>
               </div>
               
             );
           })}
-          <h2 className="px-3 mt-1 text-sm">{!users.length?'No mathes found':""}</h2>
+          <h2 className="px-3 mt-1 text-sm app-muted">{!users.length?'No matches found':""}</h2>
         </div>
       </div>
       {

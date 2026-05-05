@@ -167,14 +167,15 @@ function ProfileAndBg({
         src={item.url}
         onClick={() => setSelectedPost(posts)}
         alt={`Image ${index}`}
-        className={`object-cover  w-52 h-36 md:h-52 cursor-pointer`}
+        className="aspect-square h-full w-full cursor-pointer rounded-[20px] object-cover transition-transform duration-300 hover:scale-[1.02]"
       />
     ) : (
       <video
         key={index}
         onClick={() => setSelectedPost(posts)}
-        className={`object-cover w-52 h-36 md:h-52 cursor-pointer`}
+        className="aspect-square h-full w-full cursor-pointer rounded-[20px] object-cover transition-transform duration-300 hover:scale-[1.02]"
         autoPlay
+        muted
         src={item.url}
       ></video>
     );
@@ -325,60 +326,108 @@ function ProfileAndBg({
   );
   return (
     <>
-      <div className="w-full  ">
+      <div
+        className={`app-panel relative w-full overflow-hidden rounded-[28px] border sm:rounded-[36px] ${
+          isDarkMode
+            ? "border-white/10 bg-slate-900/70"
+            : "border-white/70 bg-white/90"
+        }`}
+      >
         {isMyProfile && (
           <FaRegEdit
             onClick={() => setShowCoverMdal(true)}
             size={18}
-            className={`  float-end text-custom-blue right-4 cursor-pointer  text-lg relative top-20 lg:top-20`}
+            className={`absolute right-4 top-4 z-20 cursor-pointer rounded-full bg-white/85 p-2 text-custom-blue shadow-md backdrop-blur sm:right-5 sm:top-5`}
           />
         )}
         <img
           src={user?.profile.background}
-          className="object-fill h-60 lg:h-96 w-full "
+          className="h-44 w-full object-cover sm:h-56 lg:h-80"
           alt=""
         />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent sm:h-32" />
       </div>
-      {isMyProfile && (
-        <FaRegEdit
-          size={40}
-          onClick={() => setShowDpMdal(true)}
-          className={`float-end relative z-40  cursor-pointer top-24 md:top-20 `}
-        />
-      )}
-      <div
-        className={`relative object-cover  ${
-          user?.profile.image ? " " : " border-none shadow-none"
-        }  flex justify-center -top-16 lg:-top-24 rounded-full lg:w-52 h-32 w-32 lg:h-52`}
-      >
-        {user?.profile.image ? (
-          <img
-            className={`${
-              isDarkMode ? "bg-black backdrop:blur-lg" : "bg-white"
-            } object-cover lg:w-36 lg:h-36 rounded-full`}
-            src={user?.profile?.image}
-          />
-        ) : (
-          <Avatar className=" rounded-full" size="140" name={user?.name} />
-        )}
+      <div className="relative z-10 mx-auto -mt-14 w-full max-w-5xl px-3 sm:-mt-20 sm:px-5 lg:-mt-24">
+        <div
+          className={`app-panel rounded-[28px] border p-4 shadow-[0_28px_70px_-42px_rgba(15,23,42,0.42)] sm:rounded-[34px] sm:p-6 ${
+            isDarkMode
+              ? "border-white/10 bg-slate-950/85"
+              : "border-white/80 bg-white/95"
+          }`}
+        >
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-5">
+              <div
+                className={`relative flex h-28 w-28 shrink-0 items-center justify-center rounded-[28px] sm:h-32 sm:w-32 lg:h-40 lg:w-40`}
+              >
+                {user?.profile.image ? (
+                  <img
+                    className={`h-28 w-28 rounded-[28px] border-4 object-cover shadow-2xl sm:h-32 sm:w-32 lg:h-40 lg:w-40 ${
+                      isDarkMode
+                        ? "border-slate-900 bg-black"
+                        : "border-white bg-white"
+                    }`}
+                    src={user?.profile?.image}
+                  />
+                ) : (
+                  <Avatar
+                    className="rounded-[28px]"
+                    size="140"
+                    name={user?.name}
+                  />
+                )}
+                {isMyProfile && (
+                  <FaRegEdit
+                    size={18}
+                    onClick={() => setShowDpMdal(true)}
+                    className="absolute -bottom-1 -right-1 z-40 cursor-pointer rounded-full bg-white p-2 text-custom-blue shadow-lg"
+                  />
+                )}
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex items-center justify-center gap-2 sm:justify-start">
+                  <p className="text-2xl font-bold tracking-tight sm:text-3xl">
+                    {user?.username}
+                  </p>
+                  {user?.profile.isPremium && (
+                    <MdVerified className="text-xl text-blue-600 sm:text-2xl" />
+                  )}
+                </div>
+                <p className="mx-auto mt-2 max-w-2xl text-sm leading-7 app-muted sm:mx-0 sm:text-base">
+                  {user?.profile.bio || "Add a short bio so people know who you are."}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  <span className="app-chip">
+                    {posts?.length || 0} posts shared
+                  </span>
+                  <span className="app-chip">
+                    {user?.profile.followers?.length || 0} followers
+                  </span>
+                  <span className="app-chip">
+                    {user?.profile.following?.length || 0} following
+                  </span>
+                </div>
+              </div>
+            </div>
+            {isMyProfile && (
+              <div className="flex items-center justify-center lg:justify-end">
+                <button
+                  onClick={() => setShowCoverMdal(true)}
+                  className="app-button-secondary px-4 py-2.5 text-sm font-semibold"
+                >
+                  Edit cover
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-      <div className="relative w-auto   justify-start flex-col  lg:flex-row lg:justify-center mb-8 mt-10 lg:mt-1 ">
-        <p className=" justify-center -mt-14 font-bold text-xl  text-center   flex gap-1">
-          {user?.username}{" "}
-          {user?.profile.isPremium && (
-            <MdVerified className="mt-1 text-blue-600" />
-          )}
-        </p>
-        <p className="  font-light text-center w-full mb-5 ">
-          {user?.profile.bio}
-        </p>
+      <div className="relative mb-8 mt-6 flex w-auto flex-col justify-start lg:justify-center">
         {!isMyProfile && (
-          <div className="w-auto flex gap-1 justify-center mb-5 mt-3">
+          <div className="mb-5 mt-3 flex w-auto flex-wrap justify-center gap-3 px-4">
             {currentUserData?.profile?.following?.includes(user?._id as any) ? (
               <button
-                className={` px-2 py-2 rounded-lg ${
-                  isDarkMode ? "text-white" : "text-custom-blue "
-                } font-extrabold `}
+                className="app-button-secondary px-4 py-2"
                 // onClick={() => {
                 //   handleFollow(user?._id as string);
                 // }}
@@ -389,9 +438,7 @@ function ProfileAndBg({
                 user?._id as any
               ) ? (
               <button
-                className={` px-2 py-2 rounded-lg ${
-                  isDarkMode ? "text-white" : "text-custom-blue "
-                } font-extrabold `}
+                className="app-button-primary px-4 py-2"
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -400,9 +447,7 @@ function ProfileAndBg({
               </button>
             ) : (
               <button
-                className={` px-2 py-2 rounded-lg ${
-                  isDarkMode ? "text-white" : "text-custom-blue "
-                } font-extrabold `}
+                className="app-button-primary px-4 py-2"
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
@@ -414,77 +459,87 @@ function ProfileAndBg({
             <Link
               to="/chats"
               onClick={() => handleMessage(user?._id as string)}
-              className={` px-2 py-2 rounded-lg ${
-                isDarkMode ? "text-white" : "text-custom-blue "
-              } font-extrabold `}
+              className="app-button-secondary px-4 py-2"
             >
               Message
             </Link>
           </div>
         )}
       </div>
-      <div className=" -mt-5 lg:-mt-14 flex w-full justify-center p-5 gap-5 h-32">
+      <div className="mx-auto grid w-full max-w-4xl grid-cols-3 gap-3 px-2 py-2 sm:gap-4 sm:px-4">
         <div
           onClick={() => handleShowFriends("follower")}
-          className={` border-2  h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={`app-panel flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border p-3 text-center transition-transform duration-200 hover:-translate-y-0.5`}
         >
-          {user?.profile.followers?.length}
-          <p>Followers</p>
+          <p className="text-2xl font-bold">{user?.profile.followers?.length}</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] app-muted sm:text-sm">
+            Followers
+          </p>
         </div>
         <div
           onClick={() => handleShowFriends("following")}
-          className={`  border-2   h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={`app-panel flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border p-3 text-center transition-transform duration-200 hover:-translate-y-0.5`}
         >
-          {user?.profile.following?.length}
-          <p>Following</p>
+          <p className="text-2xl font-bold">{user?.profile.following?.length}</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] app-muted sm:text-sm">
+            Following
+          </p>
         </div>
         <div
-          className={`  border-2   h-16 p-2 w-full lg:w-1/6 rounded-lg flex items-center flex-col cursor-pointer`}
+          className={`app-panel flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-[24px] border p-3 text-center transition-transform duration-200 hover:-translate-y-0.5`}
         >
-          {posts?.length}
-          <p>Posts</p>
+          <p className="text-2xl font-bold">{posts?.length}</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] app-muted sm:text-sm">
+            Posts
+          </p>
         </div>
       </div>
-      <div className="tab-buttons flex justify-around w-full">
+      <div
+        className={`mx-auto mt-5 flex w-full max-w-md items-center justify-center rounded-full border p-2 ${
+          isDarkMode ? "border-white/10 bg-white/5" : "border-white/80 bg-white/75"
+        }`}
+      >
         <button
           onClick={() => handleTabClick("images")}
-          className="bg-custom-blue px-3 py-1 rounded-full text-white"
+          className={`${activeTab !== "text" ? "app-button-primary" : "app-button-secondary"} flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold`}
         >
           <FaImages />
+          Photos
         </button>
         <button
           onClick={() => handleTabClick("text")}
-          className="bg-custom-blue px-3 rounded-full text-white"
+          className={`${activeTab === "text" ? "app-button-primary" : "app-button-secondary"} flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold`}
         >
           <CiText />
+          Thoughts
         </button>
-      </div>{" "}
-      <div className=" h-full w-full flex p-3 justify-center">
+      </div>
+      <div className="mt-5 h-full w-full p-1 sm:p-3">
         {activeTab === "text" ? (
-          <div className="text-content break-words w-full h-full">
+          <div className="mx-auto grid w-full max-w-4xl gap-4 text-content break-words">
             {posts &&
               posts.map(
                 (post) =>
                   !post.image.length &&
                   post.description && (
-                    <ul>
-                      <li>
-                        <small className="float-end flex gap-1 font-bold">
+                    <ul key={post._id}>
+                      <li className="app-panel rounded-[24px] border p-5 sm:rounded-[28px] sm:p-6">
+                        <small className="float-end flex gap-1 text-xs font-semibold app-muted">
                           {FormattedRelativeTime(post.createdAt)}
                         </small>
 
                         <div
                           onClick={() => setSelectedTextPost(post)}
-                          className="mt-5 cursor-pointer   p-5 font-sans rounded-lg"
+                          className="mt-5 cursor-pointer rounded-lg p-1 font-sans"
                         >
                           <p
-                            className="text-wrap break-words w-full"
+                            className="w-full break-words text-wrap text-base leading-7 sm:text-lg"
                             key={post._id}
                           >
                             {post.description}
                           </p>
                         </div>
-                        <div className="flex gap-5 px-3 mt-3">
+                        <div className="mt-4 flex gap-6 px-1">
                           <div className="flex flex-col items-center justify-center">
                             <IoMdHeartEmpty
                               onClick={() =>
@@ -503,11 +558,11 @@ function ProfileAndBg({
                                   : ""
                               }`}
                             />
-                            <p>{post?.likes?.userId?.length || 0}</p>
+                            <p className="mt-1 text-sm app-muted">{post?.likes?.userId?.length || 0}</p>
                           </div>
                           <div className="flex flex-col items-center justify-center">
                             <FaRegComment />
-                            <p>
+                            <p className="mt-1 text-sm app-muted">
                               {post.comments[0].comment
                                 ? post.comments.length
                                 : 0}
@@ -519,8 +574,8 @@ function ProfileAndBg({
                   )
               )}
             {!posts?.length && (
-              <div className=" flex justify-center w-full mt-10 h-full overflow-auto overscroll-y-auto col-span-full">
-                <p className="text-center w-full">
+              <div className="app-panel col-span-full mt-6 flex h-full w-full justify-center overflow-auto overscroll-y-auto rounded-[28px] border p-8 sm:mt-10">
+                <p className="w-full text-center">
                   {isMyProfile
                     ? "You didn't post anything yet. Share your thoughts with others"
                     : "No posts yet"}
@@ -529,22 +584,32 @@ function ProfileAndBg({
             )}
           </div>
         ) : (
-          <div className="image-content grid grid-cols-3  sm:grid-cols-3  md:grid-cols-4  gap-3">
+          <div className="image-content mx-auto grid max-w-6xl grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
             {posts &&
               posts.map((post: PostsType) =>
                 post && post.image.length && post.image.length > 1 ? (
-                  <Slider key={post._id} {...settings}>
-                    {post.image.map(
-                      (item: { url: string; type: string }, index) =>
-                        renderContentItem(item, index, post)
-                    )}
-                  </Slider>
+                  <div
+                    key={post._id}
+                    className="app-panel group overflow-hidden rounded-[24px] border p-2 sm:rounded-[28px]"
+                  >
+                    <Slider {...settings}>
+                      {post.image.map(
+                        (item: { url: string; type: string }, index) =>
+                          renderContentItem(item, index, post)
+                      )}
+                    </Slider>
+                  </div>
                 ) : (
-                  <>{renderContentItem(post.image[0], 0, post)}</>
+                  <div
+                    key={post._id}
+                    className="app-panel group overflow-hidden rounded-[24px] border p-2 sm:rounded-[28px]"
+                  >
+                    {renderContentItem(post.image[0], 0, post)}
+                  </div>
                 )
               )}
             {!posts?.length && (
-              <div className=" flex justify-center h-full w-full mt-10 overflow-auto overscroll-y-auto col-span-full">
+              <div className="app-panel col-span-full mt-6 flex h-full w-full justify-center overflow-auto overscroll-y-auto rounded-[28px] border p-8 sm:mt-10">
                 <p className="text-center">
                   {isMyProfile
                     ? "You didn't post anything yet. Share your thoughts with others"

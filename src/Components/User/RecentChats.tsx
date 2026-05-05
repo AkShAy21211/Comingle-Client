@@ -28,7 +28,7 @@ type RecentChatsProp = {
   fetchAgain: boolean;
   setIncommingCall: React.Dispatch<React.SetStateAction<boolean>>;
   inCommingCall: boolean;
-  callIndication: { room: string; message: string };
+  callIndication: { room: string; message: string; from?: string };
   setFetchAgain: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -147,30 +147,41 @@ function RecentChats({
   return (
     <Fragment>
       <div
-        className={` col-span-full  ${
-          isDarMode ? "bg-black" : "bg-white"
-        }  ${
+        className={`col-span-full overflow-y-auto px-3 pb-24 ${
           selectedChat.chatId ? "hidden lg:block" : ""
-        } lg:col-span-1 sticky top-0  shadow-lg     h-screen  overflow-y-auto overflow-auto l`}
+        } lg:sticky lg:top-28 lg:col-span-1 lg:h-[calc(100vh-8rem)] lg:px-0`}
       >
-        <div className="mt-20 p-3 flex-col">
-          <button onClick={() => navigate(-1)}>
-            <IoMdArrowRoundBack
-              className={`${isDarMode ? "text-white" : "text-black"}`}
-              size={25}
-            />
-          </button>
+        <div
+          className={`rounded-none border-b px-4 pb-4 pt-5 sm:px-5 lg:rounded-[30px] lg:border lg:px-5 lg:pb-5 lg:pt-5 ${
+            isDarMode
+              ? "border-white/10 bg-slate-950/85 text-white"
+              : "border-white/80 bg-white/90 text-slate-900 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.38)]"
+          }`}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] app-muted">
+                Messages
+              </p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight">Chats</h2>
+            </div>
+            <button onClick={() => navigate(-1)}>
+              <IoMdArrowRoundBack
+                className={`${isDarMode ? "text-white" : "text-black"}`}
+                size={25}
+              />
+            </button>
+          </div>
           <ExpandableSearchBar
-            isFocused={isFocused}
             searchUsers={searchUsers}
             setIsFocused={setIsFocused}
           />
           <div
-            className={`  ${
+            className={`${
               allUsers.length && isFocused ? "flex" : "hidden"
-            }  rounded-md w-96 bg-transparent backdrop-blur-sm h-full  overflow-scroll mt-8 z-50 fixed`}
+            } fixed z-50 mt-4 h-[70vh] w-[calc(100%-2rem)] max-w-md overflow-scroll rounded-2xl border border-white/10 bg-slate-950/90 p-2 backdrop-blur-xl`}
           >
-            <ul className="w-96">
+            <ul className="w-full">
               <li className="float-end px-8">
                 <button>
                   <IoMdClose onClick={() => setIsFocused(false)} size={20} />
@@ -181,7 +192,7 @@ function RecentChats({
                   <li
                     key={user._id}
                     onClick={() => handleMessage(user._id)}
-                    className="flex m-5 p-5 hover:bg-custom-blue/50 rounded-md w-auto gap-2 cursor-pointer"
+                    className="m-2 flex w-auto cursor-pointer gap-2 rounded-xl p-4 hover:bg-custom-blue/30"
                   >
                     {user.profile.image ? (
                       <img
@@ -207,8 +218,9 @@ function RecentChats({
             </ul>
           </div>
         </div>
-        {chats?.length ? (
-          chats.map((chat: ChatType) => {
+        <div className="mt-4 space-y-3 lg:mt-5">
+          {chats?.length ? (
+            chats.map((chat: ChatType) => {
             const receiver = chat.participants.find(
               (p) => p._id !== currentUser._id
             );
@@ -219,21 +231,23 @@ function RecentChats({
                 data-key={chat._id}
                 ref={(el) => (divRefs.current[chat._id] = el)}
                 onClick={() => handleAccessChat(chat._id, receiver as User)}
-                className={` mt-5 ${
-                  isDarMode ? "bg-black  text-white" : ""
-                } flex justify-between gap-5  cursor-pointer p-5 ${
+                className={`flex cursor-pointer justify-between gap-3 rounded-[24px] border p-4 transition-all duration-300 ${
+                  isDarMode
+                    ? "border-white/10 bg-slate-950/75 text-white hover:bg-white/5"
+                    : "border-white/80 bg-white/90 text-slate-900 shadow-[0_22px_48px_-36px_rgba(15,23,42,0.42)] hover:-translate-y-0.5"
+                } ${
                   isDarMode && selectedChat.chatId === chat._id
-                    ? "bg-custom-blue/20"
+                    ? "border-cyan-400/30 bg-custom-blue/20"
                     : !isDarMode && selectedChat.chatId === chat._id
-                    ? "bg-gray-200"
+                    ? "border-cyan-200 bg-sky-50"
                     : ""
                 } ${
                   callIndication.room === chat._id
-                    ? "bg-green-300 animate-pulse transition transform duration-0"
+                    ? "ring-2 ring-green-400/60 animate-pulse"
                     : ""
                 }`}
               >
-                <div className="flex gap-3 w-auto h-full justify-between">
+                <div className="flex h-full w-auto min-w-0 justify-between gap-3">
                   {receiver?.profile.image ? (
                     <img
                       className="w-12 h-12 rounded-full"
@@ -247,17 +261,17 @@ function RecentChats({
                       className="rounded-full"
                     />
                   )}
-                  <div className="flex flex-col w-full">
-                    <p className="p-2">{receiver?.username}</p>
-                    <div className="text-gray-500 flex   gap-4 w-full max-w-xs ">
-                      <p>
+                  <div className="flex w-full min-w-0 flex-col">
+                    <p className="truncate p-1 text-sm font-semibold sm:text-base">{receiver?.username}</p>
+                    <div className={`flex w-full max-w-xs gap-2 text-sm ${isDarMode ? "text-slate-400" : "text-slate-500"}`}>
+                      <p className="shrink-0">
                         {chat.latestMessage
                           ? chat.latestMessage.sender._id === currentUser._id
                             ? "you:"
                             : ""
                           : ""}
                       </p>
-                      <span className="text-wrap text-sm  break-words w-40 ">
+                      <span className="w-32 truncate text-sm sm:w-40">
                         {chat.latestMessage
                           ? chat.latestMessage.message.trim().slice(0, 20) || (
                               <MdOutlinePermMedia className="mt-1" />
@@ -272,29 +286,30 @@ function RecentChats({
                     )}
                   </div>
                 </div>
-                <p className="text-xs  text-end flex flex-col  justify-between">
-                  <span className="flex wau  flex-col   items-end lg:gap-0">
+                <p className="flex min-w-[74px] flex-col justify-between text-end text-[11px] sm:text-xs">
+                  <span className="flex flex-col items-end lg:gap-0">
                     {FormattedRelativeTime(chat.updatedAt)}
                   </span>
                   {getUnreadMessages(chat._id)}
                 </p>
               </div>
             );
-          })
-        ) : (
+            })
+          ) : (
           <div
-            className={` ${
-              isDarMode ? "bg-black border-y text-white" : ""
-            } flex justify-between gap-5  cursor-pointer p-5  mt-10 `}
+            className={`mt-6 flex items-center justify-center gap-3 rounded-[28px] border p-8 text-center ${
+              isDarMode
+                ? "border-white/10 bg-slate-950/80 text-white"
+                : "border-white/80 bg-white/90 text-slate-900 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.38)]"
+            }`}
           >
-            <div className="flex gap-1 w-full h-full  justify-center items-center">
+            <div className="flex h-full w-full items-center justify-center gap-2">
               <RiChatOffFill size={20} />{" "}
-              <p className="m-5">You dont have any chats</p>
+              <p className="text-sm sm:text-base">You dont have any chats</p>
             </div>
-
-            <p></p>
           </div>
-        )}
+          )}
+        </div>
       </div>
     </Fragment>
   );

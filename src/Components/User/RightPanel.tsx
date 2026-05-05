@@ -52,12 +52,10 @@ function RightPanel() {
   }, []);
 
   return (
-    <div
-      className={`h-svh ${
-        isDarkMode ? "bg-black text-white" : ""
-      } col-start-5 col-end-6 sticky top-0 shadow-lg hidden lg:block  overflow-hidden`}
-    >
-      <div className="flex flex-col  h-full p-10 mt-16">
+    <div className={`sticky top-28 hidden self-start lg:col-span-1 lg:block`}>
+      <div className={`app-panel ml-auto flex max-h-[calc(100vh-7.5rem)] w-full max-w-[240px] flex-col overflow-y-auto p-5 ${
+        isDarkMode ? "border-white/10 bg-slate-900/60 text-white" : ""
+      }`}>
         <UserAvatar
           onlineUsers={onlineUsers}
           friends={friends}
@@ -66,9 +64,6 @@ function RightPanel() {
         />
         <ProfileCard />
 
-        {/* {!showPremiumAds.includes(location.pathname) && (
-          <PremiumAd isPremiumPage={false} />
-        )} */}
       </div>
     </div>
   );

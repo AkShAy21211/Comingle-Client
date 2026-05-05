@@ -28,35 +28,41 @@ function ProfileCard() {
     fetchUserProfile();
   }, [fetchAgain]);
   return (
-    <div className=" w-full h-auto flex flex-col items-center mt-20  ">
+    <div className="mt-6 w-full">
       <div
-        className={` px-10 py-5 w-auto h-auto      flex flex-col items-center  ${
-          isDarkMode ? "border border-gray-900" : " border border-gray-300 shadow-gray-400"
-        } rounded-lg `}
+        className={`w-full rounded-[28px] px-5 py-6 text-center sm:px-6 ${
+          isDarkMode
+            ? "border border-white/10 bg-white/5"
+            : "border border-white/70 bg-white/90 shadow-[0_22px_45px_-32px_rgba(15,23,42,0.45)]"
+        }`}
       >
-       {
-        userData?.profile.image? <img
-          src={userData?.profile.image}
-          className="w-20 h-20 rounded-full "
-          alt=""
-        />:<Avatar name={userData?.name} size="80" className="rounded-full"/>
+        {userData?.profile.image ? (
+          <img
+            src={userData?.profile.image}
+            className="mx-auto h-20 w-20 rounded-3xl object-cover ring-4 ring-white/70"
+            alt=""
+          />
+        ) : (
+          <Avatar name={userData?.name} size="80" className="mx-auto rounded-3xl" />
+        )}
+        <p className="mt-4 text-lg font-bold">{userData?.username}</p>
+        <p className={`mt-1 text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+          Your profile snapshot
+        </p>
 
-       }
-        <p className="text-lg  text-center font-bold mt-5">{userData?.username}</p>
-
-        <div className="w-full h-32 gap-10 flex justify-around ">
-          <div className=" flex flex-col gap4 justify-center items-center">
-            {userData?.profile.followers?.length}
-            <p>Followers</p>
+        <div className="mt-5 grid w-full grid-cols-2 gap-3">
+          <div className={`rounded-[22px] px-2 py-4 ${isDarkMode ? "bg-white/5" : "bg-slate-50"}`}>
+            <p className="text-xl font-semibold">{userData?.profile.followers?.length || 0}</p>
+            <p className="mt-1 text-[11px] font-medium app-muted">Followers</p>
           </div>
-          <div className=" flex flex-col justify-center items-center">
-            {userData?.profile.following?.length}
-            <p>Following</p>
+          <div className={`rounded-[22px] px-2 py-4 ${isDarkMode ? "bg-white/5" : "bg-slate-50"}`}>
+            <p className="text-xl font-semibold">{userData?.profile.following?.length || 0}</p>
+            <p className="mt-1 text-[11px] font-medium app-muted">Following</p>
           </div>
         </div>
 
         {location.pathname === "/profile" ? null : (
-          <Link className="font-bold text-sm text-custom-blue" to={"/profile"}>
+          <Link className="mt-5 inline-flex text-sm font-bold text-custom-blue" to={"/profile"}>
             View profile
           </Link>
         )}

@@ -59,12 +59,12 @@ function Posts() {
       const getPosts = await userApi.getAllPosts(0);
       if (getPosts) {
         setFetchAgain(false);
-        setPosts(getPosts.posts);
-        localStorage.setItem("posts", JSON.stringify(getPosts.posts));
-        posts.sort(
+        const sortedPosts = [...getPosts.posts].sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
+        setPosts(sortedPosts);
+        localStorage.setItem("posts", JSON.stringify(sortedPosts));
         setHasMore(getPosts.posts.length > 0);
       }
     } catch (error: any) {
@@ -165,7 +165,7 @@ function Posts() {
         console.log(error);
       }
     },
-    [posts]
+    [socket]
   );
 
   //////////////////////// HANDLE USER UNLIKE POST //////////////////////////
@@ -193,7 +193,7 @@ function Posts() {
         console.log(error);
       }
     },
-    [posts]
+    []
   );
 
   const handleCopyLink = async (postId: string) => {
@@ -352,9 +352,9 @@ function Posts() {
 
   return (
     <div
-      className={` mt-16 pt-1 lg:mt-0 ${
-        isDarkMode ? "bg-black text-white" : ""
-      } col-span-full   overflow-auto h-svh lg:col-start-2 lg:col-end-5`}
+      className={`${
+        isDarkMode ? "text-white" : ""
+      } col-span-full overflow-auto min-h-screen custom-scrollbar lg:col-start-2 lg:col-end-3`}
       id="scrollableDiv"
     >
       <CreatePost fetchAgain={fetchAgain} setfetchAgain={setFetchAgain} />
@@ -372,16 +372,16 @@ function Posts() {
         scrollableTarget="scrollableDiv"
       >
         <div className="flex justify-center">
-          <div className="w-full lg:w-3/5">
+          <div className="w-full max-w-[860px]">
             {posts.length > 0 &&
               posts.map((post) => (
                 <div
                   key={post._id}
-                  className={`w-full ${
-                    isDarkMode ? "bg-black text-white" : ""
-                  } flex flex-col justify-between items-center mb-10 relative`}
+                  className={`relative mb-5 flex w-full flex-col justify-between overflow-hidden rounded-[24px] border transition-all duration-300 sm:mb-8 sm:rounded-[30px] ${
+                    isDarkMode ? "bg-slate-900/60 border-white/5 shadow-glass text-white backdrop-blur-sm hover:border-white/10" : "bg-white/80 border-gray-100 shadow-soft backdrop-blur-sm hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.12)]"
+                  }`}
                 >
-                  <div className="flex items-center mb-3 p-2 w-full">
+                  <div className="mb-1 flex w-full items-center p-4 sm:p-5">
                     {post.postedUser?.profile?.image ? (
                       <img
                         onClick={() =>
@@ -389,7 +389,7 @@ function Posts() {
                             ? navigate("/profile")
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
-                        className="w-10 h-10 mr-4 cursor-pointer rounded-full"
+                        className="mr-3 h-10 w-10 cursor-pointer rounded-full sm:mr-4"
                         src={post.postedUser.profile.image}
                       />
                     ) : (
@@ -400,18 +400,18 @@ function Posts() {
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
                         name={post.postedUser.username.slice(1)}
-                        className="rounded-full me-4 cursor-pointer"
+                        className="cursor-pointer rounded-full me-3 sm:me-4"
                         size="35"
                       />
                     )}
-                    <div className="flex flex-col md:flex-row md:items-center w-full justify-between">
+                    <div className="flex w-full flex-col justify-between md:flex-row md:items-center">
                       <div
                         onClick={() =>
                           currentUser._id === post.postedUser._id
                             ? navigate("/profile")
                             : navigate(`/profile/${post.postedUser.username}`)
                         }
-                        className="text-base cursor-pointer md:text-lg font-semibold flex gap-3"
+                        className="flex cursor-pointer gap-3 text-sm font-semibold sm:text-base md:text-lg"
                       >
                         <p>{post.postedUser.username}</p>
                       </div>
@@ -453,19 +453,17 @@ function Posts() {
 
                   {post.image?.length > 0 && <Contents content={post} />}
                   <div
-                    className={`w-full ${
-                      isDarkMode ? "bg-black" : ""
-                    } flex items-center mt-2 p-2 md:p-0 sm:text-sm font-light md:font-normal break-words`}
+                    className={`mt-3 flex w-full items-center break-words px-4 text-sm font-light text-slate-700 sm:mt-4 sm:px-6 md:font-normal ${isDarkMode ? 'text-slate-200' : ''}`}
                   >
-                    <p className="text-wrap mx-2 w-full">{post.description}</p>
+                    <p className="text-wrap w-full leading-relaxed">{post.description}</p>
                   </div>
 
                   <div
-                    className={`w-full ${
-                      isDarkMode ? "bg-black" : ""
-                    } flex justify-around gap-8 p-4`}
+                    className={`mt-4 flex w-full items-center justify-between border-t p-4 pt-3 transition-colors sm:p-5 ${
+                      isDarkMode ? "border-white/5" : "border-gray-50"
+                    }`}
                   >
-                    <div className="flex w-full gap-10">
+                    <div className="flex items-center gap-5 sm:gap-6">
                       <IoMdHeartEmpty
                         className={
                           post.likes.userId &&
@@ -498,31 +496,24 @@ function Posts() {
                       <PiShareFatThin
                         onClick={() => handleCopyLink(post._id)}
                         size={25}
-                        className="font-bold cursor-pointer"
+                        className={`cursor-pointer transition-transform hover:scale-110 duration-300 ${isDarkMode ? 'hover:text-custom-teal' : 'text-slate-600 hover:text-custom-teal'}`}
                       />
                     </div>
-
-                    {/* SAVE POST  */}
-                    {/* <CiSaveDown2 size={27} className="font-bold" /> */}
                   </div>
-                  <div className="flex w-full px-4 gap-5">
-                    <p className="text-xs flex">
+                  <div className="flex w-full flex-wrap gap-4 px-4 pb-4 sm:gap-6 sm:px-6">
+                    <p className={`text-[13px] font-medium flex ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       {post.likes.userId ? post.likes.userId.length : 0} likes
                     </p>
-                    <p className="text-xs flex">
+                    <p className={`text-[13px] font-medium flex cursor-pointer transition-colors ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`} onClick={() => handleCommentShow(post._id)}>
                       {post.comments[0].comment ? post.comments.length : 0}{" "}
                       comments
                     </p>
                   </div>
                   {showComment === post._id && (
                     <div
-                      className={`w-full ${
-                        isDarkMode ? "bg-black text-white" : ""
-                      } ${
-                        showComment ? "h-auto " : "h-full"
-                      } transition-all duration-500 ease-in-out flex flex-col`}
+                      className={`w-full transition-all duration-500 ease-in-out flex flex-col bg-black/5 dark:bg-white/5 rounded-b-3xl`}
                     >
-                      <div className="w-full px-4">
+                      <div className="w-full px-4 sm:px-5">
                         <div className="mt-4">
                           {post.comments.length > 0 &&
                             post.comments[0].comment &&
@@ -546,7 +537,7 @@ function Posts() {
                                       size="28"
                                     />
                                   )}
-                                  <div className="flex flex-col break-words w-80 md:w-96">
+                                  <div className="flex w-[calc(100%-3rem)] flex-col break-words sm:w-80 md:w-96">
                                     <p className="text-sm font-semibold  text-wrap flex gap-1">
                                       {comment.commenter}
                                       {comment.isPremium ? (
@@ -669,28 +660,24 @@ function Posts() {
                           </button>
                         )}
                       </div>
-                      <div className="flex justify-start p-4 gap-3">
+                      <div className="mt-2 flex items-center gap-3 rounded-b-3xl border-t border-gray-100 bg-white/50 px-4 py-4 dark:border-white/5 dark:bg-slate-900/50 sm:px-5">
                         <input
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
                           type="text"
-                          className={`${
-                            isDarkMode ? "bg-gray-950" : "bg-gray-200"
-                          } w-80 md:w-96 h-10 p-3 rounded-full`}
-                          placeholder="Add a comment..."
+                          className={`flex-1 h-11 px-4 rounded-full border-none focus:ring-2 focus:ring-custom-blue/30 transition-all text-sm ${
+                            isDarkMode ? "bg-black/40 text-white placeholder-slate-500" : "bg-white shadow-sm text-slate-800 placeholder-slate-400"
+                          }`}
+                          placeholder="Write a comment..."
                         />
-                        <span className="p-3">
-                          <IoMdSend
-                            onClick={() =>
-                              handleCommentSubmit(
-                                post._id,
-                                currentUser._id,
-                                post.postedUser._id as string
-                              )
-                            }
-                            size={23}
-                          />
-                        </span>
+                        <button 
+                          className={`p-2.5 rounded-full transition-all duration-300 shadow-sm ${
+                            isDarkMode ? "bg-custom-blue hover:bg-blue-600 text-white" : "bg-custom-blue hover:bg-blue-800 text-white"
+                          }`}
+                          onClick={() => handleCommentSubmit(post._id, currentUser._id, post.postedUser._id as string)}
+                        >
+                          <IoMdSend size={18} />
+                        </button>
                       </div>
                       {commetError.error && commetError.postId === post._id && (
                         <p className="text-red-500 text-sm px-4 -mt-2">
@@ -709,6 +696,12 @@ function Posts() {
               ))}
           </div>
         </div>
+        {!posts.length && (
+          <div className="mx-auto mt-6 w-full max-w-[860px] rounded-[28px] border border-white/60 bg-white/75 p-8 text-center shadow-[0_32px_80px_-40px_rgba(15,23,42,0.28)] backdrop-blur-2xl sm:rounded-[32px] sm:p-12">
+            <p className="font-display text-xl font-semibold text-slate-900 sm:text-2xl">Your feed is ready</p>
+            <p className="mt-3 text-slate-500">Start with a post, or wait for new updates from people you follow.</p>
+          </div>
+        )}
       </InfiniteScroll>
       <ReportModal
         isOpen={isModalOpen}

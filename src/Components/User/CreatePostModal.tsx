@@ -53,7 +53,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
     if (event.target.files) {
       const selectedImages = Array.from(event.target.files);
 
-      selectedImages.map((file) => {
+      selectedImages.forEach((file) => {
         if (file.type.startsWith("video") && !file.type.endsWith("mp4")) {
           toast.error(
             "Unsuported file format (mov) select video(mp4) or image",
@@ -69,7 +69,7 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
           );
           return;
         } else {
-          setImages([...images, ...selectedImages]);
+          setImages((prev) => [...prev, ...selectedImages]);
         }
       });
     }
@@ -128,97 +128,130 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full h-full flex items-center justify-center z-[50]">
+    <div className="fixed inset-0 z-[120] flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-4 backdrop-blur-md">
       <div
-        className={`rounded-xl shadow-2xl backdrop-blur-xl w-full max-w-[350px] ${
-          isDarkMode ? "backdrop-blur-lg" : "bg-white"
+        className={`w-full max-w-[720px] overflow-hidden rounded-t-[28px] border shadow-[0_40px_120px_-35px_rgba(15,23,42,0.55)] sm:rounded-[32px] ${
+          isDarkMode
+            ? "border-white/10 bg-slate-900/95 text-white"
+            : "border-white/70 bg-white/95 text-slate-900"
         }`}
       >
-        <div className="flex justify-end items-center py-3 px-4 dark:border-neutral-700">
+        <div className="flex items-center justify-between border-b border-black/5 px-4 py-4 sm:px-6 sm:py-5 dark:border-white/10">
+          <div>
+            <p className="font-display text-xl font-semibold sm:text-2xl">Create post</p>
+            <p className={`mt-1 text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+              Share an update, image, or scheduled post.
+            </p>
+          </div>
           <IoCloseCircleSharp
             onClick={() => setOpenModal(false)}
-            className="rounded-full cursor-pointer"
+            className="cursor-pointer rounded-full text-2xl"
           />
         </div>
 
-        <div className="p-4 overflow-y-auto flex">
+        <div className="flex p-4 sm:p-6">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full h-20 p-5 bg-transparent resize-none text-xl focus:outline-none rounded-lg"
-            placeholder="Type something"
+            className={`min-h-32 w-full resize-none rounded-[24px] border p-4 text-base focus:outline-none sm:min-h-36 sm:p-5 sm:text-xl ${
+              isDarkMode
+                ? "border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                : "border-slate-200 bg-slate-50/80 text-slate-900 placeholder:text-slate-400"
+            }`}
+            placeholder="What's worth sharing today?"
           ></textarea>
         </div>
 
-        <div className="w-full p-4">
-          <Slider {...settings}>
-            {images.length > 0 &&
-              images.map((file, index) =>
-                file.type.startsWith("image") ? (
-                  <div key={index} className="w-full h-auto">
-                    <img
-                      className="object-cover h-60 w-full md:w-full md:h-72"
-                      src={URL.createObjectURL(file)}
-                      alt=""
-                    />
-                  </div>
-                ) : (
-                  <div key={index} className="w-full h-auto">
-                    <video
-                      className="object-cover h-60 w-full md:w-full md:h-72"
-                      src={URL.createObjectURL(file)}
-                      controls
-                      autoPlay
-                    />
-                  </div>
-                )
-              )}
-          </Slider>
-        </div>
+        {images.length > 0 && (
+          <div className="w-full px-4 pb-2 sm:px-6">
+            <div className="overflow-hidden rounded-[24px]">
+              <Slider {...settings}>
+                {images.map((file, index) =>
+                  file.type.startsWith("image") ? (
+                    <div key={index} className="w-full">
+                      <div className="aspect-[4/5] w-full overflow-hidden rounded-[24px] bg-slate-100/50 dark:bg-white/5">
+                      <img
+                        className="h-full w-full object-cover"
+                        src={URL.createObjectURL(file)}
+                        alt=""
+                      />
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={index} className="w-full">
+                      <div className="aspect-[4/5] w-full overflow-hidden rounded-[24px] bg-slate-100/50 dark:bg-white/5">
+                      <video
+                        className="h-full w-full object-cover"
+                        src={URL.createObjectURL(file)}
+                        controls
+                        autoPlay
+                      />
+                      </div>
+                    </div>
+                  )
+                )}
+              </Slider>
+            </div>
+          </div>
+        )}
 
-        <div className="relative flex px-7 gap-5 items-center">
-          <div>
+        <div className="relative flex flex-wrap items-center gap-3 px-4 py-4 sm:gap-5 sm:px-6 sm:py-5">
+          <button
+            type="button"
+            className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
+              isDarkMode ? "bg-white/5 text-white hover:bg-white/10" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+            onClick={handleOpenImageInput}
+          >
             <MdOutlinePhotoLibrary
-              onClick={handleOpenImageInput}
-              size={25}
-              className="cursor-pointer text-blue-500"
+              size={20}
+              className="text-blue-500"
             />
-            <Tooltip id="photoLibraryTooltip" place="top">
-              Select Photo/Video
-            </Tooltip>
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              ref={imageRef}
-              onChange={handleImageChange}
-            />
-          </div>
+            Add media
+          </button>
+          <Tooltip id="photoLibraryTooltip" place="top">
+            Select Photo/Video
+          </Tooltip>
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            ref={imageRef}
+            onChange={handleImageChange}
+          />
 
-          <div>
+          <button
+            type="button"
+            className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold ${
+              isDarkMode ? "bg-white/5 text-white hover:bg-white/10" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+            onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+          >
             <MdOutlineSchedule
-              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
               data-tooltip-id="scheduleTooltip"
-              className="text-custom-blue cursor-pointer"
-              size={25}
+              className="text-custom-blue"
+              size={20}
             />
-            <Tooltip id="scheduleTooltip" place="top">
-              Schedule
-            </Tooltip>
-          </div>
+            Schedule
+          </button>
+          <Tooltip id="scheduleTooltip" place="top">
+            Schedule
+          </Tooltip>
 
           {isCalendarOpen && (
-            <DatePicker
-              selected={schedule}
-              onChange={(date: Date | null) => handleDateChange(date)}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              timeCaption="Time"
-              dateFormat="MMMM d, yyyy h:mm aa"
-              className="rounded-lg border border-gray-300 p-2 text-sm w-full"
-              popperPlacement="bottom"
-            />
+            <div className="w-full">
+              <DatePicker
+                selected={schedule}
+                onChange={(date: Date | null) => handleDateChange(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+                className="w-full rounded-2xl border border-gray-300 p-3 text-sm"
+                popperPlacement="bottom"
+              />
+            </div>
           )}
 
           {dateError && (
@@ -226,11 +259,14 @@ const CreatePostModal: React.FC<CreatePostProps> = ({ setOpenModal }) => {
           )}
         </div>
 
-        <div className="flex justify-end items-center gap-x-2 py-3 px-4">
+        <div className="flex flex-col items-stretch justify-between gap-3 border-t border-black/5 px-4 py-4 sm:flex-row sm:items-center sm:px-6 sm:py-5 dark:border-white/10">
+          <p className={`text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+            {images.length ? `${images.length} file selected` : "Text-only posts are supported too"}
+          </p>
           <button
             onClick={handleSubmit}
             type="submit"
-            className="py-2 px-7 inline-flex items-center gap-x-2 text-sm font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-700"
+            className="inline-flex w-full items-center justify-center gap-x-2 rounded-2xl bg-blue-600 px-7 py-3 text-sm font-semibold text-white hover:bg-blue-700 sm:w-auto"
           >
             {posting ? (
               <CgSpinner size={20} className="animate-spin" />

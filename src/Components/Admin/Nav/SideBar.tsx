@@ -50,43 +50,43 @@ function SideBar() {
         </svg>
       )}
       <Header />
-      <div className="flex z-50 flex-col fixed items-center justify-center min-h-screen py-2">
+      <div className="fixed z-50 flex min-h-screen flex-col items-center justify-center py-2">
         <div
           className={classNames(
-            "top-20 border-t left-0 w-64 shadow-white backdrop-blur-lg bg-blue-800/30 p-10 pl-20 text-white fixed h-full z-40 transition-transform",
+            "fixed left-0 top-20 z-40 h-full w-72 border-r border-white/10 bg-slate-900/92 p-8 pl-10 text-white shadow-2xl backdrop-blur-xl transition-transform",
             {
               "transform translate-x-0": showSidebar,
               "transform -translate-x-full": !showSidebar,
             }
           )}
         >
-          <ul className="space-y-10 mt-4 relative -space-x-10">
+          <ul className="relative mt-4 space-y-4">
             <li></li>
-            <li className="hover:border bg-custom-blue hover:border-white border border-transparent p-3 rounded-lg">
+            <li className="rounded-2xl border border-transparent bg-white/5 p-3 transition hover:border-white/20 hover:bg-white/10">
               <Link to="/admin/dashboard" className="flex">
                 <RiDashboardHorizontalLine size={30}/>
                 <p className="mx-4 m-1">Dashboard</p>
               </Link>
             </li>
-            <li className="hover:border bg-custom-blue hover:border-white border border-transparent p-3 rounded-lg">
+            <li className="rounded-2xl border border-transparent bg-white/5 p-3 transition hover:border-white/20 hover:bg-white/10">
               <Link to="/admin/users" className="flex">
                 <MdOutlinePeopleAlt size={30} />
                 <p className="mx-4 m-1">Users</p>
               </Link>
             </li>
-            <li className="hover:border bg-custom-blue hover:border-white border border-transparent p-3 rounded-lg">
+            <li className="rounded-2xl border border-transparent bg-white/5 p-3 transition hover:border-white/20 hover:bg-white/10">
               <Link to="/admin/posts" className="flex">
                 <GoFileMedia size={30} />
                 <p className="mx-4 m-1">Contents</p>
               </Link>
             </li>
-            <li className="hover:border bg-custom-blue hover:border-white border border-transparent p-3 rounded-lg">
+            <li className="rounded-2xl border border-transparent bg-white/5 p-3 transition hover:border-white/20 hover:bg-white/10">
               <Link to="/admin/premium" className="flex">
                 <TbPremiumRights size={30} />
                 <p className="mx-4 m-1">Premium</p>
               </Link>
             </li>
-            <li className="hover:border bg-custom-blue hover:border-white border border-transparent p-3 rounded-lg">
+            <li className="rounded-2xl border border-transparent bg-red-500/10 p-3 transition hover:border-red-300/40 hover:bg-red-500/20">
               <Link
                 to="/admin/login"
                 onClick={() => {

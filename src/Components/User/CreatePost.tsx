@@ -18,9 +18,9 @@ function CreatePost({ setfetchAgain,fetchAgain}: CreatePostProps) {
   return (
     <>
       <div
-        className={` hidden h-24 lg:flex mt-32 ${
-          isDarkMode ? "bg-black border" : "bg-gray-100"
-        } items-center   mx-auto shadow-md rounded-xl border-gray-600  lg:w-3/5 mb-20  `}
+        className={`hidden h-[6.5rem] lg:flex items-center mx-auto rounded-[28px] w-full max-w-[860px] mb-8 transition-all duration-300 border ${
+          isDarkMode ? "bg-slate-900/60 border-white/5 shadow-glass backdrop-blur-md" : "bg-white/80 border-gray-100 shadow-soft backdrop-blur-md"
+        }`}
       >
         {currentUser?.profile ? (
           <img
@@ -31,19 +31,26 @@ function CreatePost({ setfetchAgain,fetchAgain}: CreatePostProps) {
         ) : (
           <Avatar size="35" className="rounded-full mx-5" name={currentUser.name} />
         )}
-        <input
-          type="tel"
-          onClick={() => setOpenModal(true)}
-          id="newPost"
-          autoComplete="off"
-          className={`bg-gray-50 border  border-gray-300 text-gray-900 ${
-            isDarkMode ? "bg-gray-900" : ""
-          } text-sm mx-5 rounded-full focus:ring-blue-500 focus:border-blue-500  w-72 p-2.5 h-10`}
-          placeholder="Type something . . . . ."
-        />
-        <div className=" flex w-32 ml-20 gap-3">
-          <MdOutlinePhotoLibrary size={20} />
-          <LuSendHorizonal size={20} />
+        <div className="flex-1 px-4 relative">
+          <input
+            type="text"
+            onClick={() => setOpenModal(true)}
+            id="newPost"
+            autoComplete="off"
+            className={`w-full rounded-2xl border-none p-3.5 pl-5 text-[15px] cursor-pointer transition-colors duration-300 ${
+              isDarkMode ? "bg-white/5 hover:bg-white/10 text-gray-200 placeholder-gray-500" : "bg-gray-50 hover:bg-gray-100 text-gray-800 placeholder-gray-400"
+            } focus:ring-0`}
+            placeholder="Share what's on your mind..."
+            readOnly
+          />
+        </div>
+        <div className="flex items-center gap-4 pr-6 text-gray-400">
+          <button className={`p-2.5 rounded-xl transition-colors duration-300 ${isDarkMode ? 'hover:bg-white/10 hover:text-custom-teal' : 'hover:bg-custom-teal/10 hover:text-custom-teal'}`}>
+            <MdOutlinePhotoLibrary size={22} />
+          </button>
+          <button className={`p-2.5 rounded-xl transition-colors duration-300 ${isDarkMode ? 'hover:bg-white/10 hover:text-custom-blue' : 'hover:bg-custom-blue/10 hover:text-custom-blue'}`}>
+            <LuSendHorizonal size={22} />
+          </button>
         </div>
       </div>
       {openModal && (

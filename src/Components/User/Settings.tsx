@@ -1,60 +1,60 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
-import { IoLogOutOutline } from "react-icons/io5";
-import { useState } from "react";
-import LogoutModal from "../Common/LogoutModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
 
 function Settings() {
-  const [logoutModal, setLogoutModal] = useState(false);
+  const location = useLocation();
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+
+  const items = [
+    {
+      to: "/details",
+      label: "Personal Details",
+      icon: CgProfile,
+      active: location.pathname === "/details",
+    },
+    {
+      to: "/settings",
+      label: "Account Settings",
+      icon: IoSettingsOutline,
+      active: location.pathname === "/settings",
+    },
+  ];
 
   return (
-    <>
-      <div className=" ">
-        <h2 className="px-10 font-bold">Settings</h2>
-        <ul className="pt-2 space-y-5 text-lg flex-1 mt-3  p-10">
-          {/* <li className="rounded-sm">
-					<Link rel="noopener noreferrer" to="#" className="flex items-center p-2 space-x-3 rounded-md">
-					    <span>Profile</span>
-					</Link>
-				</li>
-			 */}
-          <li className="rounded-sm">
-            <Link
-              rel="noopener noreferrer"
-              to="/details"
-              className="flex items-center p-2 space-x-3 rounded-md"
-            >
-              <CgProfile size={30} />
-              <span>Personal Details</span>
-            </Link>
-          </li>
-
-          <li className="rounded-sm">
-            <Link
-              rel="noopener noreferrer"
-              to="/settings"
-              className="flex items-center p-2 space-x-3 rounded-md"
-            >
-              <IoSettingsOutline size={30} />
-              <span>Settings</span>
-            </Link>
-          </li>
-          <li className="rounded-sm">
-            <Link
-              onClick={() => setLogoutModal(true)}
-              rel="noopener noreferrer"
-              to="#"
-              className="flex items-center p-2 space-x-3 rounded-md"
-            >
-              <IoLogOutOutline size={30} />
-              <span>Logout</span>
-            </Link>
-          </li>
-        </ul>
+    <div className="w-full">
+      <div className="mb-4">
+        <h2 className={`text-lg font-semibold tracking-tight ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>
+          Settings
+        </h2>
+        <p className={`mt-1 text-sm leading-6 ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>
+          Profile, preferences, and plan management.
+        </p>
       </div>
-      {logoutModal && <LogoutModal setLogoutModal={setLogoutModal} />}
-    </>
+
+      <ul className="space-y-2">
+        {items.map(({ to, label, icon: Icon, active }) => (
+          <li key={to}>
+            <Link
+              rel="noopener noreferrer"
+              to={to}
+              className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
+                active
+                  ? "bg-gradient-to-r from-custom-blue to-custom-teal text-white shadow-[0_18px_36px_-24px_rgba(15,76,129,0.9)]"
+                  : isDarkMode
+                    ? "text-slate-200 hover:bg-white/10 hover:text-white"
+                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <Icon size={20} />
+              <span className="text-sm font-semibold">{label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

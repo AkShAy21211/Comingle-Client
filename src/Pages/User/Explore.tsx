@@ -66,38 +66,36 @@ function Explore() {
 
   return (
     <div
-      className={` h-full ${
-        isDarkMode ? "bg-black text-white" : ""
-      }  col-span-full lg:col-span-3  `}
+      className={`col-span-full lg:col-start-2 lg:col-end-3`}
     >
-      <div className="   flex  md:flex   mt-20 px-5 mb-5" id="top-search-bar">
+      <div className={`app-page mb-0 pb-4`} id="top-search-bar">
+        <div className={`app-panel mx-auto flex max-w-6xl flex-col gap-4 rounded-[28px] p-4 sm:p-5 md:flex-row md:items-center md:justify-between ${isDarkMode ? "border-white/10 bg-slate-900/60 text-white" : ""}`}>
         {/* SEARCH BAR FOR EXPLORE */}
 
         <ExpandableSearchBar
           searchUsers={searchUsers}
-          isFocused={isFocused}
           setIsFocused={setIsFocused}
         />
         {/* TOOGLE BETWEEN POSTS AND PEOPLE */}
 
-        <div className={`w-96 h-8  justify-end hidden md:flex gap-5`}>
+        <div className={`hidden items-center justify-end gap-3 md:flex`}>
           <button
             onClick={handleShowPosts}
-            className="bg-custom-teal p-4 rounded-lg text-white text-center flex justify-center items-center"
+            className={`${isPosts ? "app-button-primary" : "app-button-secondary"} min-w-28 px-4 py-3 text-sm`}
           >
             Posts
           </button>
           <button
             onClick={handleShowPeople}
-            className="bg-custom-teal p-4 rounded-lg text-white text-center flex justify-center items-center"
+            className={`${isPeople ? "app-button-primary" : "app-button-secondary"} min-w-28 px-4 py-3 text-sm`}
           >
             People
           </button>
         </div>
         <div
-          className={`w-96 h-8  flex md:hidden  ${
+          className={`flex md:hidden  ${
             isFocused ? "hidden" : "flex"
-          } justify-end  h-9  gap-5`}
+          } justify-end`}
         >
           <select
             onChange={(e) => {
@@ -109,11 +107,12 @@ function Explore() {
             }}
             name="explore-type"
             id="explore-type"
-            className={`bg-custom-tealborder-none outline-none p-2 bg-custom-teal text-white rounded-lg `}
+            className={`app-input w-32 bg-custom-teal text-white`}
           >
             <option value="Posts">Posts</option>
             <option value="People">People</option>
           </select>
+        </div>
         </div>
       </div>
 

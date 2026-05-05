@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import LogoutModal from "../../Components/Common/LogoutModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux/rootReducer";
 import { toggleMode } from "../../Redux/Slice/Theam/theamSlice";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
 import { GiCancel } from "react-icons/gi";
+import { IoLogOutOutline } from "react-icons/io5";
 import OtpInputBox from "react-otp-input";
 import userApi from "../../Apis/user";
 import { useFormik } from "formik";
 import { Otp } from "../../Interface/interface";
+import LogoutModal from "../../Components/Common/LogoutModal";
 
 type EmailVerificationModal = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +19,7 @@ type EmailVerificationModal = {
   setIsHandled: React.Dispatch<React.SetStateAction<boolean>>;
   isopen: boolean;
 };
+
 const EmailVerificationModal = ({
   isopen,
   setIsOpen,
@@ -33,8 +34,9 @@ const EmailVerificationModal = ({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordErrror] = useState("");
   const token = useSelector((state: RootState) => state.user.token);
+  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
-  if (!isopen) return;
+  if (!isopen) return null;
 
   const verifyEmail = async () => {
     if (!email.trim()) {
@@ -61,20 +63,17 @@ const EmailVerificationModal = ({
     setIsOpen(false);
     setIsSubmit(false);
   };
+
   const { handleSubmit, values, setFieldValue } = useFormik<Otp>({
     initialValues: {
       otp: "",
     },
-
     onSubmit: onSubmit,
   });
 
   async function onSubmit(otpData: Otp) {
     try {
-      const response = await userApi.changePasswordVefifyOTp(
-        email,
-        otpData.otp
-      );
+      const response = await userApi.changePasswordVefifyOTp(email, otpData.otp);
       if (response) {
         setIsHandled(true);
       }
@@ -101,105 +100,97 @@ const EmailVerificationModal = ({
       console.log(error);
     }
   };
+
   return (
-    <div className="fixed inset-0 flex jc items-center justify-center bg-opacity-75 z-50">
-      <div className=" backdrop-blur-xl border shadow-lg gap-2  py-5  rounded-lg px-5 m-5">
-        <GiCancel className="float-end" size={15} onClick={handleReset} />
-        <p className=" text-sm text-center flex justify-center gap-3">
+    <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
+      <div className={`w-full max-w-md rounded-[28px] border p-5 shadow-2xl ${isDarkMode ? "border-white/10 bg-slate-900 text-white" : "border-white/70 bg-white text-slate-900"}`}>
+        <GiCancel className="float-end cursor-pointer" size={18} onClick={handleReset} />
+        <p className="pt-2 text-center text-sm font-medium">
           {!isSubmit
             ? "Please verify your email"
             : isSubmit && !isHandled
-            ? "Verify OTP"
-            : "Enter new password"}
+              ? "Verify OTP"
+              : "Enter new password"}
         </p>
 
         {!isSubmit && (
-          <div className="flex w-full justify-center gap-3 mt-3">
-            <div className="flex-col gap-3">
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <div className="flex-1">
               <input
                 type="email"
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@gmail.com"
-                className="w-auto p-1 bg-transparent border focus:outline-none   rounded "
+                className="app-input"
               />
-              <p className="text-sm mt-2 text-red-500">
-                {emailError ? emailError : ""}
-              </p>
+              <p className="mt-2 text-sm text-red-500">{emailError ? emailError : ""}</p>
             </div>
-            <button
-              // onClick={onVerify}
-              className=" text-white  rounded "
-            >
-              <IoCheckmarkCircleSharp
-                color="green"
-                onClick={verifyEmail}
-                size={25}
-              />
+            <button className="flex h-12 w-12 items-center justify-center self-start rounded-2xl bg-emerald-500/10">
+              <IoCheckmarkCircleSharp color="green" onClick={verifyEmail} size={25} />
             </button>
           </div>
         )}
+
         {isSubmit && !isHandled && (
-          <div className="w-full flex-col  justify-center items-center">
+          <div className="mt-4 flex w-full flex-col items-center justify-center">
             <OtpInputBox
               value={values.otp}
               numInputs={4}
               onChange={(otp) => setFieldValue("otp", otp)}
               inputType="tel"
-              renderSeparator={<span>-</span>}
+              renderSeparator={<span className="px-1">-</span>}
               renderInput={(props) => (
                 <input
                   {...props}
                   style={{
-                    width: "40px",
+                    width: "48px",
                     marginTop: "10px",
-                    padding: "13px",
-                    color: `black`,
-                    fontSize: "20px",
-                    height: "40px",
-                    borderRadius: "20%",
+                    padding: "10px",
+                    color: "black",
+                    fontSize: "18px",
+                    height: "48px",
+                    borderRadius: "14px",
                   }}
                 />
               )}
             />
             <button
               onClick={() => handleSubmit()}
-              className="text-center w-full mt-4 bg-custom-blue  py-1 rounded-lg text-white"
+              className="app-button-primary mt-5 w-full text-sm"
             >
               Submit
             </button>
           </div>
         )}
+
         {isHandled ? (
-          <div className="flex flex-col w-full justify-center gap-3 mt-3">
-            <div className=" flex flex-col w-full">
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <label htmlFor="Password">Password</label>
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 id="Password"
-                type="email"
+                type="password"
                 placeholder="**************"
-                className="w-auto px-1 py-1  text-black  border focus:outline-none   rounded-lg "
+                className="app-input"
               />
             </div>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col gap-2">
               <label htmlFor="Confirmpassword">Confirm password</label>
               <input
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 id="Confirmpassword"
-                type="email"
+                type="password"
                 placeholder="**************"
-                className="w-auto px-1 py-1 text-black  border focus:outline-none   rounded-lg "
+                className="app-input"
               />
             </div>
-            <p className="text-sm mt-2 text-red-500">
-              {passwordError ? passwordError : ""}
-            </p>
+            <p className="mt-1 text-sm text-red-500">{passwordError ? passwordError : ""}</p>
             <button
               type="submit"
               onClick={handleNewPassword}
-              className="text-center w-full mt-4 bg-custom-blue  py-1 rounded-lg text-white"
+              className="app-button-primary mt-2 w-full text-sm"
             >
               Submit
             </button>
@@ -211,95 +202,80 @@ const EmailVerificationModal = ({
 };
 
 function Settings() {
-  const [logoutModal, setLogoutModal] = useState(false);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [isOpen, setIsOpen] = useState(false);
+  const [logoutModal, setLogoutModal] = useState(false);
   const dispatch = useDispatch();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isHandled, setIsHandled] = useState(false);
 
   return (
-    <div
-      className={` h-screen  flex ${
-        isDarkMode ? "bg-black text-white " : ""
-      } gap-10  flex-col overflow-hidden col-span-full mt-18 pt-20  lg:col-start-2 lg:col-end-5`}
-    >
-      {/* <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
-        Personal Details
-      </h1> */}
-      <ul className="h-auto   mt-10  w-full text-nowrap space-y-10  pl-10 lg:pl-0 text-md">
-        <li className="lg:text-center w-auto flex lg:block ">
-          <Link
-            to="/details"
-            className="hover:bg-custom-blue/40  px-2 py-3 rounded-lg"
-          >
-            Edit personal details
-          </Link>
-        </li>
+    <div className="col-span-full lg:col-start-2 lg:col-end-3">
+      <div className="app-page pt-0">
+        <div className={`app-panel mx-auto max-w-[860px] p-5 sm:p-8 ${isDarkMode ? "border-white/10 bg-slate-900/75 text-white" : ""}`}>
+          <div className="mb-8">
+            <span className="app-chip">Preferences</span>
+            <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight sm:text-3xl">Account settings</h1>
+            <p className={`mt-2 text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+              Update your login security and app appearance.
+            </p>
+          </div>
 
-        {/* <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
-        Account seetings
-      </h1> */}
-        <li className="lg:text-center">
-          <Link
-            onClick={() => setIsOpen(true)}
-            className="hover:bg-custom-blue/40   px-2  py-3 rounded-lg"
-            to={""}
-          >
-            Change Password{" "}
-          </Link>
-        </li>
+          <div className="space-y-4">
+            <div className={`rounded-[24px] border p-4 sm:p-5 ${isDarkMode ? "border-white/10 bg-slate-950/40" : "border-slate-100 bg-slate-50/80"}`}>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-base font-semibold sm:text-lg">Theme</h2>
+                  <p className={`mt-1 text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                    Switch between light and dark mode.
+                  </p>
+                </div>
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isDarkMode}
+                    onChange={() => dispatch(toggleMode())}
+                    className="sr-only peer"
+                  />
+                  <div className="relative h-7 w-12 rounded-full bg-slate-300 peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:start-[3px] after:top-[3px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            </div>
 
-        {/* <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
-       Subscription
-      </h1> */}
-        <li className="lg:text-center ">
-          <Link
-            className="hover:bg-custom-blue/40 py-3  px-2 rounded-lg"
-            to={"/settings/subscription"}
-          >
-            Upgrade to premium
-          </Link>
-        </li>
+            <button
+              onClick={() => setIsOpen(true)}
+              className={`w-full rounded-[24px] border p-4 text-left transition-colors sm:p-5 ${
+                isDarkMode ? "border-white/10 bg-slate-950/40 hover:bg-white/10" : "border-slate-100 bg-slate-50/80 hover:bg-slate-100"
+              }`}
+            >
+              <h2 className="text-base font-semibold sm:text-lg">Change password</h2>
+              <p className={`mt-1 text-sm ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                Verify your email and set a new password.
+              </p>
+            </button>
 
-        {/* <h1 className={`${isDarkMode?'text-white':""}  p-5 text-lg  lg:text-center font-bold`}>
-        App seetings
-      </h1> */}
+            <button
+              onClick={() => setLogoutModal(true)}
+              className={`w-full rounded-[24px] border p-4 text-left transition-colors sm:p-5 ${
+                isDarkMode ? "border-red-500/20 bg-red-500/10 hover:bg-red-500/15" : "border-red-100 bg-red-50 hover:bg-red-100"
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 text-red-500">
+                  <IoLogOutOutline size={20} />
+                </div>
+                <div>
+                  <h2 className="text-base font-semibold text-red-500 sm:text-lg">Sign out</h2>
+                  <p className={`mt-1 text-sm ${isDarkMode ? "text-red-200/80" : "text-red-500/80"}`}>
+                    Log out from this account on this device.
+                  </p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
 
-        <li className="lg:text-center flex lg:block  px-2">
-          <p>Theam</p>
-          <label className="inline-flex mx-3 items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isDarkMode}
-              onChange={() => dispatch(toggleMode())}
-              className="sr-only peer  "
-            />
-            <div
-              className="relative  w-11  
-               
-             h-6 bg-gray-200 peer-focus:outline-none 
-              rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full
-               rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white 
-               after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white
-                after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5
-                 after:transition-all peer-checked:bg-blue-600"
-            ></div>
-          </label>
-        </li>
-
-        <li className="lg:text-center flex lg:block  px-2">
-          <Link
-            to=""
-            onClick={() => setLogoutModal(true)}
-            className="text-red-500 lg:text-center  font-bold text-xl mt-5 w-auto"
-          >
-            Logout
-          </Link>
-        </li>
-      </ul>
-
-      {logoutModal && <LogoutModal setLogoutModal={setLogoutModal} />}
       {isOpen ? (
         <EmailVerificationModal
           isHandled={isHandled}
@@ -310,6 +286,7 @@ function Settings() {
           setIsOpen={setIsOpen}
         />
       ) : null}
+      {logoutModal && <LogoutModal setLogoutModal={setLogoutModal} />}
     </div>
   );
 }

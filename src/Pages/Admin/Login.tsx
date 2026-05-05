@@ -39,10 +39,10 @@ function Login() {
     }
   };
   return (
-    <div className=" flex bg-blue-900  lg:bg-white justify-center h-screen items-center md:bg-blue-900">
+    <div className="min-h-screen justify-center bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.2),_transparent_28%),linear-gradient(135deg,_#020617_0%,_#0f172a_42%,_#f8fafc_42%,_#eff6ff_100%)] px-4 py-8 lg:flex lg:items-center">
       <LoginLeft />
       <div className="w-full  flex  flex-col justify-center items-center ">
-        <div className=" space-y-2 md:space-y-2 w-full flex flex-col  items-center">
+        <div className="app-surface-strong space-y-2 md:space-y-2 w-full max-w-xl rounded-[32px] p-8 flex flex-col  items-center">
           <h1 className="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 ">
             <strong className="text-white sm:text-white lg:text-gray-500">
               ADMIN SIGN
@@ -50,7 +50,7 @@ function Login() {
             <strong className="text-black lg:text-blue-800"> IN</strong>
           </h1>
           <form
-            className="space-y-2 md:space-y-4 w-full p-5 sm:w-full md:w-auto lg:w-1/2"
+            className="space-y-2 md:space-y-4 w-full p-2 sm:w-full md:w-auto lg:w-4/5"
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
@@ -65,7 +65,7 @@ function Login() {
                 type="email"
                 {...register("email")}
                 id="email"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="app-input"
                 placeholder="name@gmail.com"
               />
               <p className="text-red-500 text-sm mt-2">
@@ -84,7 +84,7 @@ function Login() {
                 id="password"
                 {...register("password")}
                 placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="app-input"
               />
               <p className="text-red-500 text-sm mt-2">
                 {errors.password?.message}
@@ -93,7 +93,7 @@ function Login() {
 
             <button
               type="submit"
-              className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none bg-black lg:bg-blue-900 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+              className="app-button-primary w-full text-sm"
             >
               SignIn
             </button>
