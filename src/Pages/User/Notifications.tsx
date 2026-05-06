@@ -11,17 +11,22 @@ import { MdVerified } from "react-icons/md";
 function Notifications() {
   const socket = connectToSocket();
   const [notifications, setNotificatioins] = useState<FollowNotification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [acceptingId, setAcceptingId] = useState("");
   const currentUser = useSelector((state: RootState) => state.user.user);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
   const [fetchAgain, setFetchAgain] = useState(false);
 
   async function getNotification() {
     try {
+      setIsLoading(true);
       const items = await userApi.notifications();
       setFetchAgain(false);
       setNotificatioins(Array.isArray(items) ? items : []);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -43,10 +48,13 @@ function Notifications() {
 
   async function handleAcceptFollow(followId: string, notificationId: string) {
     try {
+      setAcceptingId(notificationId);
       await userApi.acceptFollow(followId, notificationId);
       setFetchAgain((prev) => !prev);
     } catch (err) {
       console.error(err);
+    } finally {
+      setAcceptingId("");
     }
   }
 
@@ -82,10 +90,11 @@ function Notifications() {
         action:
           noti.sourceId.status === "Pending" ? (
             <button
+              disabled={acceptingId === noti._id}
               onClick={() => handleAcceptFollow(noti.sourceId._id, noti._id)}
-              className="app-button-primary px-4 py-2 text-sm"
+              className="app-button-primary px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Accept
+              {acceptingId === noti._id ? "Accepting..." : "Accept"}
             </button>
           ) : (
             <button className="app-button-secondary px-4 py-2 text-sm">
@@ -134,7 +143,28 @@ function Notifications() {
             </p>
           </div>
 
-          {visibleNotifications.length ? (
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className={`animate-pulse rounded-[24px] border p-5 ${
+                    isDarkMode
+                      ? "border-white/10 bg-white/5"
+                      : "border-slate-100 bg-slate-50/90"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-slate-200/70 dark:bg-white/10" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-40 rounded bg-slate-200/70 dark:bg-white/10" />
+                      <div className="h-3 w-24 rounded bg-slate-200/60 dark:bg-white/5" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : visibleNotifications.length ? (
             <div className="space-y-4">
               {visibleNotifications.map(({ noti, ui }) =>
                 ui ? (

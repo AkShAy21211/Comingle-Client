@@ -13,6 +13,7 @@ type LayoutProps = {
 function Layout({ children, isProflie }: LayoutProps) {
   const location = useLocation();
   const showPlane = "/chats";
+  const showHomeRightRail = location.pathname === "/";
   const showSettingsRail =
     isProflie ||
     location.pathname === "/settings" ||
@@ -26,7 +27,7 @@ function Layout({ children, isProflie }: LayoutProps) {
         <div className="mx-auto grid min-h-screen max-w-[1600px] grid-cols-1 px-3 pt-24 sm:px-5 lg:grid-cols-[240px_minmax(0,1fr)_240px] lg:gap-8 lg:px-6 lg:pt-28 xl:px-8">
           <LeftPanel isProfile={showSettingsRail} />
           {children}
-          <RightPanel />
+          {showHomeRightRail ? <RightPanel /> : null}
         </div>
       )}
       <MobileBottomNav />

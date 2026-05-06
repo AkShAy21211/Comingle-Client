@@ -5,18 +5,19 @@ const axiosInstance = axios.create({
     import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
       ? import.meta.env.VITE_BACKEND_URI_DEV
       : import.meta.env.VITE_BACKEND_URI,
-        withCredentials: true,
+  withCredentials: true,
 });
 
 
-const authFreeEndpoints = ["/admin/login"];
+const authFreeEndpoints = ["/admin/signin"];
 // List of prefixes for endpoints that don't require authorization
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Set Content-Type header conditionally
-    const token:string = JSON.parse(localStorage.getItem("token") as string);
+    const storedToken = localStorage.getItem("token");
+    const token: string | null = storedToken ? JSON.parse(storedToken) : null;
 
     if (config.data && config.data instanceof FormData) {
 

@@ -64,6 +64,8 @@ function ProfileAndBg({
   const [followeing, setFollowing] = useState<User[] | []>([]);
   const [type, setType] = useState("");
   const [currentUserData, setCurrentUserData] = useState<User | null>(null);
+  const [followActionLoading, setFollowActionLoading] = useState("");
+  const [messageLoading, setMessageLoading] = useState("");
   //////// fetching user profile ///////////////
 
   const handleTabClick = (tab: string) => {
@@ -128,16 +130,24 @@ function ProfileAndBg({
   };
 
   const handleFollow = async (id: string) => {
-    await userApi.followRequest(id);
-    fetchCurrentUserProfile()
+    try {
+      setFollowActionLoading(id);
+      await userApi.followRequest(id);
+      fetchCurrentUserProfile();
+    } finally {
+      setFollowActionLoading("");
+    }
   };
 
   const handleMessage = async (participantId: string) => {
     try {
+      setMessageLoading(participantId);
       await userApi.accessChat(participantId);
       await userApi.fetchAllChats();
     } catch (error) {
       console.log(error);
+    } finally {
+      setMessageLoading("");
     }
   };
 
@@ -439,20 +449,22 @@ function ProfileAndBg({
               ) ? (
               <button
                 className="app-button-primary px-4 py-2"
+                disabled={followActionLoading === user?._id}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
               >
-                Follow Back
+                {followActionLoading === user?._id ? "Please wait..." : "Follow Back"}
               </button>
             ) : (
               <button
                 className="app-button-primary px-4 py-2"
+                disabled={followActionLoading === user?._id}
                 onClick={() => {
                   handleFollow(user?._id as string);
                 }}
               >
-                Follow
+                {followActionLoading === user?._id ? "Please wait..." : "Follow"}
               </button>
             )}
 
@@ -461,7 +473,7 @@ function ProfileAndBg({
               onClick={() => handleMessage(user?._id as string)}
               className="app-button-secondary px-4 py-2"
             >
-              Message
+              {messageLoading === user?._id ? "Opening..." : "Message"}
             </Link>
           </div>
         )}

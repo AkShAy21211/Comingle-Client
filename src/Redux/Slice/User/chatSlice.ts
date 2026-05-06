@@ -21,20 +21,11 @@ const chatSlice = createSlice({
     },
 
     setUnreadMessage: (state, action) => {
-      console.log('set',action.payload);
-
-      
-      state.unreadMessage = state.unreadMessage||[]
-
+      state.unreadMessage = state.unreadMessage || [];
       state.unreadMessage.push(action.payload as never);
-
-
     },
     removeUnreadMessage: (state, action) => {
-      console.log('remove',action.payload);
-      
       state.unreadMessage = state.unreadMessage.filter(
-
         (chat: ChatType) => chat._id !== action.payload
       );
     },

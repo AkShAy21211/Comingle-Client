@@ -1,8 +1,9 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
-const backenndurl = import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
-  ? import.meta.env.VITE_BACKEND_URI_DEV
-  : import.meta.env.VITE_BACKEND_URI
+const backenndurl =
+  import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
+    ? import.meta.env.VITE_BACKEND_URI_DEV
+    : import.meta.env.VITE_BACKEND_URI;
 
 
   
@@ -27,8 +28,8 @@ const authFreeEndpoints = [
 axiosInstance.interceptors.request.use(
 
   (config: InternalAxiosRequestConfig) => {
-
-    const token:string = JSON.parse(localStorage.getItem("token") as string);
+    const storedToken = localStorage.getItem("token");
+    const token: string | null = storedToken ? JSON.parse(storedToken) : null;
 
     
     
@@ -45,8 +46,6 @@ axiosInstance.interceptors.request.use(
     );
 
     if (requiresAuth) {
-      ;
-
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
       }

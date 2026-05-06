@@ -11,10 +11,13 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
   const [status, setStatus] = useState("");
   const [followedByOther, setFollowedByOther] = useState<Follow[] | null>(null);
   const [folloedBytMe, setFollowedByme] = useState<Follow[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStatusLoading, setIsStatusLoading] = useState(true);
 
   useEffect(() => {
     async function fetchFollowStatus() {
       try {
+        setIsStatusLoading(true);
         const response = await userApi.getFollowStatus(
           requesterId,
           recipientId
@@ -25,6 +28,8 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsStatusLoading(false);
       }
     }
 
@@ -55,19 +60,23 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
 
   async function handleFollow() {
     try {
+      setIsLoading(true);
       setStatus("Pending");
       const response = await userApi.followRequest(recipientId);
-      if (response.data) {
+      if (response?.data) {
         setStatus(response.data.follow.status);
       }
     } catch (err) {
       setStatus("not_following");
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function handleAcceptFollow(followId:string) {
     try {
+      setIsLoading(true);
       setStatus("Accepted");
       const response = await userApi.acceptFollow(followId);
 
@@ -76,6 +85,8 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -89,14 +100,25 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
 
   return (
     <>
+      {isStatusLoading && (
+        <button className="mt-5 rounded-lg border border-slate-200 px-3 py-1 text-slate-500" disabled>
+          Loading...
+        </button>
+      )}
       {isFollowedBuyOther &&
+        !isStatusLoading &&
         status === "Pending" &&
         isFollowedBuyOther.requester === recipientId && (
-          <button onClick={()=>handleAcceptFollow(isFollowedBuyOther._id)} className="bg-custom-teal px-3 py-1 text-white rounded-lg mt-5">
-            Follow Back
+          <button
+            disabled={isLoading}
+            onClick={() => handleAcceptFollow(isFollowedBuyOther._id)}
+            className="mt-5 rounded-lg bg-custom-teal px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isLoading ? "Please wait..." : "Follow Back"}
           </button>
         )}
       {isFollowedBuyOther &&
+        !isStatusLoading &&
         status === "Accepted" &&
         isFollowedBuyOther.requester === recipientId && (
           <button className=" border border-custom-teal px-3 py-1 text-custom-teal rounded-lg mt-5">
@@ -104,6 +126,7 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
           </button>
         )}
       {isFollowedByMe &&
+        !isStatusLoading &&
         status === "Pending" &&
         isFollowedByMe.requester === requesterId && (
           <button className="border border-custom-teal px-3 py-1 text-custom-teal rounded-lg mt-5">
@@ -111,18 +134,20 @@ function FollowButton({ recipientId, requesterId }: FollowBtnProps) {
           </button>
         )}
       {isFollowedByMe &&
+        !isStatusLoading &&
         status === "Accepted" &&
         isFollowedByMe.requester === requesterId && (
           <button className="border border-custom-teal px-3 py-1 text-custom-teal rounded-lg mt-5">
             Following
           </button>
         )}
-      {!isFollowedBuyOther && !isFollowedByMe && (
+      {!isStatusLoading && !isFollowedBuyOther && !isFollowedByMe && (
         <button
+          disabled={isLoading}
           onClick={handleFollow}
-          className="bg-custom-teal px-3 py-1 rounded-lg my-5 text-white"
+          className="my-5 rounded-lg bg-custom-teal px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {status === "Pending" ? "Pending" : "Follow"}
+          {isLoading ? "Please wait..." : status === "Pending" ? "Pending" : "Follow"}
         </button>
       )}
     </>

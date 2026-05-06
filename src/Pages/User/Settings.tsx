@@ -33,6 +33,9 @@ const EmailVerificationModal = ({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordErrror] = useState("");
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
+  const [isSubmittingOtp, setIsSubmittingOtp] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const token = useSelector((state: RootState) => state.user.token);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
@@ -50,11 +53,14 @@ const EmailVerificationModal = ({
     }
     setEmailError("");
     try {
+      setIsSubmittingEmail(true);
       await userApi.changePasswordVefifyMail(email);
       setIsSubmit(true);
     } catch (error) {
       console.log(error);
       setIsSubmit(false);
+    } finally {
+      setIsSubmittingEmail(false);
     }
   };
 
@@ -73,12 +79,15 @@ const EmailVerificationModal = ({
 
   async function onSubmit(otpData: Otp) {
     try {
+      setIsSubmittingOtp(true);
       const response = await userApi.changePasswordVefifyOTp(email, otpData.otp);
       if (response) {
         setIsHandled(true);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsSubmittingOtp(false);
     }
   }
 
@@ -94,10 +103,13 @@ const EmailVerificationModal = ({
     }
 
     try {
+      setIsUpdatingPassword(true);
       await userApi.updatePassword(password.trim(), token);
       handleReset();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -124,7 +136,10 @@ const EmailVerificationModal = ({
               />
               <p className="mt-2 text-sm text-red-500">{emailError ? emailError : ""}</p>
             </div>
-            <button className="flex h-12 w-12 items-center justify-center self-start rounded-2xl bg-emerald-500/10">
+            <button
+              disabled={isSubmittingEmail}
+              className="flex h-12 w-12 items-center justify-center self-start rounded-2xl bg-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-70"
+            >
               <IoCheckmarkCircleSharp color="green" onClick={verifyEmail} size={25} />
             </button>
           </div>
@@ -154,10 +169,11 @@ const EmailVerificationModal = ({
               )}
             />
             <button
+              disabled={isSubmittingOtp}
               onClick={() => handleSubmit()}
-              className="app-button-primary mt-5 w-full text-sm"
+              className="app-button-primary mt-5 w-full text-sm disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Submit
+              {isSubmittingOtp ? "Verifying..." : "Submit"}
             </button>
           </div>
         )}
@@ -189,10 +205,11 @@ const EmailVerificationModal = ({
             <p className="mt-1 text-sm text-red-500">{passwordError ? passwordError : ""}</p>
             <button
               type="submit"
+              disabled={isUpdatingPassword}
               onClick={handleNewPassword}
-              className="app-button-primary mt-2 w-full text-sm"
+              className="app-button-primary mt-2 w-full text-sm disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Submit
+              {isUpdatingPassword ? "Updating..." : "Submit"}
             </button>
           </div>
         ) : null}
@@ -208,6 +225,13 @@ function Settings() {
   const dispatch = useDispatch();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isHandled, setIsHandled] = useState(false);
+  const [isTogglingTheme, setIsTogglingTheme] = useState(false);
+
+  const handleThemeToggle = () => {
+    setIsTogglingTheme(true);
+    dispatch(toggleMode());
+    window.setTimeout(() => setIsTogglingTheme(false), 250);
+  };
 
   return (
     <div className="col-span-full lg:col-start-2 lg:col-end-3">
@@ -234,11 +258,14 @@ function Settings() {
                   <input
                     type="checkbox"
                     checked={isDarkMode}
-                    onChange={() => dispatch(toggleMode())}
+                    onChange={handleThemeToggle}
                     className="sr-only peer"
                   />
                   <div className="relative h-7 w-12 rounded-full bg-slate-300 peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:start-[3px] after:top-[3px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
+                <span className="text-xs app-muted">
+                  {isTogglingTheme ? "Updating..." : ""}
+                </span>
               </div>
             </div>
 

@@ -3,13 +3,9 @@ import { Otp, SignInType, SignUpType } from "../Interface/interface";
 import { Bounce, toast } from "react-toastify";
 import userEnpoints from "./Endpoints/user";
 
-console.log(import.meta.env);
-
 const userApi = {
   guestLogin: async () => {
     try {
-      console.log("called");
-      
       const signinResponse = await axiosInstance.post(userEnpoints.SIGNIN, {
         email: "guest@gmail.com",
         password: "Guest*#123",
@@ -348,7 +344,11 @@ const userApi = {
 
   googleLogin: async () => {
     try {
-      window.open(import.meta.env.VITE_BACKEND_URI + userEnpoints.GOOGLE_LOGIN);
+      const backendUrl =
+        import.meta.env.VITE_NODE_ENV === "DEVELOPMENT"
+          ? import.meta.env.VITE_BACKEND_URI_DEV
+          : import.meta.env.VITE_BACKEND_URI;
+      window.open(backendUrl + userEnpoints.GOOGLE_LOGIN);
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message, {
