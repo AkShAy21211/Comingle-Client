@@ -58,7 +58,7 @@ Note:
 ### 1. Install dependencies
 
 ```powershell
-cd D:\Downloads\miscellaneous\BroCamp\Comingle\frontend
+cd comingle-client
 npm install
 ```
 
