@@ -1,5 +1,7 @@
 # Comingle Frontend
 
+![Build](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+
 This frontend is a React 18 + Vite application that powers the user-facing Comingle experience and parts of the admin-facing UI. It handles authentication flows, feed rendering, responsive layouts, notifications, realtime chat, video-call initiation, settings, profile management, and premium subscription screens.
 
 ## Stack
